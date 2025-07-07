@@ -42,5 +42,6 @@
   },
   "prisma": {
     "seed": "node prisma/seed.js"
-  }
+  },
+  "postinstall": "prisma generate"
 }
