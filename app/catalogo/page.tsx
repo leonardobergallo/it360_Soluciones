@@ -21,18 +21,41 @@ const serviceImages = [
   "/servicio-software.png"
 ];
 
+const hardcodedServices = [
+  {
+    id: 'servicio-1',
+    name: 'Desarrollo de Software',
+    description: 'Aplicaciones web, móviles y sistemas a medida para tu negocio con las últimas tecnologías.',
+    price: 2500,
+    type: 'service',
+    image: '/servicio-apps.png'
+  },
+  {
+    id: 'servicio-2',
+    name: 'Ciberseguridad',
+    description: 'Protege tus datos y tu infraestructura con soluciones avanzadas de seguridad.',
+    price: 3200,
+    type: 'service',
+    image: '/servicio-redes.png'
+  },
+  {
+    id: 'servicio-3',
+    name: 'Soporte Técnico',
+    description: 'Asistencia rápida y profesional para mantener tu empresa operativa 24/7.',
+    price: 800,
+    type: 'service',
+    image: '/servicio-software.png'
+  }
+];
+
 export default function CatalogoPage() {
   const [products, setProducts] = useState<Item[]>([]);
-  const [services, setServices] = useState<Item[]>([]);
   const [toast, setToast] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
 
   useEffect(() => {
     fetch("/api/products").then(r => r.json()).then(data => {
       setProducts(data.map((p: any, i: number) => ({ ...p, type: "product", image: productImages[i % productImages.length] })));
-    });
-    fetch("/api/services").then(r => r.json()).then(data => {
-      setServices(data.map((s: any, i: number) => ({ ...s, type: "service", image: serviceImages[i % serviceImages.length] })));
     });
   }, []);
 
@@ -136,9 +159,8 @@ export default function CatalogoPage() {
             <h2 className="text-3xl font-bold text-blue-800 mb-4">Nuestros Servicios</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">Soluciones profesionales y personalizadas para todas tus necesidades tecnológicas</p>
           </div>
-          
           <div className="grid md:grid-cols-3 gap-8">
-            {services.map(s => (
+            {hardcodedServices.map(s => (
               <div key={s.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
                 <div className="h-48 bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center p-6">
                   <img src={s.image} alt={s.name} className="w-32 h-32 object-contain" />
@@ -151,13 +173,13 @@ export default function CatalogoPage() {
                     <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">Servicio</span>
                   </div>
                   <button 
-                    onClick={() => addToCart(s)} 
+                    onClick={() => window.location.href = '/contacto'} 
                     className="w-full bg-indigo-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:bg-indigo-800 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12H8m0 0l4-4m-4 4l4 4" />
                     </svg>
-                    Agregar al carrito
+                    Solicitar cotización
                   </button>
                 </div>
               </div>
@@ -167,7 +189,7 @@ export default function CatalogoPage() {
       </div>
 
       {/* Modal de detalle de producto */}
-      {selectedProduct && (
+      {selectedProduct && selectedProduct.type === 'product' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" onClick={() => setSelectedProduct(null)}>
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fadeIn" onClick={e => e.stopPropagation()}>
             <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold" onClick={() => setSelectedProduct(null)} aria-label="Cerrar modal">&times;</button>

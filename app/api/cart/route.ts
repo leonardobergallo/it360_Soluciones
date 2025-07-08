@@ -58,6 +58,11 @@ export async function POST(request: NextRequest) {
   if (!productId || !quantity || quantity < 1) {
     return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
   }
+  // Validar que el producto exista y sea un producto real
+  const product = await prisma.product.findUnique({ where: { id: productId } });
+  if (!product) {
+    return NextResponse.json({ error: 'Solo se pueden agregar productos válidos al carrito' }, { status: 400 });
+  }
   // Buscar o crear el carrito
   let cart = await prisma.cart.findUnique({ where: { userId } });
   if (!cart) {

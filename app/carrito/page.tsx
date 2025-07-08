@@ -28,6 +28,7 @@ export default function CarritoPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
+  const [cotizaciones, setCotizaciones] = useState<any[]>([]);
 
   // Cargar carrito desde la API
   useEffect(() => {
@@ -84,6 +85,18 @@ export default function CarritoPage() {
     }
   }, []);
 
+  // Cargar cotizaciones desde localStorage al montar
+  useEffect(() => {
+    const stored = localStorage.getItem('carrito');
+    let cotizacionesLS = [];
+    if (stored) {
+      try {
+        cotizacionesLS = JSON.parse(stored).filter((item: any) => item.type === 'cotizacion');
+      } catch {}
+    }
+    setCotizaciones(cotizacionesLS);
+  }, []);
+
   // Modificar cantidad
   const updateQty = async (productId: string, quantity: number) => {
     if (quantity < 1) return;
@@ -125,6 +138,19 @@ export default function CarritoPage() {
       const data = await res.json();
       setCartItems(data.items || []);
     }
+  };
+
+  // Eliminar cotización del localStorage
+  const removeCotizacion = (index: number) => {
+    const stored = localStorage.getItem('carrito');
+    if (!stored) return;
+    let cart = JSON.parse(stored);
+    const cotizacionesLS = cart.filter((item: any) => item.type === 'cotizacion');
+    const productosLS = cart.filter((item: any) => item.type !== 'cotizacion');
+    cotizacionesLS.splice(index, 1);
+    const newCart = [...productosLS, ...cotizacionesLS];
+    localStorage.setItem('carrito', JSON.stringify(newCart));
+    setCotizaciones(cotizacionesLS);
   };
 
   // Checkout (flujo real de ventas con datos completos y método de pago)
@@ -198,6 +224,9 @@ export default function CarritoPage() {
       setError(err.message || "Error al realizar la compra");
     }
   };
+
+  // Filtrar cotizaciones válidas
+  const cotizacionesValidas = cotizaciones.filter(c => c.nombre && c.email && c.servicio);
 
   return (
     <div className="container mx-auto py-12 px-4 min-h-screen">
@@ -277,6 +306,35 @@ export default function CarritoPage() {
           {error && <div className="text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 font-semibold text-center mt-2">{error}</div>}
         </form>
       </section>
+      {/* Sección de cotizaciones */}
+      {cotizacionesValidas.length > 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
+          <h2 className="text-xl font-bold text-yellow-800 mb-4">Solicitudes de cotización</h2>
+          <ul className="space-y-4">
+            {cotizacionesValidas.map((c, i) => (
+              <li key={i} className="bg-white rounded-lg shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <div>
+                  <div className="font-semibold text-yellow-900">{c.servicio}</div>
+                  <div className="text-sm text-gray-700">{c.nombre} &lt;{c.email}&gt; {c.empresa && `- ${c.empresa}`}</div>
+                  <div className="text-sm text-gray-500">{c.telefono}</div>
+                  <div className="text-gray-600 mt-1">{c.mensaje}</div>
+                </div>
+                <button
+                  onClick={() => removeCotizacion(i)}
+                  className="bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 text-xs font-semibold mt-2 md:mt-0"
+                >
+                  Eliminar
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {cotizaciones.length > 0 && cotizacionesValidas.length === 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8 text-yellow-900 font-semibold">
+          Hay cotizaciones incompletas en tu carrito. Por favor, elimínalas y vuelve a enviar tu solicitud desde el formulario de contacto.
+        </div>
+      )}
     </div>
   );
 } 

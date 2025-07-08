@@ -218,39 +218,32 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center text-blue-800 mb-10">Nuestros Servicios</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {servicios.map((serv, i) => (
-            <div
+            <a
               key={serv.nombre}
-              className="bg-white rounded-2xl shadow-lg p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
-              onClick={() => {
-                if (openService === null) handleOpenService(i);
-              }}
-              style={openService !== null ? { pointerEvents: 'none', opacity: 0.7 } : {}}
+              href="/contacto"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+              onClick={e => { if (openService !== null) e.preventDefault(); }}
             >
-              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <img src={serv.imagen} alt={serv.nombre} className="w-16 h-16 object-contain" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-800">{serv.nombre}</h3>
-              <p className="text-gray-600 leading-relaxed mb-4">{serv.descripcion}</p>
-              <button
-                onClick={e => {
-                  e.stopPropagation();
-                  const stored = localStorage.getItem("carrito");
-                  let cart = stored ? JSON.parse(stored) : [];
-                  const existingItem = cart.find((item: any) => item.nombre === serv.nombre && item.type === "service");
-                  if (existingItem) {
-                    existingItem.qty += 1;
-                  } else {
-                    cart.push({ ...serv, qty: 1, type: "service" });
-                  }
-                  localStorage.setItem("carrito", JSON.stringify(cart));
-                  setToast("¡Servicio agregado al carrito!");
-                  setTimeout(() => setToast(""), 2000);
+              <div
+                className="bg-white rounded-2xl shadow-lg p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
+                onClick={() => {
+                  if (openService === null) handleOpenService(i);
                 }}
-                className="w-full bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium mt-4"
+                style={openService !== null ? { pointerEvents: 'none', opacity: 0.7 } : {}}
               >
-                Agregar al carrito
-              </button>
-            </div>
+                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <img src={serv.imagen} alt={serv.nombre} className="w-16 h-16 object-contain" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">{serv.nombre}</h3>
+                <p className="text-gray-600 leading-relaxed mb-4">{serv.descripcion}</p>
+                <button
+                  onClick={e => { e.stopPropagation(); window.location.href = '/contacto'; }}
+                  className="w-full bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium mt-4"
+                >
+                  Solicitar cotización
+                </button>
+              </div>
+            </a>
           ))}
         </div>
         {/* Modal de servicio expandido */}
@@ -262,24 +255,10 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-blue-800 mb-4">{servicios[openService].nombre}</h3>
               <p className="text-gray-700 text-lg mb-2">{servicios[openService].descripcionLarga}</p>
               <button
-                onClick={e => {
-                  e.stopPropagation();
-                  const serv = servicios[openService];
-                  const stored = localStorage.getItem("carrito");
-                  let cart = stored ? JSON.parse(stored) : [];
-                  const existingItem = cart.find((item: any) => item.nombre === serv.nombre && item.type === "service");
-                  if (existingItem) {
-                    existingItem.qty += 1;
-                  } else {
-                    cart.push({ ...serv, qty: 1, type: "service" });
-                  }
-                  localStorage.setItem("carrito", JSON.stringify(cart));
-                  setToast("¡Servicio agregado al carrito!");
-                  setTimeout(() => setToast(""), 2000);
-                }}
+                onClick={e => { e.stopPropagation(); window.location.href = '/contacto'; }}
                 className="w-full bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium mt-4"
               >
-                Agregar al carrito
+                Solicitar cotización
               </button>
             </div>
           </div>

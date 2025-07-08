@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -22,7 +22,7 @@ model User {
 
 model Service {
   id          String   @id @default(uuid())
-  name        String
+  name        String   @unique
   description String
   price       Float
   sales       Sale[]
@@ -32,10 +32,12 @@ model Service {
 
 model Product {
   id          String   @id @default(uuid())
-  name        String
+  name        String   @unique
   description String
   price       Float
   stock       Int
+  category    String
+  image       String?
   sales       Sale[]
   cartItems   CartItem[]
   createdAt   DateTime @default(now())
@@ -64,7 +66,7 @@ model Sale {
 model Contact {
   id        String   @id @default(uuid())
   name      String
-  email     String
+  email     String   @unique
   message   String
   createdAt DateTime @default(now())
 }
