@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 // GET - Obtener todos los usuarios
 export async function GET() {
@@ -40,10 +41,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Hashear la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
     const user = await prisma.user.create({
       data: {
         email,
-        password, // En producción, hashear la contraseña
+        password: hashedPassword,
         name,
         role: role || 'USER',
       },
@@ -99,7 +103,9 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'ID requerido' }, { status: 400 });
     }
     const data: any = { name, email, role };
-    if (password) data.password = password;
+    if (password) {
+      data.password = await bcrypt.hash(password, 10);
+    }
     const user = await prisma.user.update({
       where: { id },
       data,
