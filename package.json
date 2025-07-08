@@ -16,7 +16,8 @@
     "migrate:neon": "node scripts/migrate-to-neon.js",
     "db:deploy": "prisma migrate deploy",
     "verify:neon": "node scripts/verify-neon-setup.js",
-    "verify:env": "node scripts/verify-env.js"
+    "verify:env": "node scripts/verify-env.js",
+    "setup:env": "node scripts/setup-env.js"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
