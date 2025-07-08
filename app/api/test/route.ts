@@ -1,26 +1,26 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    // Probar la conexión a la base de datos
-    await prisma.$connect();
-    
-    // Contar usuarios como prueba
-    const userCount = await prisma.user.count();
-    
+    // Verificar solo variables de entorno básicas
+    const envInfo = {
+      DATABASE_URL_EXISTS: !!process.env.DATABASE_URL,
+      DATABASE_URL_LENGTH: process.env.DATABASE_URL?.length || 0,
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL_ENV: process.env.VERCEL_ENV,
+      VERCEL_URL: process.env.VERCEL_URL,
+    };
+
     return NextResponse.json({
-      status: 'success',
-      message: 'Conexión a la base de datos exitosa',
-      userCount,
+      status: 'OK',
+      message: 'Endpoint funcionando',
+      environment: envInfo,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error en test API:', error);
     return NextResponse.json({
-      status: 'error',
-      message: 'Error conectando a la base de datos',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: 'ERROR',
+      message: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }
