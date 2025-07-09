@@ -114,109 +114,122 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
-      {/* Barra superior de servicios */}
-      <header className="bg-gray-100 text-xs py-1 border-b">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex gap-4">
-            <span>🚚 Seguimiento de compra</span>
-            <span>🛠️ Servicio técnico</span>
-            <span>🏬 Sucursales</span>
-            <span>📞 Venta telefónica</span>
-            <span>❓ Centro de ayuda</span>
+      {/* Barra superior de servicios - Responsive */}
+      <header className="bg-gray-100 text-xs py-1 border-b hidden sm:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-1 sm:space-y-0">
+            <div className="flex flex-wrap gap-2 sm:gap-4 text-center sm:text-left">
+              <span className="whitespace-nowrap">🚚 Seguimiento</span>
+              <span className="whitespace-nowrap">🛠️ Soporte técnico</span>
+              <span className="whitespace-nowrap">📞 Venta telefónica</span>
+            </div>
+            <span className="font-bold text-sm text-blue-700">IT360 Créditos</span>
           </div>
-          <span className="font-bold text-sm text-blue-700">IT360 Créditos</span>
         </div>
       </header>
 
-      {/* Header principal */}
+      {/* Header principal - Responsive */}
       <header className="bg-white py-3 shadow">
-        <div className="container mx-auto flex items-center justify-between">
-          <Image src="/icono.png" alt="Logo IT360" width={50} height={50} className="rounded-lg" />
-          <div className="flex-1 flex justify-center">
-            <input
-              type="text"
-              placeholder="Buscar productos o servicios"
-              className="w-96 px-4 py-2 border rounded-l"
-            />
-            <button className="bg-gray-200 px-3 rounded-r">
-              <span role="img" aria-label="Buscar">🔍</span>
-            </button>
-          </div>
-          <div className="flex gap-6 items-center">
-            <span className="flex items-center gap-1 cursor-pointer">
-              <span role="img" aria-label="Usuario">👤</span> Mi cuenta
-            </span>
-            <CartIconWithBadge />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+            <div className="flex items-center">
+              <Image src="/icono.png" alt="Logo IT360" width={50} height={50} className="rounded-lg" />
+            </div>
+            <div className="w-full sm:w-auto sm:flex-1 sm:flex sm:justify-center max-w-md sm:max-w-lg lg:max-w-xl">
+              <div className="flex w-full">
+                <input
+                  type="text"
+                  placeholder="Buscar productos o servicios"
+                  className="flex-1 px-4 py-2 border rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button className="bg-gray-200 px-3 rounded-r hover:bg-gray-300 transition-colors">
+                  <span role="img" aria-label="Buscar">🔍</span>
+                </button>
+              </div>
+            </div>
+            <div className="flex gap-4 sm:gap-6 items-center">
+              <span className="hidden sm:flex items-center gap-1 cursor-pointer hover:text-blue-700 transition-colors">
+                <span role="img" aria-label="Usuario">👤</span> Mi cuenta
+              </span>
+              <CartIconWithBadge />
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Barra de navegación */}
+      {/* Barra de navegación - Responsive */}
       <nav className="bg-white border-b">
-        <div className="container mx-auto flex items-center gap-6 py-2">
-          <button className="text-lg">☰</button>
-          <a href="#inicio" className="font-bold text-blue-700">Inicio</a>
-          <a href="#servicios" className="text-blue-700 font-semibold">Servicios</a>
-          <a href="#productos">Productos</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#testimonios">Testimonios</a>
-          <a href="#contacto">Contacto</a>
-          <Link href="/catalogo" className="ml-auto text-blue-700 hover:text-blue-800 font-medium transition-colors">Catálogo</Link>
-          <Link href="/admin" className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium">Admin</Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 py-2">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-6 w-full sm:w-auto">
+              <a href="#inicio" className="font-bold text-blue-700 hover:text-blue-800 transition-colors">Inicio</a>
+              <a href="#servicios" className="text-blue-700 font-semibold hover:text-blue-800 transition-colors">Servicios</a>
+              <a href="#productos" className="hover:text-blue-700 transition-colors">Productos</a>
+              <a href="#nosotros" className="hover:text-blue-700 transition-colors">Nosotros</a>
+              <a href="#testimonios" className="hover:text-blue-700 transition-colors">Testimonios</a>
+              <a href="#contacto" className="hover:text-blue-700 transition-colors">Contacto</a>
+            </div>
+            <div className="flex gap-2 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end">
+              <Link href="/catalogo" className="text-blue-700 hover:text-blue-800 font-medium transition-colors">Catálogo</Link>
+              <Link href="/admin" className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium">Admin</Link>
+            </div>
+          </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section id="inicio" className="relative flex flex-col items-center justify-center flex-1 min-h-[55vh] py-16 bg-gradient-to-br from-blue-900 via-blue-600 to-blue-200 text-center fade-in opacity-0 translate-y-8 transition-all duration-700 overflow-hidden">
+      {/* Hero Section - Responsive */}
+      <section id="inicio" className="relative flex flex-col items-center justify-center flex-1 min-h-[50vh] sm:min-h-[55vh] py-8 sm:py-16 bg-gradient-to-br from-blue-900 via-blue-600 to-blue-200 text-center fade-in opacity-0 translate-y-8 transition-all duration-700 overflow-hidden">
         {/* Imagen de fondo opcional, solo superpone con opacidad */}
         <img src="/circuloazulbannerfondo.png" alt="Banner IT360" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" style={{ opacity: 0.32 }} onError={e => { e.currentTarget.style.display = 'none'; }} />
-        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4" style={{ fontFamily: 'Poppins, Montserrat, Arial, sans-serif', letterSpacing: '-1px', color: '#fff', textShadow: '0 2px 16px #1a237e99' }}>
+        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 px-4" style={{ fontFamily: 'Poppins, Montserrat, Arial, sans-serif', letterSpacing: '-1px', color: '#fff', textShadow: '0 2px 16px #1a237e99' }}>
             Bienvenido a IT360 Soluciones
           </h1>
-          <p className="text-lg md:text-2xl mb-8 max-w-2xl font-medium" style={{ fontFamily: 'Poppins, Montserrat, Arial, sans-serif', color: '#e3e8f7', textShadow: '0 1px 8px #1a237e88' }}>
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 max-w-2xl font-medium px-4" style={{ fontFamily: 'Poppins, Montserrat, Arial, sans-serif', color: '#e3e8f7', textShadow: '0 1px 8px #1a237e88' }}>
             Soluciones tecnológicas integrales para tu empresa. Innovación, soporte y desarrollo a tu alcance.
           </p>
-          <a href="#contacto" className="px-8 py-3 bg-blue-700 text-white rounded-full font-semibold shadow hover:bg-blue-800 transition">Contáctanos</a>
+          <a href="#contacto" className="px-6 sm:px-8 py-3 bg-blue-700 text-white rounded-full font-semibold shadow hover:bg-blue-800 transition-colors text-sm sm:text-base">Contáctanos</a>
         </div>
       </section>
 
-      {/* Pasarela de tecnologías con SVGs e íconos extra, más grandes */}
-      <section className="py-8 bg-white fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="container mx-auto flex flex-wrap justify-center items-center gap-10 overflow-x-auto">
-          {/* Next.js */}
-          <svg width="120" height="40" viewBox="0 0 120 40" fill="none"><text x="0" y="32" fontSize="40" fontWeight="bold" fill="#000">NEXT</text><text x="90" y="36" fontSize="16" fill="#000">.Js</text></svg>
-          {/* React */}
-          <svg width="48" height="48" viewBox="0 0 32 32"><g><ellipse cx="16" cy="16" rx="14" ry="6" stroke="#61DAFB" strokeWidth="2" fill="none"/><ellipse cx="16" cy="16" rx="6" ry="14" stroke="#61DAFB" strokeWidth="2" fill="none"/><circle cx="16" cy="16" r="2.5" fill="#61DAFB"/></g></svg>
-          {/* React Native */}
-          <svg width="48" height="48" viewBox="0 0 32 32"><g><ellipse cx="16" cy="16" rx="14" ry="6" stroke="#00D8FF" strokeWidth="2" fill="none"/><ellipse cx="16" cy="16" rx="6" ry="14" stroke="#00D8FF" strokeWidth="2" fill="none"/><circle cx="16" cy="16" r="2.5" fill="#00D8FF"/></g></svg>
-          {/* Node.js */}
-          <svg width="48" height="48" viewBox="0 0 32 32"><polygon points="16,2 30,9 30,23 16,30 2,23 2,9" fill="#8CC84B"/><text x="8" y="22" fontSize="12" fill="#fff">Node</text></svg>
-          {/* PostgreSQL */}
-          <svg width="48" height="48" viewBox="0 0 32 32"><ellipse cx="16" cy="16" rx="14" ry="14" fill="#336791"/><text x="7" y="22" fontSize="12" fill="#fff">PGSQL</text></svg>
-          {/* Tailwind */}
-          <svg width="48" height="48" viewBox="0 0 32 32"><path d="M8 20c0-6 8-6 8 0s8 6 8 0" stroke="#38BDF8" strokeWidth="2" fill="none"/><path d="M8 12c0-6 8-6 8 0s8 6 8 0" stroke="#38BDF8" strokeWidth="2" fill="none"/></svg>
-          {/* Prisma */}
-          <svg width="48" height="48" viewBox="0 0 32 32"><polygon points="16,2 30,30 2,30" fill="#0C344B"/><text x="8" y="24" fontSize="12" fill="#fff">Prisma</text></svg>
-          {/* TypeScript */}
-          <svg width="48" height="48" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3178C6"/><text x="4" y="22" fontSize="16" fill="#fff">TS</text></svg>
-          {/* Docker */}
-          <svg width="48" height="48" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#2496ED"/><text x="4" y="22" fontSize="16" fill="#fff">🐳</text></svg>
-          {/* Extra: file.svg */}
-          <img src="/file.svg" alt="File" className="h-12 w-auto" />
-          {/* Extra: globe.svg */}
-          <img src="/globe.svg" alt="Globe" className="h-12 w-auto" />
-          {/* Extra: window.svg */}
-          <img src="/window.svg" alt="Window" className="h-12 w-auto" />
-          {/* Extra: vercel.svg */}
-          <img src="/vercel.svg" alt="Vercel" className="h-12 w-auto" />
+      {/* Pasarela de tecnologías - Responsive */}
+      <section className="py-6 sm:py-8 bg-white fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 lg:gap-10 overflow-x-auto">
+            {/* Next.js */}
+            <svg width="80" height="30" viewBox="0 0 120 40" fill="none" className="sm:w-[120px] sm:h-[40px]"><text x="0" y="32" fontSize="40" fontWeight="bold" fill="#000">NEXT</text><text x="90" y="36" fontSize="16" fill="#000">.Js</text></svg>
+            {/* React */}
+            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><g><ellipse cx="16" cy="16" rx="14" ry="6" stroke="#61DAFB" strokeWidth="2" fill="none"/><ellipse cx="16" cy="16" rx="6" ry="14" stroke="#61DAFB" strokeWidth="2" fill="none"/><circle cx="16" cy="16" r="2.5" fill="#61DAFB"/></g></svg>
+            {/* React Native */}
+            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><g><ellipse cx="16" cy="16" rx="14" ry="6" stroke="#00D8FF" strokeWidth="2" fill="none"/><ellipse cx="16" cy="16" rx="6" ry="14" stroke="#00D8FF" strokeWidth="2" fill="none"/><circle cx="16" cy="16" r="2.5" fill="#00D8FF"/></g></svg>
+            {/* Node.js */}
+            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><polygon points="16,2 30,9 30,23 16,30 2,23 2,9" fill="#8CC84B"/><text x="8" y="22" fontSize="12" fill="#fff">Node</text></svg>
+            {/* PostgreSQL */}
+            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><ellipse cx="16" cy="16" rx="14" ry="14" fill="#336791"/><text x="7" y="22" fontSize="12" fill="#fff">PGSQL</text></svg>
+            {/* Tailwind */}
+            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><path d="M8 20c0-6 8-6 8 0s8 6 8 0" stroke="#38BDF8" strokeWidth="2" fill="none"/><path d="M8 12c0-6 8-6 8 0s8 6 8 0" stroke="#38BDF8" strokeWidth="2" fill="none"/></svg>
+            {/* Prisma */}
+            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><polygon points="16,2 30,30 2,30" fill="#0C344B"/><text x="8" y="24" fontSize="12" fill="#fff">Prisma</text></svg>
+            {/* TypeScript */}
+            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><rect width="32" height="32" rx="6" fill="#3178C6"/><text x="4" y="22" fontSize="16" fill="#fff">TS</text></svg>
+            {/* Docker */}
+            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><rect width="32" height="32" rx="6" fill="#2496ED"/><text x="4" y="22" fontSize="16" fill="#fff">🐳</text></svg>
+            {/* Extra: file.svg */}
+            <img src="/file.svg" alt="File" className="h-8 sm:h-12 w-auto" />
+            {/* Extra: globe.svg */}
+            <img src="/globe.svg" alt="Globe" className="h-8 sm:h-12 w-auto" />
+            {/* Extra: window.svg */}
+            <img src="/window.svg" alt="Window" className="h-8 sm:h-12 w-auto" />
+            {/* Extra: vercel.svg */}
+            <img src="/vercel.svg" alt="Vercel" className="h-8 sm:h-12 w-auto" />
+          </div>
         </div>
       </section>
 
-      {/* Servicios con modal expandible */}
-      <section id="servicios" className="container mx-auto py-16 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <h2 className="text-3xl font-bold text-center text-blue-800 mb-10">Nuestros Servicios</h2>
-        <div className="grid md:grid-cols-3 gap-8">
+      {/* Servicios con modal expandible - Responsive */}
+      <section id="servicios" className="max-w-7xl mx-auto py-12 sm:py-16 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8 sm:mb-10">Nuestros Servicios</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {servicios.map((serv, i) => (
             <a
               key={serv.nombre}
@@ -225,20 +238,20 @@ export default function Home() {
               onClick={e => { if (openService !== null) e.preventDefault(); }}
             >
               <div
-                className="bg-white rounded-2xl shadow-lg p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
+                className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
                 onClick={() => {
                   if (openService === null) handleOpenService(i);
                 }}
                 style={openService !== null ? { pointerEvents: 'none', opacity: 0.7 } : {}}
               >
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <img src={serv.imagen} alt={serv.nombre} className="w-16 h-16 object-contain" />
+                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <img src={serv.imagen} alt={serv.nombre} className="w-12 h-12 sm:w-16 sm:h-16 object-contain" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-800">{serv.nombre}</h3>
-                <p className="text-gray-600 leading-relaxed mb-4">{serv.descripcion}</p>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-800">{serv.nombre}</h3>
+                <p className="text-gray-600 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">{serv.descripcion}</p>
                 <button
                   onClick={e => { e.stopPropagation(); window.location.href = '/contacto'; }}
-                  className="w-full bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium mt-4"
+                  className="w-full bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium mt-3 sm:mt-4"
                 >
                   Solicitar cotización
                 </button>
@@ -265,10 +278,10 @@ export default function Home() {
         )}
       </section>
 
-      {/* Productos con modal expandible */}
-      <section id="productos" className="bg-blue-50 py-16 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-blue-800 mb-10">Nuestros Productos</h2>
+      {/* Productos con modal expandible - Responsive */}
+      <section id="productos" className="bg-blue-50 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8 sm:mb-10">Nuestros Productos</h2>
           {loadingProducts ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto mb-4"></div>
@@ -280,20 +293,20 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <div className="grid md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 {products.map((prod: any, i: number) => (
                   <div
                     key={prod.id}
-                    className="bg-white rounded-2xl shadow-lg p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
+                    className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
                     onClick={() => setOpenProduct(i)}
                   >
-                    <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <img src={prod.imagen} alt={prod.name} className="w-16 h-16 object-contain" />
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <img src={prod.imagen} alt={prod.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-3 text-gray-800">{prod.name}</h3>
-                    <p className="text-gray-600 leading-relaxed mb-4">{prod.description}</p>
-                    <div className="text-2xl font-bold text-blue-700 mb-4">${prod.price.toLocaleString()}</div>
-                    <div className="text-sm text-gray-500 mb-4">Stock: {prod.stock}</div>
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-800">{prod.name}</h3>
+                    <p className="text-gray-600 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">{prod.description}</p>
+                    <div className="text-xl sm:text-2xl font-bold text-blue-700 mb-3 sm:mb-4">${prod.price.toLocaleString()}</div>
+                    <div className="text-sm text-gray-500 mb-3 sm:mb-4">Stock: {prod.stock}</div>
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
@@ -361,39 +374,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Nosotros */}
-      <section id="nosotros" className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-20 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="container mx-auto flex flex-col items-center justify-center">
-          <h2 className="text-3xl font-extrabold text-center text-blue-800 mb-8 flex items-center gap-2">
+      {/* Nosotros - Responsive */}
+      <section id="nosotros" className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-12 sm:py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="max-w-7xl mx-auto flex flex-col items-center justify-center">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-blue-800 mb-6 sm:mb-8 flex items-center gap-2">
             <span>Sobre Nosotros</span>
-            <span className="text-2xl">🚀</span>
+            <span className="text-xl sm:text-2xl">🚀</span>
           </h2>
-          <div className="relative mb-8">
+          <div className="relative mb-6 sm:mb-8">
             <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-60 animate-pulse"></span>
-            <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=256&h=256&facepad=2" alt="Equipo IT360" className="relative w-36 h-36 rounded-full object-cover border-4 border-white shadow-xl" />
+            <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=256&h=256&facepad=2" alt="Equipo IT360" className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-xl" />
           </div>
-          <div className="max-w-3xl mx-auto text-center text-lg text-gray-700 bg-white bg-opacity-80 rounded-xl p-8 shadow-lg">
+          <div className="max-w-3xl mx-auto text-center text-base sm:text-lg text-gray-700 bg-white bg-opacity-80 rounded-xl p-6 sm:p-8 shadow-lg">
             <p className="mb-2 font-semibold text-blue-700 text-xl flex items-center justify-center gap-2"><span>💡</span> Innovación, experiencia y compromiso</p>
             <p>En IT360 Soluciones somos un equipo apasionado por la tecnología y la innovación. Nos dedicamos a brindar soluciones integrales que impulsan el crecimiento de nuestros clientes, combinando experiencia, creatividad y compromiso.</p>
           </div>
         </div>
       </section>
 
-      {/* Testimonios */}
-      <section id="testimonios" className="bg-gradient-to-br from-pink-100 via-blue-50 to-purple-100 py-20 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-extrabold text-center text-blue-800 mb-10 flex items-center gap-2 justify-center">
+      {/* Testimonios - Responsive */}
+      <section id="testimonios" className="bg-gradient-to-br from-pink-100 via-blue-50 to-purple-100 py-12 sm:py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-blue-800 mb-8 sm:mb-10 flex items-center gap-2 justify-center">
             <span>Testimonios</span>
-            <span className="text-2xl">⭐</span>
+            <span className="text-xl sm:text-2xl">⭐</span>
           </h2>
-          <div className="grid md:grid-cols-3 gap-10">
-            <div className="relative bg-white rounded-2xl shadow-xl p-8 text-center flex flex-col items-center overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+            <div className="relative bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center flex flex-col items-center overflow-hidden">
               <span className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-40 animate-pulse"></span>
               <div className="relative mb-4">
-                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María G." className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María G." className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
               </div>
-              <p className="italic mb-4 text-gray-700 relative z-10">"El equipo de IT360 transformó nuestra infraestructura digital. ¡100% recomendados!"</p>
-              <div className="font-semibold text-blue-700 relative z-10">María G., CEO de EmpresaX</div>
+              <p className="italic mb-4 text-gray-700 relative z-10 text-sm sm:text-base">"El equipo de IT360 transformó nuestra infraestructura digital. ¡100% recomendados!"</p>
+              <div className="font-semibold text-blue-700 relative z-10 text-sm sm:text-base">María G., CEO de EmpresaX</div>
             </div>
             <div className="relative bg-white rounded-2xl shadow-xl p-8 text-center flex flex-col items-center overflow-hidden">
               <span className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-40 animate-pulse"></span>
@@ -415,17 +428,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contacto */}
-      <section id="contacto" className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-blue-200 py-16">
-        <h2 className="text-3xl md:text-4xl font-extrabold mb-8 text-blue-800 text-center drop-shadow">Contacto y Presupuesto</h2>
-        <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl p-10 border border-blue-100">
-          <h3 className="text-xl font-bold mb-6 text-blue-700 text-center">Solicitar Presupuesto</h3>
-          <form ref={formRef} onSubmit={handlePresupuesto} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <input name="nombre" type="text" placeholder="Nombre" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg" required />
-            <input name="email" type="email" placeholder="Email" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg" required />
-            <input name="telefono" type="tel" placeholder="Teléfono" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg" required />
-            <input name="empresa" type="text" placeholder="Empresa (opcional)" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg" />
-            <select name="servicio" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg" required>
+      {/* Contacto - Responsive */}
+      <section id="contacto" className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-blue-200 py-8 sm:py-16 px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-6 sm:mb-8 text-blue-800 text-center drop-shadow">Contacto y Presupuesto</h2>
+        <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-10 border border-blue-100">
+          <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-blue-700 text-center">Solicitar Presupuesto</h3>
+          <form ref={formRef} onSubmit={handlePresupuesto} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <input name="nombre" type="text" placeholder="Nombre" className="col-span-1 border-2 border-blue-100 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-base sm:text-lg" required />
+            <input name="email" type="email" placeholder="Email" className="col-span-1 border-2 border-blue-100 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-base sm:text-lg" required />
+            <input name="telefono" type="tel" placeholder="Teléfono" className="col-span-1 border-2 border-blue-100 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-base sm:text-lg" required />
+            <input name="empresa" type="text" placeholder="Empresa (opcional)" className="col-span-1 border-2 border-blue-100 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-base sm:text-lg" />
+            <select name="servicio" className="col-span-1 border-2 border-blue-100 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-base sm:text-lg" required>
               <option value="">Selecciona una opción</option>
               <option value="Desarrollo de Software">Desarrollo de Software</option>
               <option value="Ciberseguridad">Ciberseguridad</option>
@@ -433,9 +446,9 @@ export default function Home() {
               <option value="Infraestructura">Infraestructura</option>
               <option value="Consultoría">Consultoría</option>
             </select>
-            <input name="presupuesto" type="number" min="0" step="1000" placeholder="Presupuesto estimado (opcional)" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg" />
-            <textarea name="mensaje" className="col-span-2 border-2 border-blue-100 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg" rows={4} required placeholder="Describe brevemente tu necesidad o proyecto..." />
-            <button type="submit" className="col-span-2 bg-gradient-to-r from-blue-700 to-blue-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:from-blue-800 hover:to-blue-600 transition mt-2">Solicitar presupuesto</button>
+            <input name="presupuesto" type="number" min="0" step="1000" placeholder="Presupuesto estimado (opcional)" className="col-span-1 border-2 border-blue-100 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-base sm:text-lg" />
+            <textarea name="mensaje" className="col-span-2 border-2 border-blue-100 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-base sm:text-lg" rows={4} required placeholder="Describe brevemente tu necesidad o proyecto..." />
+            <button type="submit" className="col-span-2 bg-gradient-to-r from-blue-700 to-blue-500 text-white py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg shadow-lg hover:from-blue-800 hover:to-blue-600 transition mt-2">Solicitar presupuesto</button>
             {success && <div className="col-span-2 text-green-600 bg-green-50 border border-green-200 rounded px-4 py-2 font-semibold text-center mt-2">¡Presupuesto enviado correctamente!</div>}
           </form>
           <div className="text-center text-sm text-gray-500 mt-6">O escríbenos a <a href="mailto:info@it360.com" className="underline">info@it360.com</a></div>
@@ -447,15 +460,15 @@ export default function Home() {
         © {new Date().getFullYear()} IT360 Soluciones. Todos los derechos reservados.
       </footer>
 
-      {/* Botón WhatsApp flotante */}
+      {/* Botón WhatsApp flotante - Responsive */}
       <a 
         href="https://wa.me/513425089906?text=Hola,%20me%20interesan%20sus%20servicios%20tecnológicos%20de%20IT360" 
         target="_blank" 
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full hover:bg-green-600 transition-all duration-300 shadow-lg hover:scale-110 z-50"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-green-500 text-white p-3 sm:p-4 rounded-full hover:bg-green-600 transition-all duration-300 shadow-lg hover:scale-110 z-50"
         style={{ animation: 'bounce 2s infinite' }}
       >
-        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
         </svg>
       </a>
