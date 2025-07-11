@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 interface CartItem {
@@ -29,6 +29,9 @@ export default function CarritoPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const [cotizaciones, setCotizaciones] = useState<any[]>([]);
+  const [success, setSuccess] = useState("");
+  const [processing, setProcessing] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Cargar carrito desde la API
   useEffect(() => {
@@ -40,11 +43,20 @@ export default function CarritoPage() {
         const res = await fetch("/api/cart", {
           headers: { Authorization: `Bearer ${token}` }
         });
+        const data = await res.json();
         if (res.ok) {
-          const data = await res.json();
           setCartItems(data.items || []);
         } else {
-          setError("No se pudo cargar el carrito. ¿Estás logueado?");
+          if (data.error === 'Token expirado') {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            setTimeout(() => {
+              router.push('/login?message=Sesion expirada. Inicia sesión de nuevo.');
+            }, 1500);
+            return;
+          }
+          setError(data.error || "No se pudo cargar el carrito. ¿Estás logueado?");
         }
       } catch {
         setError("Error de red al cargar el carrito");
@@ -153,10 +165,24 @@ export default function CarritoPage() {
     setCotizaciones(cotizacionesLS);
   };
 
+  // Vaciar carrito
+  const clearCart = async () => {
+    const token = localStorage.getItem('authToken');
+    await fetch("/api/cart", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ productId: "all" })
+    });
+    setCartItems([]);
+    localStorage.removeItem('carrito');
+  };
+
   // Checkout (flujo real de ventas con datos completos y método de pago)
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
+    setProcessing(true);
     const token = localStorage.getItem('authToken');
     const userStr = localStorage.getItem('user');
     let userId = null;
@@ -219,53 +245,63 @@ export default function CarritoPage() {
       }
       setCartItems([]);
       setCheckout(false);
-      alert("¡Compra registrada como reembolso!");
+      setSuccess("¡Compra realizada con éxito!");
+      localStorage.removeItem('carrito');
+      if (formRef.current) formRef.current.reset();
     } catch (err: any) {
       setError(err.message || "Error al realizar la compra");
+    } finally {
+      setProcessing(false);
     }
   };
 
   // Filtrar cotizaciones válidas
   const cotizacionesValidas = cotizaciones.filter(c => c.nombre && c.email && c.servicio);
 
+  // Separar productos y servicios
+  const productos = cartItems.filter((item: any) => item.type === 'product');
+  const servicios = cartItems.filter((item: any) => item.type !== 'product');
+  const totalProductos = productos.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+
   return (
-    <div className="container mx-auto py-12 px-4 min-h-screen">
+    <div className="container mx-auto py-12 px-4 min-h-screen pb-24">
       <h1 className="text-3xl font-bold mb-8 text-blue-800">Carrito</h1>
+      {success && (
+        <div className="bg-green-100 border border-green-300 text-green-800 rounded px-4 py-3 mb-6 text-center font-semibold text-lg animate-fadeIn">
+          {success}
+        </div>
+      )}
+      {error && (
+        <div className="bg-red-100 border border-red-300 text-red-800 rounded px-4 py-3 mb-6 text-center font-semibold text-lg animate-fadeIn">
+          {error}
+        </div>
+      )}
       {loading ? (
         <div className="text-center py-12">Cargando...</div>
-      ) : error ? (
-        <div className="text-center text-red-600 font-semibold py-8">{error}</div>
       ) : cartItems.length === 0 ? (
         <div className="text-center text-gray-500 py-12">Tu carrito está vacío.</div>
       ) : (
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
-          <ul className="divide-y divide-gray-200">
-            {cartItems.map((item: any, idx: number) => (
-              <li key={idx} className="flex flex-col md:flex-row md:items-center justify-between py-4 gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-4">
-                    {item.type === 'product' && item.product?.image && (
-                      <img src={item.product.image} alt={item.product.name} className="w-16 h-16 object-contain rounded" />
-                    )}
-                    {item.type === 'service' && item.imagen && (
-                      <img src={item.imagen} alt={item.nombre} className="w-16 h-16 object-contain rounded" />
-                    )}
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-lg">
-                          {item.type === 'product' ? item.product.name : item.nombre}
-                        </span>
-                        <span className={`text-xs px-2 py-1 rounded-full ${item.type === 'product' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                          {item.type === 'product' ? 'Producto' : 'Servicio a cotizar'}
-                        </span>
-                      </div>
-                      <div className="text-gray-600 text-sm">
-                        {item.type === 'product' ? item.product.description : item.descripcion}
+        <>
+        {/* Sección de productos */}
+        {productos.length > 0 && (
+          <div className="bg-white rounded-xl shadow p-6 mb-8">
+            <ul className="divide-y divide-gray-200">
+              {productos.map((item: any, idx: number) => (
+                <li key={idx} className="flex flex-col md:flex-row md:items-center justify-between py-4 gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4">
+                      {item.product?.image && (
+                        <img src={item.product.image} alt={item.product.name} className="w-16 h-16 object-contain rounded" />
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-lg">{item.product.name}</span>
+                          <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">Producto</span>
+                        </div>
+                        <div className="text-gray-600 text-sm">{item.product.description}</div>
                       </div>
                     </div>
                   </div>
-                </div>
-                {item.type === 'product' ? (
                   <div className="flex flex-col items-end gap-2 min-w-[120px]">
                     <div className="text-blue-700 font-bold text-lg">${item.product.price.toLocaleString()}</div>
                     <div className="flex items-center gap-2">
@@ -275,22 +311,51 @@ export default function CarritoPage() {
                     </div>
                     <button onClick={() => removeItem(item.product.id)} className="text-xs text-red-600 hover:underline">Eliminar</button>
                   </div>
-                ) : (
-                  <div className="flex flex-col items-end gap-2 min-w-[120px]">
-                    <span className="text-yellow-700 font-semibold text-sm">Cotización</span>
-                    <button onClick={() => removeItem(item.nombre)} className="text-xs text-red-600 hover:underline">Eliminar</button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+                </li>
+              ))}
+            </ul>
+            <div className="flex justify-between items-center mt-6">
+              <div className="text-xl font-bold text-blue-800">Total: ${totalProductos.toLocaleString()}</div>
+              <button onClick={clearCart} className="bg-red-100 text-red-700 px-4 py-2 rounded hover:bg-red-200 text-sm font-semibold">Vaciar carrito</button>
+            </div>
+          </div>
+        )}
+        {/* Sección de servicios a cotizar */}
+        {servicios.length > 0 && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
+            <h2 className="text-lg font-bold text-yellow-800 mb-2">Servicios a cotizar</h2>
+            <ul className="mb-2">
+              {servicios.map((item: any, idx: number) => (
+                <li key={idx} className="flex justify-between text-sm py-1 items-center">
+                  <span>{item.nombre || 'Servicio a cotizar'}</span>
+                  <button onClick={() => removeItem(item.nombre)} className="text-xs text-red-600 hover:underline ml-4">Eliminar</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {/* Resumen de compra solo si hay productos */}
+        {productos.length > 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+            <h2 className="text-lg font-bold text-blue-700 mb-2">Resumen de compra</h2>
+            <ul className="mb-2">
+              {productos.map((item: any, idx: number) => (
+                <li key={idx} className="flex justify-between text-sm py-1">
+                  <span>{item.product.name} x{item.quantity}</span>
+                  <span>${(item.product.price * item.quantity).toLocaleString()}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="text-right font-bold text-blue-800">Total: ${totalProductos.toLocaleString()}</div>
+          </div>
+        )}
+        </>
       )}
       {/* Mejoro la sección de contacto/cotización */}
       <section className="max-w-lg mx-auto bg-gradient-to-br from-yellow-100 to-blue-50 rounded-2xl shadow-lg p-10 border border-blue-100 mt-12 mb-8">
         <h2 className="text-2xl font-bold mb-4 text-blue-800 text-center">Solicitar Cotización</h2>
         <p className="text-center text-gray-700 mb-6">¿Tienes servicios en el carrito? Completa tus datos y te enviaremos una cotización personalizada.</p>
-        <form onSubmit={handleCheckout} className="flex flex-col gap-4">
+        <form onSubmit={handleCheckout} ref={formRef} className="flex flex-col gap-4">
           <input name="nombre" type="text" placeholder="Nombre" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
           <input name="email" type="email" placeholder="Email" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
           <input name="telefono" type="tel" placeholder="Teléfono" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
@@ -302,7 +367,9 @@ export default function CarritoPage() {
               <option value="mercadopago">Mercado Pago (solo productos)</option>
             </select>
           </div>
-          <button type="submit" className="bg-gradient-to-r from-blue-700 to-blue-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:from-blue-800 hover:to-blue-600 transition disabled:opacity-60 text-lg mt-2">Solicitar cotización / Pagar productos</button>
+          <button type="submit" className="bg-gradient-to-r from-blue-700 to-blue-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:from-blue-800 hover:to-blue-600 transition disabled:opacity-60 text-lg mt-2" disabled={processing}>
+            {processing ? 'Procesando...' : 'Solicitar cotización / Pagar productos'}
+          </button>
           {error && <div className="text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 font-semibold text-center mt-2">{error}</div>}
         </form>
       </section>

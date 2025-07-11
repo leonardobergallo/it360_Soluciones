@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState, Fragment, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import CartIconWithBadge from "@/components/CartIconWithBadge";
+import FooterNav from "@/components/FooterNav";
 
 export default function Home() {
   // Animación simple de fade-in al cargar
@@ -113,35 +114,12 @@ export default function Home() {
   const [toast, setToast] = useState("");
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
-      {/* Barra superior de servicios */}
-      <header className="bg-gray-100 text-xs py-1 border-b">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex gap-4">
-            <span>🚚 Seguimiento de compra</span>
-            <span>🛠️ Servicio técnico</span>
-            <span>🏬 Sucursales</span>
-            <span>📞 Venta telefónica</span>
-            <span>❓ Centro de ayuda</span>
-          </div>
-          <span className="font-bold text-sm text-blue-700">IT360 Créditos</span>
-        </div>
-      </header>
-
+    <div className="min-h-screen flex flex-col bg-gray-50 font-sans pb-16"> {/* pb-16 para espacio del footer */}
       {/* Header principal */}
       <header className="bg-white py-3 shadow">
         <div className="container mx-auto flex items-center justify-between">
           <Image src="/icono.png" alt="Logo IT360" width={50} height={50} className="rounded-lg" />
-          <div className="flex-1 flex justify-center">
-            <input
-              type="text"
-              placeholder="Buscar productos o servicios"
-              className="w-96 px-4 py-2 border rounded-l"
-            />
-            <button className="bg-gray-200 px-3 rounded-r">
-              <span role="img" aria-label="Buscar">🔍</span>
-            </button>
-          </div>
+          {/* Eliminado el input de búsqueda y el botón de lupa */}
           <div className="flex gap-6 items-center">
             <span className="flex items-center gap-1 cursor-pointer">
               <span role="img" aria-label="Usuario">👤</span> Mi cuenta
@@ -162,7 +140,9 @@ export default function Home() {
           <a href="#testimonios">Testimonios</a>
           <a href="#contacto">Contacto</a>
           <Link href="/catalogo" className="ml-auto text-blue-700 hover:text-blue-800 font-medium transition-colors">Catálogo</Link>
-          <Link href="/admin" className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium">Admin</Link>
+          <Link href="/login" className="flex items-center gap-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-yellow-500 transition-colors font-medium shadow">
+            <span role="img" aria-label="Login">🔑</span> Login
+          </Link>
         </div>
       </nav>
 
@@ -468,6 +448,7 @@ export default function Home() {
           {toast}
         </div>
       )}
+      <FooterNav />
     </div>
   );
 }

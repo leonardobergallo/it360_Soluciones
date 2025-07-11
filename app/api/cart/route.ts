@@ -7,28 +7,29 @@ async function getUserIdFromRequest(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
+      return { userId: null, error: 'No autenticado' };
     }
 
     const token = authHeader.substring(7); // Remover 'Bearer '
     const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || 'it360-secret-key-2024') as any;
-    
     if (!decoded || !decoded.userId) {
-      return null;
+      return { userId: null, error: 'Token inválido' };
     }
-    
-    return decoded.userId as string;
-  } catch (error) {
-    console.error('Error verificando token:', error);
-    return null;
+    return { userId: decoded.userId as string, error: null };
+  } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      return { userId: null, error: 'Token expirado' };
+    }
+    return { userId: null, error: 'Error verificando token' };
   }
 }
 
 // GET: Obtener el carrito del usuario logueado
 export async function GET(request: NextRequest) {
-  const userId = await getUserIdFromRequest(request);
+  const { userId, error } = await getUserIdFromRequest(request);
   if (!userId) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+    let message = error || 'No autenticado';
+    return NextResponse.json({ error: message }, { status: 401 });
   }
   let cart = await prisma.cart.findUnique({
     where: { userId },
@@ -50,9 +51,10 @@ export async function GET(request: NextRequest) {
 
 // POST: Agregar o actualizar un producto en el carrito
 export async function POST(request: NextRequest) {
-  const userId = await getUserIdFromRequest(request);
+  const { userId, error } = await getUserIdFromRequest(request);
   if (!userId) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+    let message = error || 'No autenticado';
+    return NextResponse.json({ error: message }, { status: 401 });
   }
   const { productId, quantity } = await request.json();
   if (!productId || !quantity || quantity < 1) {
@@ -98,9 +100,10 @@ export async function POST(request: NextRequest) {
 
 // DELETE: Eliminar un producto del carrito
 export async function DELETE(request: NextRequest) {
-  const userId = await getUserIdFromRequest(request);
+  const { userId, error } = await getUserIdFromRequest(request);
   if (!userId) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+    let message = error || 'No autenticado';
+    return NextResponse.json({ error: message }, { status: 401 });
   }
   const { productId } = await request.json();
   if (!productId) {

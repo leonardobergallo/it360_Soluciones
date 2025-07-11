@@ -74,7 +74,7 @@ export default function CatalogoPage() {
       window.location.href = "/login";
       return;
     }
-    await fetch("/api/cart", {
+    const res = await fetch("/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -82,8 +82,23 @@ export default function CatalogoPage() {
       },
       body: JSON.stringify({ productId: item.id, quantity: 1 })
     });
-    setToast("Agregado al carrito");
-    setTimeout(() => setToast(""), 2000);
+    const data = await res.json();
+    if (res.ok) {
+      setToast("Agregado al carrito");
+      setTimeout(() => setToast(""), 2000);
+    } else {
+      if (data.error === 'Token expirado') {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        setToast('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        setTimeout(() => {
+          window.location.href = '/login?message=Sesion expirada. Inicia sesión de nuevo.';
+        }, 1500);
+        return;
+      }
+      setToast(data.error || 'No se pudo agregar al carrito');
+      setTimeout(() => setToast(""), 2000);
+    }
   };
 
   return (

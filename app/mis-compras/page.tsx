@@ -30,9 +30,23 @@ export default function MisComprasPage() {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`/api/sales`);
-        if (!res.ok) throw new Error("No se pudieron cargar las compras");
+        const token = localStorage.getItem("authToken");
+        const res = await fetch(`/api/sales`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         const data = await res.json();
+        if (!res.ok) {
+          if (data.error === 'Token expirado') {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            setTimeout(() => {
+              router.push('/login?message=Sesion expirada. Inicia sesión de nuevo.');
+            }, 1500);
+            return;
+          }
+          throw new Error(data.error || "No se pudieron cargar las compras");
+        }
         // Filtrar solo las compras del usuario actual
         setCompras(data.filter((c: any) => c.userId === userId && c.product));
       } catch {
