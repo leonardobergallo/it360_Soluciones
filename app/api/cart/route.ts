@@ -31,22 +31,41 @@ export async function GET(request: NextRequest) {
     let message = error || 'No autenticado';
     return NextResponse.json({ error: message }, { status: 401 });
   }
-  let cart = await prisma.cart.findUnique({
-    where: { userId },
-    include: {
-      items: {
-        include: { product: true }
-      }
-    }
-  });
-  if (!cart) {
-    // Si no existe, crear uno vacío
-    cart = await prisma.cart.create({
-      data: { userId },
-      include: { items: { include: { product: true } } }
+  try {
+    // Verificar que el usuario existe
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
     });
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+    }
+
+    let cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: {
+        items: {
+          include: { product: true }
+        }
+      }
+    });
+    
+    if (!cart) {
+      // Si no existe, crear uno vacío
+      cart = await prisma.cart.create({
+        data: { userId },
+        include: { items: { include: { product: true } } }
+      });
+    }
+    
+    return NextResponse.json(cart);
+  } catch (error) {
+    console.error('Error en GET /api/cart:', error);
+    return NextResponse.json(
+      { error: 'Error interno del servidor' },
+      { status: 500 }
+    );
   }
-  return NextResponse.json(cart);
 }
 
 // POST: Agregar o actualizar un producto en el carrito

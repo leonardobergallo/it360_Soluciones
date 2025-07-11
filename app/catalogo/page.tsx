@@ -54,9 +54,25 @@ export default function CatalogoPage() {
   const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
 
   useEffect(() => {
-    fetch("/api/products").then(r => r.json()).then(data => {
-      setProducts(data.map((p: any, i: number) => ({ ...p, type: "product", image: productImages[i % productImages.length] })));
-    });
+    fetch("/api/products")
+      .then(r => {
+        if (!r.ok) {
+          throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        return r.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setProducts(data.map((p: any, i: number) => ({ ...p, type: "product", image: productImages[i % productImages.length] })));
+        } else {
+          console.error('La API no devolvió un array:', data);
+          setProducts([]);
+        }
+      })
+      .catch(error => {
+        console.error('Error cargando productos:', error);
+        setProducts([]);
+      });
   }, []);
 
   useEffect(() => {
