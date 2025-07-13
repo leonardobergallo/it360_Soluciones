@@ -121,7 +121,7 @@ model Presupuesto {
   estado      String   @default("pendiente")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-} 
+}
 
 model TestTable {
   id String @id @default(uuid())
