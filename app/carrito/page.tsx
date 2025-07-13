@@ -34,39 +34,66 @@ export default function CarritoPage() {
   const [processing, setProcessing] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Cargar carrito desde la API
+  // Cargar carrito (backend para logueados, localStorage para no logueados)
   useEffect(() => {
     async function fetchCart() {
       setLoading(true);
       setError("");
       try {
         const token = localStorage.getItem('authToken');
-        const res = await fetch("/api/cart", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setCartItems(data.items || []);
-        } else {
-          if (data.error === 'Token expirado') {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('user');
-            setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-            setTimeout(() => {
-              router.push('/login?message=Sesion expirada. Inicia sesión de nuevo.');
-            }, 1500);
-            return;
+        if (token) {
+          // Usuario logueado: cargar desde API
+          const res = await fetch("/api/cart", {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (res.ok) {
+            setCartItems(data.items || []);
+          } else {
+            if (data.error === 'Token expirado') {
+              localStorage.removeItem('authToken');
+              localStorage.removeItem('user');
+              setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+              setTimeout(() => {
+                router.push('/login?message=Sesion expirada. Inicia sesión de nuevo.');
+              }, 1500);
+              return;
+            }
+            setError(data.error || "No se pudo cargar el carrito");
           }
-          setError(data.error || "No se pudo cargar el carrito. ¿Estás logueado?");
+        } else {
+          // Usuario no logueado: cargar desde localStorage
+          const stored = localStorage.getItem('carrito');
+          if (stored) {
+            try {
+              const cart = JSON.parse(stored);
+              const products = cart.filter((item: { type?: string }) => item.type !== 'cotizacion');
+              setCartItems(products.map((item: any) => ({
+                id: item.productId,
+                product: {
+                  id: item.productId,
+                  name: item.name,
+                  price: item.price,
+                  description: '',
+                  image: ''
+                },
+                quantity: item.quantity || 1
+              })));
+            } catch {
+              setCartItems([]);
+            }
+          } else {
+            setCartItems([]);
+          }
         }
       } catch {
-        setError("Error de red al cargar el carrito");
+        setError("Error al cargar el carrito");
       } finally {
         setLoading(false);
       }
     }
     fetchCart();
-  }, []);
+  }, [router]);
 
   // Calcular total
   useEffect(() => {
@@ -114,42 +141,107 @@ export default function CarritoPage() {
   const updateQty = async (productId: string, quantity: number) => {
     if (quantity < 1) return;
     const token = localStorage.getItem('authToken');
-    await fetch("/api/cart", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ productId, quantity })
-    });
-    // Refrescar carrito
-    const res = await fetch("/api/cart", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setCartItems(data.items || []);
+    
+    if (token) {
+      // Usuario logueado: usar API
+      await fetch("/api/cart", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ productId, quantity })
+      });
+      // Refrescar carrito
+      const res = await fetch("/api/cart", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCartItems(data.items || []);
+      }
+    } else {
+      // Usuario no logueado: usar localStorage
+      const stored = localStorage.getItem('carrito');
+      if (stored) {
+        try {
+          const cart = JSON.parse(stored);
+          const itemIndex = cart.findIndex((item: { productId: string; type?: string }) => 
+            item.productId === productId && item.type !== 'cotizacion'
+          );
+          if (itemIndex >= 0) {
+            cart[itemIndex].quantity = quantity;
+            localStorage.setItem('carrito', JSON.stringify(cart));
+            // Actualizar estado local
+            setCartItems(cart.filter((item: { type?: string }) => item.type !== 'cotizacion').map((item: any) => ({
+              id: item.productId,
+              product: {
+                id: item.productId,
+                name: item.name,
+                price: item.price,
+                description: '',
+                image: ''
+              },
+              quantity: item.quantity || 1
+            })));
+          }
+        } catch {
+          // Error al actualizar localStorage
+        }
+      }
     }
   };
 
   // Eliminar ítem
   const removeItem = async (productId: string) => {
     const token = localStorage.getItem('authToken');
-    await fetch("/api/cart", {
-      method: "DELETE",
-      headers: { 
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ productId })
-    });
-    // Refrescar carrito
-    const res = await fetch("/api/cart", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setCartItems(data.items || []);
+    
+    if (token) {
+      // Usuario logueado: usar API
+      await fetch("/api/cart", {
+        method: "DELETE",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ productId })
+      });
+      // Refrescar carrito
+      const res = await fetch("/api/cart", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCartItems(data.items || []);
+      }
+    } else {
+      // Usuario no logueado: usar localStorage
+      const stored = localStorage.getItem('carrito');
+      if (stored) {
+        try {
+          const cart = JSON.parse(stored);
+          const cotizaciones = cart.filter((item: { type?: string }) => item.type === 'cotizacion');
+          const productos = cart.filter((item: { productId: string; type?: string }) => 
+            item.productId !== productId && item.type !== 'cotizacion'
+          );
+          const newCart = [...productos, ...cotizaciones];
+          localStorage.setItem('carrito', JSON.stringify(newCart));
+          // Actualizar estado local
+          setCartItems(productos.map((item: any) => ({
+            id: item.productId,
+            product: {
+              id: item.productId,
+              name: item.name,
+              price: item.price,
+              description: '',
+              image: ''
+            },
+            quantity: item.quantity || 1
+          })));
+        } catch {
+          // Error al actualizar localStorage
+        }
+      }
     }
   };
 
@@ -169,13 +261,33 @@ export default function CarritoPage() {
   // Vaciar carrito
   const clearCart = async () => {
     const token = localStorage.getItem('authToken');
-    await fetch("/api/cart", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ productId: "all" })
-    });
+    
+    if (token) {
+      // Usuario logueado: vaciar en backend
+      await fetch("/api/cart", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ productId: "all" })
+      });
+    }
+    
+    // Limpiar localStorage (mantener solo cotizaciones)
+    const stored = localStorage.getItem('carrito');
+    if (stored) {
+      try {
+        const cart = JSON.parse(stored);
+        const cotizaciones = cart.filter((item: { type?: string }) => item.type === 'cotizacion');
+        if (cotizaciones.length > 0) {
+          localStorage.setItem('carrito', JSON.stringify(cotizaciones));
+        } else {
+          localStorage.removeItem('carrito');
+        }
+      } catch {
+        localStorage.removeItem('carrito');
+      }
+    }
+    
     setCartItems([]);
-    localStorage.removeItem('carrito');
   };
 
   // Checkout (flujo real de ventas con datos completos y método de pago)
@@ -184,19 +296,28 @@ export default function CarritoPage() {
     setError("");
     setSuccess("");
     setProcessing(true);
+    
     const token = localStorage.getItem('authToken');
     const userStr = localStorage.getItem('user');
     let userId = null;
-    try {
-      userId = userStr ? JSON.parse(userStr).id : null;
-    } catch {
-      setError("No se pudo obtener el usuario. Vuelve a iniciar sesión.");
+    
+    if (token && userStr) {
+      try {
+        userId = JSON.parse(userStr).id;
+      } catch {
+        setError("No se pudo obtener el usuario. Vuelve a iniciar sesión.");
+        setProcessing(false);
+        return;
+      }
+    }
+    
+    // Verificar que hay productos para comprar
+    if (cartItems.length === 0) {
+      setError("No hay productos en el carrito para comprar");
+      setProcessing(false);
       return;
     }
-    if (!userId) {
-      setError("No se pudo obtener el usuario. Vuelve a iniciar sesión.");
-      return;
-    }
+    
     try {
       if (form.metodoPago === 'mercadopago') {
         // Llamar a /api/mercadopago y redirigir
@@ -215,44 +336,81 @@ export default function CarritoPage() {
         const data = await res.json();
         if (!res.ok || !data.url) {
           setError(data.error || 'Error al iniciar pago con Mercado Pago');
+          setProcessing(false);
           return;
         }
         window.location.href = data.url;
         return;
       }
-      // Si es reembolso, registrar la venta como antes
-      for (const item of cartItems) {
-        const res = await fetch("/api/sales", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            userId,
-            productId: item.product.id,
-            amount: item.product.price * item.quantity,
-            nombre: form.nombre,
-            email: form.email,
-            telefono: form.telefono,
-            direccion: form.direccion,
-            metodoPago: form.metodoPago
-          })
-        });
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || "Error al registrar la venta");
+      
+      // Si es reembolso o transferencia, registrar la venta
+      if (token && userId) {
+        // Usuario logueado: registrar en backend
+        for (const item of cartItems) {
+          const res = await fetch("/api/sales", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              userId,
+              productId: item.product.id,
+              amount: item.product.price * item.quantity,
+              nombre: form.nombre,
+              email: form.email,
+              telefono: form.telefono,
+              direccion: form.direccion,
+              metodoPago: form.metodoPago
+            })
+          });
+          if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.error || "Error al registrar la venta");
+          }
         }
+      } else {
+        // Usuario no logueado: solo mostrar mensaje de éxito
+        // En un caso real, aquí se enviaría un email con los detalles
       }
+      
       setCartItems([]);
       setCheckout(false);
-      setSuccess("¡Compra realizada con éxito!");
-      localStorage.removeItem('carrito');
+      setSuccess("¡Compra realizada con éxito! Te contactaremos pronto.");
+      
+      // Limpiar localStorage (mantener cotizaciones)
+      const stored = localStorage.getItem('carrito');
+      if (stored) {
+        try {
+          const cart = JSON.parse(stored);
+          const cotizaciones = cart.filter((item: { type?: string }) => item.type === 'cotizacion');
+          if (cotizaciones.length > 0) {
+            localStorage.setItem('carrito', JSON.stringify(cotizaciones));
+          } else {
+            localStorage.removeItem('carrito');
+          }
+        } catch {
+          localStorage.removeItem('carrito');
+        }
+      }
+      
       if (formRef.current) formRef.current.reset();
-    } catch (err: any) {
-      setError(err.message || "Error al realizar la compra");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al realizar la compra");
     } finally {
       setProcessing(false);
+    }
+  };
+
+  // Nuevo handler para el botón principal
+  const handleMainCheckout = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (productos.length > 0) {
+      // Si hay productos, ir a /checkout
+      router.push("/checkout");
+    } else {
+      // Solo servicios: enviar cotización como antes
+      handleCheckout(e);
     }
   };
 
@@ -260,8 +418,8 @@ export default function CarritoPage() {
   const cotizacionesValidas = cotizaciones.filter(c => c.nombre && c.email && c.servicio);
 
   // Separar productos y servicios
-  const productos = cartItems.filter((item: any) => item.type === 'product');
-  const servicios = cartItems.filter((item: any) => item.type !== 'product');
+  const productos = cartItems.filter((item: any) => item.product); // Si tiene .product es un producto real
+  const servicios = cartItems.filter((item: any) => !item.product); // Si NO tiene .product, es un servicio/cotización
   const totalProductos = productos.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
   return (
@@ -348,32 +506,43 @@ export default function CarritoPage() {
               ))}
             </ul>
             <div className="text-right font-bold text-blue-800">Total: ${totalProductos.toLocaleString()}</div>
+            <button
+              className="w-full mt-6 bg-blue-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:bg-blue-800 transition-all duration-300 text-lg"
+              onClick={() => router.push('/checkout')}
+            >
+              Finalizar compra
+            </button>
+            <div className="text-center text-sm text-gray-600 mt-2">
+              Podrás elegir MercadoPago o Transferencia bancaria en el siguiente paso.
+            </div>
           </div>
         )}
         </>
       )}
       {/* Mejoro la sección de contacto/cotización */}
-      <section className="max-w-lg mx-auto bg-gradient-to-br from-yellow-100 to-blue-50 rounded-2xl shadow-lg p-10 border border-blue-100 mt-12 mb-8">
-        <h2 className="text-2xl font-bold mb-4 text-blue-800 text-center">Solicitar Cotización</h2>
-        <p className="text-center text-gray-700 mb-6">¿Tienes servicios en el carrito? Completa tus datos y te enviaremos una cotización personalizada.</p>
-        <form onSubmit={handleCheckout} ref={formRef} className="flex flex-col gap-4">
-          <input name="nombre" type="text" placeholder="Nombre" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
-          <input name="email" type="email" placeholder="Email" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-          <input name="telefono" type="tel" placeholder="Teléfono" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
-          <input name="direccion" type="text" placeholder="Dirección" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.direccion} onChange={e => setForm({ ...form, direccion: e.target.value })} />
-          <div className="flex flex-col gap-2">
-            <label className="text-blue-700 font-medium">Método de pago</label>
-            <select name="metodoPago" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" value={form.metodoPago} onChange={e => setForm({ ...form, metodoPago: e.target.value })}>
-              <option value="reembolso">Cotización (solo servicios)</option>
-              <option value="mercadopago">Mercado Pago (solo productos)</option>
-            </select>
-          </div>
-          <button type="submit" className="bg-gradient-to-r from-blue-700 to-blue-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:from-blue-800 hover:to-blue-600 transition disabled:opacity-60 text-lg mt-2" disabled={processing}>
-            {processing ? 'Procesando...' : 'Solicitar cotización / Pagar productos'}
-          </button>
-          {error && <div className="text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 font-semibold text-center mt-2">{error}</div>}
-        </form>
-      </section>
+      {productos.length === 0 && (
+        <section className="max-w-lg mx-auto bg-gradient-to-br from-yellow-100 to-blue-50 rounded-2xl shadow-lg p-10 border border-blue-100 mt-12 mb-8">
+          <h2 className="text-2xl font-bold mb-4 text-blue-800 text-center">Solicitar Cotización</h2>
+          <p className="text-center text-gray-700 mb-6">¿Tienes servicios en el carrito? Completa tus datos y te enviaremos una cotización personalizada.</p>
+          <form onSubmit={handleMainCheckout} ref={formRef} className="flex flex-col gap-4">
+            <input name="nombre" type="text" placeholder="Nombre" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
+            <input name="email" type="email" placeholder="Email" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+            <input name="telefono" type="tel" placeholder="Teléfono" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
+            <input name="direccion" type="text" placeholder="Dirección" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.direccion} onChange={e => setForm({ ...form, direccion: e.target.value })} />
+            <div className="flex flex-col gap-2">
+              <label className="text-blue-700 font-medium">Método de pago</label>
+              <select name="metodoPago" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" value={form.metodoPago} onChange={e => setForm({ ...form, metodoPago: e.target.value })}>
+                <option value="reembolso">Cotización (solo servicios)</option>
+                <option value="mercadopago">Mercado Pago (solo productos)</option>
+              </select>
+            </div>
+            <button type="submit" className="bg-gradient-to-r from-blue-700 to-blue-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:from-blue-800 hover:to-blue-600 transition disabled:opacity-60 text-lg mt-2" disabled={processing}>
+              {processing ? 'Procesando...' : 'Solicitar cotización / Pagar productos'}
+            </button>
+            {error && <div className="text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 font-semibold text-center mt-2">{error}</div>}
+          </form>
+        </section>
+      )}
       {/* Sección de cotizaciones */}
       {cotizacionesValidas.length > 0 && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">

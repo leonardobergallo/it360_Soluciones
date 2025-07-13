@@ -41,6 +41,37 @@ export default function LoginPage() {
         // Guardar el token en localStorage
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Migrar carrito del localStorage al backend si existe
+        const storedCart = localStorage.getItem('carrito');
+        if (storedCart) {
+          try {
+            const cartItems = JSON.parse(storedCart);
+            const productsToMigrate = cartItems.filter((item: { type?: string }) => item.type !== 'cotizacion');
+            
+            if (productsToMigrate.length > 0) {
+              await fetch('/api/cart/migrate', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${data.token}`
+                },
+                body: JSON.stringify({ localStorageItems: productsToMigrate })
+              });
+              
+              // Limpiar solo los productos del localStorage (mantener cotizaciones)
+              const cotizaciones = cartItems.filter((item: { type?: string }) => item.type === 'cotizacion');
+              if (cotizaciones.length > 0) {
+                localStorage.setItem('carrito', JSON.stringify(cotizaciones));
+              } else {
+                localStorage.removeItem('carrito');
+              }
+            }
+          } catch (migrationError) {
+            console.error('Error migrando carrito:', migrationError);
+          }
+        }
+        
         // Redirigir según rol
         if (data.user.role === 'ADMIN') {
           router.push('/admin');
@@ -53,7 +84,7 @@ export default function LoginPage() {
         const errorData = await response.json();
         setError(errorData.message || 'Error al iniciar sesión');
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setLoading(false);
