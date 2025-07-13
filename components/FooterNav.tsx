@@ -1,16 +1,18 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import CartIconWithBadge from "@/components/CartIconWithBadge";
 
 export default function FooterNav() {
   const [isLogged, setIsLogged] = useState(false);
   const router = useRouter();
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    function checkLogin() {
       const token = localStorage.getItem("authToken");
       setIsLogged(!!token);
     }
+    checkLogin();
+    window.addEventListener("storage", checkLogin);
+    return () => window.removeEventListener("storage", checkLogin);
   }, []);
   const handleLogout = () => {
     localStorage.removeItem("authToken");

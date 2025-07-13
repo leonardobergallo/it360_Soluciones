@@ -4,6 +4,16 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
+  // Limpiar tablas en orden de dependencias
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
+  await prisma.sale.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.service.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.contact.deleteMany();
+  await prisma.paymentPreference.deleteMany();
+
   // Usuarios de ejemplo
   const users = [
     {
@@ -79,12 +89,14 @@ async function main() {
     },
   ];
 
+  const createdProducts = [];
   for (const product of products) {
-    await prisma.product.upsert({
+    const p = await prisma.product.upsert({
       where: { name: product.name },
       update: {},
       create: product,
     });
+    createdProducts.push(p);
   }
 
   // Servicios de ejemplo
@@ -106,15 +118,83 @@ async function main() {
     },
   ];
 
+  const createdServices = [];
   for (const service of services) {
-    await prisma.service.upsert({
+    const s = await prisma.service.upsert({
       where: { name: service.name },
       update: {},
       create: service,
     });
+    createdServices.push(s);
   }
 
-  console.log('✅ Usuarios, productos y servicios de prueba insertados en Neon/PostgreSQL');
+  // Ventas de ejemplo
+  await prisma.sale.create({
+    data: {
+      userId: users[2].id, // cliente1
+      productId: createdProducts[0].id,
+      amount: createdProducts[0].price,
+      status: 'completed',
+      nombre: 'Cliente 1',
+      email: 'cliente1@it360.com',
+      metodoPago: 'tarjeta',
+    }
+  });
+  await prisma.sale.create({
+    data: {
+      userId: users[2].id, // cliente1
+      serviceId: createdServices[0].id,
+      amount: createdServices[0].price,
+      status: 'pending',
+      nombre: 'Cliente 1',
+      email: 'cliente1@it360.com',
+      metodoPago: 'transferencia',
+    }
+  });
+
+  // Contactos de ejemplo
+  await prisma.contact.create({
+    data: {
+      name: 'Juan Pérez',
+      email: 'juan@cliente.com',
+      message: 'Quiero más información sobre soporte técnico.'
+    }
+  });
+  await prisma.contact.create({
+    data: {
+      name: 'Ana Gómez',
+      email: 'ana@empresa.com',
+      message: '¿Ofrecen descuentos para empresas?'
+    }
+  });
+
+  // Carrito y items de ejemplo
+  const cart = await prisma.cart.create({
+    data: {
+      userId: users[2].id // cliente1
+    }
+  });
+  await prisma.cartItem.create({
+    data: {
+      cartId: cart.id,
+      productId: createdProducts[1].id,
+      quantity: 2
+    }
+  });
+
+  // Preferencia de pago de ejemplo
+  await prisma.paymentPreference.create({
+    data: {
+      preferenceId: 'pref-123',
+      userId: users[2].id,
+      total: 500,
+      status: 'pending',
+      items: JSON.stringify([{ productId: createdProducts[1].id, quantity: 2 }]),
+      payerInfo: JSON.stringify({ name: 'Cliente 1', email: 'cliente1@it360.com' })
+    }
+  });
+
+  console.log('✅ Todos los datos de prueba insertados en Neon/PostgreSQL');
 }
 
 main()

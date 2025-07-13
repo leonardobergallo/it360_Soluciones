@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import FooterNav from '@/components/FooterNav';
 
 interface Item {
   id: string;
@@ -21,35 +22,9 @@ const serviceImages = [
   "/servicio-software.png"
 ];
 
-const hardcodedServices = [
-  {
-    id: 'servicio-1',
-    name: 'Desarrollo de Software',
-    description: 'Aplicaciones web, móviles y sistemas a medida para tu negocio con las últimas tecnologías.',
-    price: 2500,
-    type: 'service',
-    image: '/servicio-apps.png'
-  },
-  {
-    id: 'servicio-2',
-    name: 'Ciberseguridad',
-    description: 'Protege tus datos y tu infraestructura con soluciones avanzadas de seguridad.',
-    price: 3200,
-    type: 'service',
-    image: '/servicio-redes.png'
-  },
-  {
-    id: 'servicio-3',
-    name: 'Soporte Técnico',
-    description: 'Asistencia rápida y profesional para mantener tu empresa operativa 24/7.',
-    price: 800,
-    type: 'service',
-    image: '/servicio-software.png'
-  }
-];
-
 export default function CatalogoPage() {
   const [products, setProducts] = useState<Item[]>([]);
+  const [services, setServices] = useState<Item[]>([]);
   const [toast, setToast] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
 
@@ -72,6 +47,14 @@ export default function CatalogoPage() {
       .catch(error => {
         console.error('Error cargando productos:', error);
         setProducts([]);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/services")
+      .then(r => r.json())
+      .then(data => {
+        setServices(data.map((s: any, i: number) => ({ ...s, type: "service", image: serviceImages[i % serviceImages.length] })));
       });
   }, []);
 
@@ -191,7 +174,7 @@ export default function CatalogoPage() {
             <p className="text-gray-600 max-w-2xl mx-auto">Soluciones profesionales y personalizadas para todas tus necesidades tecnológicas</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {hardcodedServices.map(s => (
+            {services.map(s => (
               <div key={s.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
                 <div className="h-48 bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center p-6">
                   <img src={s.image} alt={s.name} className="w-32 h-32 object-contain" />
@@ -241,6 +224,9 @@ export default function CatalogoPage() {
           </div>
         </div>
       )}
+
+      {/* FooterNav: navegación inferior para usuarios */}
+      <FooterNav />
     </div>
   );
 } 

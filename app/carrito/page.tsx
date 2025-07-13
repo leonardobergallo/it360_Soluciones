@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import FooterNav from '@/components/FooterNav';
 
 interface CartItem {
   id: string;
@@ -402,6 +403,9 @@ export default function CarritoPage() {
           Hay cotizaciones incompletas en tu carrito. Por favor, elimínalas y vuelve a enviar tu solicitud desde el formulario de contacto.
         </div>
       )}
+
+      {/* FooterNav: navegación inferior para usuarios */}
+      <FooterNav />
     </div>
   );
 } 
