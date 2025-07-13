@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import GlobalHeader from "@/components/GlobalHeader";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
@@ -38,6 +39,8 @@ export default function RootLayout({
         <GlobalHeader />
         <main className="min-h-screen">
           {children}
+          {/* Botón flotante de WhatsApp global */}
+          <WhatsAppButton />
         </main>
         <Toaster position="top-right" />
       </body>

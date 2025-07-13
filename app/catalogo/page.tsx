@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import FooterNav from '@/components/FooterNav';
 
 interface Item {
@@ -38,7 +39,7 @@ export default function CatalogoPage() {
       })
       .then(data => {
         if (Array.isArray(data)) {
-          setProducts(data.map((p: any, i: number) => ({ ...p, type: "product", image: productImages[i % productImages.length] })));
+          setProducts(data.map((p: { id: string; name: string; description: string; price: number }, i: number) => ({ ...p, type: "product", image: productImages[i % productImages.length] })));
         } else {
           console.error('La API no devolvió un array:', data);
           setProducts([]);
@@ -54,7 +55,7 @@ export default function CatalogoPage() {
     fetch("/api/services")
       .then(r => r.json())
       .then(data => {
-        setServices(data.map((s: any, i: number) => ({ ...s, type: "service", image: serviceImages[i % serviceImages.length] })));
+        setServices(data.map((s: { id: string; name: string; description: string; price: number }, i: number) => ({ ...s, type: "service", image: serviceImages[i % serviceImages.length] })));
       });
   }, []);
 
@@ -69,34 +70,71 @@ export default function CatalogoPage() {
 
   const addToCart = async (item: Item) => {
     const token = localStorage.getItem('authToken');
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    const res = await fetch("/api/cart", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ productId: item.id, quantity: 1 })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setToast("Agregado al carrito");
-      setTimeout(() => setToast(""), 2000);
-    } else {
-      if (data.error === 'Token expirado') {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
-        setToast('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-        setTimeout(() => {
-          window.location.href = '/login?message=Sesion expirada. Inicia sesión de nuevo.';
-        }, 1500);
-        return;
+    
+    if (token) {
+      // Usuario logueado: usar API del backend
+      try {
+        const res = await fetch("/api/cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ productId: item.id, quantity: 1 })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setToast("✅ Agregado al carrito");
+          setTimeout(() => setToast(""), 2000);
+        } else {
+          if (data.error === 'Token expirado') {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            setToast('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            setTimeout(() => {
+              window.location.href = '/login?message=Sesion expirada. Inicia sesión de nuevo.';
+            }, 1500);
+            return;
+          }
+          setToast(data.error || 'No se pudo agregar al carrito');
+          setTimeout(() => setToast(""), 2000);
+        }
+      } catch {
+        setToast('Error de conexión al agregar al carrito');
+        setTimeout(() => setToast(""), 2000);
       }
-      setToast(data.error || 'No se pudo agregar al carrito');
-      setTimeout(() => setToast(""), 2000);
+    } else {
+      // Usuario no logueado: usar localStorage
+      try {
+        const stored = localStorage.getItem('carrito');
+        const cart = stored ? JSON.parse(stored) : [];
+        
+        // Verificar si el producto ya está en el carrito
+        const existingIndex = cart.findIndex((cartItem: { productId: string; type?: string }) => 
+          cartItem.productId === item.id && cartItem.type !== 'cotizacion'
+        );
+        
+        if (existingIndex >= 0) {
+          // Incrementar cantidad
+          cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + 1;
+        } else {
+          // Agregar nuevo producto
+          cart.push({
+            productId: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: 1,
+            type: 'product'
+          });
+        }
+        
+        localStorage.setItem('carrito', JSON.stringify(cart));
+        setToast("✅ Agregado al carrito (modo local)");
+        setTimeout(() => setToast(""), 2000);
+      } catch {
+        setToast('Error al guardar en carrito local');
+        setTimeout(() => setToast(""), 2000);
+      }
     }
   };
 
@@ -111,7 +149,7 @@ export default function CatalogoPage() {
               <h1 className="text-2xl font-bold text-blue-700">Catálogo IT360</h1>
             </div>
             <div className="flex items-center gap-4">
-              <a href="/" className="text-blue-700 hover:text-blue-800 transition-colors">← Volver al inicio</a>
+              <Link href="/" className="text-blue-700 hover:text-blue-800 transition-colors">← Volver al inicio</Link>
               <a href="/carrito" className="relative text-blue-700 hover:text-blue-800 transition-colors">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />

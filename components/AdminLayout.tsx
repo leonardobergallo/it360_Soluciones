@@ -34,24 +34,27 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden" onClick={() => setSidebarOpen(false)}></div>
       )}
-      <aside className={`fixed md:static z-50 top-0 left-0 h-full w-64 bg-gradient-to-b from-blue-800 to-blue-600 shadow-lg p-0 flex flex-col transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <aside className={`fixed md:static z-50 top-0 left-0 h-full w-64 
+        ${userRole === 'TECNICO' ? 'bg-gradient-to-b from-green-700 to-green-500' : 'bg-gradient-to-b from-blue-800 to-blue-600'}
+        shadow-lg p-0 flex flex-col transform transition-transform duration-300 
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex flex-col items-center py-8 border-b border-blue-700">
           <Image src="/icono.png" alt="IT360 Logo" width={60} height={60} className="rounded-xl mb-2" />
-          <h2 className="text-xl font-bold text-white tracking-wide">
+          <h2 className={`text-xl font-bold tracking-wide ${userRole === 'TECNICO' ? 'text-green-100' : 'text-white'}`}> 
             IT360 {userRole === 'TECNICO' ? 'Técnico' : 'Admin'}
           </h2>
-          <span className="text-xs text-blue-200">
+          <span className={`text-xs ${userRole === 'TECNICO' ? 'text-green-200' : 'text-blue-200'}`}> 
             {userRole === 'TECNICO' ? 'Panel técnico' : 'Panel de gestión'}
           </span>
         </div>
         <nav className="flex flex-col gap-1 mt-8 px-4">
           <Link href="/admin" className="text-white hover:bg-blue-700 rounded-lg px-4 py-2 font-medium transition" onClick={handleNav}>Dashboard</Link>
-          <Link href="/admin/users" className="text-blue-100 hover:bg-blue-700 rounded-lg px-4 py-2 transition" onClick={handleNav}>Usuarios</Link>
+          {userRole === 'ADMIN' && (
+            <Link href="/admin/users" className="text-blue-100 hover:bg-blue-700 rounded-lg px-4 py-2 transition" onClick={handleNav}>Usuarios</Link>
+          )}
           <Link href="/admin/services" className="text-blue-100 hover:bg-blue-700 rounded-lg px-4 py-2 transition" onClick={handleNav}>Servicios</Link>
           <Link href="/admin/products" className="text-blue-100 hover:bg-blue-700 rounded-lg px-4 py-2 transition" onClick={handleNav}>Productos</Link>
           <Link href="/admin/sales" className="text-blue-100 hover:bg-blue-700 rounded-lg px-4 py-2 transition" onClick={handleNav}>Ventas</Link>
-          <Link href="/admin/presupuestos" className="text-blue-100 hover:bg-blue-700 rounded-lg px-4 py-2 transition" onClick={handleNav}>Presupuestos</Link>
-          <Link href="/admin/contacts" className="text-blue-100 hover:bg-blue-700 rounded-lg px-4 py-2 transition" onClick={handleNav}>Contactos</Link>
         </nav>
       </aside>
       {/* Main content con header superior */}
