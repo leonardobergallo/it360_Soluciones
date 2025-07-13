@@ -31,26 +31,24 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [openService]);
 
-  const servicios = [
-    {
-      nombre: 'Desarrollo de Software',
-      descripcion: 'Aplicaciones web, móviles y sistemas a medida para tu negocio con las últimas tecnologías.',
-      descripcionLarga: 'Creamos soluciones de software personalizadas, desde apps móviles hasta sistemas empresariales, utilizando las tecnologías más modernas para potenciar tu empresa.',
-      imagen: '/servicio-software.png',
-    },
-    {
-      nombre: 'Ciberseguridad',
-      descripcion: 'Protege tus datos y tu infraestructura con soluciones avanzadas de seguridad.',
-      descripcionLarga: 'Implementamos estrategias de ciberseguridad, firewalls, auditorías y monitoreo para proteger tu información y la de tus clientes.',
-      imagen: '/servicio-redes.png',
-    },
-    {
-      nombre: 'Soporte Técnico',
-      descripcion: 'Asistencia rápida y profesional para mantener tu empresa operativa 24/7.',
-      descripcionLarga: 'Brindamos soporte técnico remoto y presencial, mantenimiento preventivo y correctivo, y atención personalizada para resolver cualquier inconveniente.',
-      imagen: '/servicio-apps.png',
-    },
-  ];
+  const [services, setServices] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setServices(data);
+        } else {
+          setServices([]);
+          console.error('La API de servicios no devolvió un array:', data);
+        }
+      })
+      .catch(error => {
+        setServices([]);
+        console.error('Error cargando servicios:', error);
+      });
+  }, []);
 
   // Estado para productos dinámicos
   const [products, setProducts] = useState<any[]>([]);
@@ -199,31 +197,20 @@ export default function Home() {
       <section id="servicios" className="max-w-7xl mx-auto py-12 sm:py-16 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
         <h2 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8 sm:mb-10">Nuestros Servicios</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {servicios.map((serv, i) => (
+          {Array.isArray(services) && services.map((serv, i) => (
             <a
-              key={serv.nombre}
+              key={serv.id}
               href="/contacto"
               style={{ textDecoration: 'none', color: 'inherit' }}
-              onClick={e => { if (openService !== null) e.preventDefault(); }}
             >
               <div
                 className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
-                onClick={() => {
-                  if (openService === null) handleOpenService(i);
-                }}
-                style={openService !== null ? { pointerEvents: 'none', opacity: 0.7 } : {}}
               >
                 <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <img src={serv.imagen} alt={serv.nombre} className="w-12 h-12 sm:w-16 sm:h-16 object-contain" />
+                  <img src={serv.image || '/servicio-software.png'} alt={serv.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-800">{serv.nombre}</h3>
-                <p className="text-gray-600 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">{serv.descripcion}</p>
-                <button
-                  onClick={e => { e.stopPropagation(); window.location.href = '/contacto'; }}
-                  className="w-full bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium mt-3 sm:mt-4"
-                >
-                  Solicitar cotización
-                </button>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-800">{serv.name}</h3>
+                <p className="text-gray-600 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">{serv.description}</p>
               </div>
             </a>
           ))}

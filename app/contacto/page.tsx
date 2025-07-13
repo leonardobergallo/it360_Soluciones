@@ -1,24 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
-
-const servicios = [
-  'Desarrollo de Software',
-  'Ciberseguridad',
-  'Soporte Técnico',
-];
+import React, { useState, useEffect } from 'react';
 
 export default function ContactoPage() {
+  const [services, setServices] = useState<string[]>([]);
   const [enviado, setEnviado] = useState(false);
   const [form, setForm] = useState({
     nombre: '',
     email: '',
     telefono: '',
     empresa: '',
-    servicio: servicios[0],
+    servicio: services[0] || '',
     mensaje: '',
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(r => r.json())
+      .then((data: { name: string }[]) => setServices(data.map((s) => s.name)));
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,23 +28,27 @@ export default function ContactoPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Agregar la cotización al carrito (localStorage)
-    const stored = localStorage.getItem('carrito');
-    let cart = stored ? JSON.parse(stored) : [];
-    cart.push({ ...form, type: 'cotizacion', qty: 1 });
-    localStorage.setItem('carrito', JSON.stringify(cart));
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/presupuestos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error('Error al enviar presupuesto');
       setEnviado(true);
+    } catch {
+      alert('Hubo un error al enviar tu solicitud. Intenta nuevamente.');
+    } finally {
       setLoading(false);
       setForm({
         nombre: '',
         email: '',
         telefono: '',
         empresa: '',
-        servicio: servicios[0],
+        servicio: services[0] || '',
         mensaje: '',
       });
-    }, 1200);
+    }
   };
 
   return (
@@ -107,8 +112,8 @@ export default function ContactoPage() {
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
-                {servicios.map(s => (
-                  <option key={s} value={s}>{s}</option>
+                {services.map((s, i) => (
+                  <option key={i} value={s}>{s}</option>
                 ))}
               </select>
             </div>

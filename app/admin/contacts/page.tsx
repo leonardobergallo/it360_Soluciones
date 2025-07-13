@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from 'next/navigation';
 
 interface Contact {
   id: string;
@@ -11,11 +12,26 @@ interface Contact {
 }
 
 export default function ContactsAdminPage() {
+  const router = useRouter();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const formRef = useRef<HTMLFormElement>(null);
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Protección para técnicos
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        if (userData.role === 'TECNICO') {
+          localStorage.setItem('toastMsg', 'Acceso denegado: solo puedes ver presupuestos.');
+          router.push('/admin/presupuestos');
+        }
+      } catch {}
+    }
+  }, [router]);
 
   // Fetch contacts
   useEffect(() => {
@@ -66,11 +82,11 @@ export default function ContactsAdminPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold">Gestión de Contactos</h1>
-        <a href="/" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 font-semibold flex items-center gap-2">
+        <a href="/admin" className="px-4 py-2 bg-blue-700 text-white rounded-lg font-semibold flex items-center gap-2 shadow hover:bg-blue-800 transition-all">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 12l6-6M3 12l6 6" />
           </svg>
-          Ir al inicio
+          Ir al dashboard
         </a>
       </div>
       <h1 className="text-3xl font-extrabold mb-8 text-blue-800">Mensajes de Contacto</h1>

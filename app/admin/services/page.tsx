@@ -2,7 +2,8 @@
 
 import AdminLayout from '@/components/AdminLayout';
 import Table from '@/components/Table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Service {
   id: number;
@@ -11,17 +12,36 @@ interface Service {
   price: number;
 }
 
-const mockServices: Service[] = [
-  { id: 1, name: 'Desarrollo Web', description: 'Sitios web a medida', price: 1000 },
-  { id: 2, name: 'Soporte Técnico', description: 'Soporte remoto y presencial', price: 500 },
-];
-
 export default function ServicesPage() {
-  const [services, setServices] = useState(mockServices);
+  const router = useRouter();
+  const [services, setServices] = useState<Service[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', description: '', price: '' });
   const [error, setError] = useState<string | null>(null);
   const [editService, setEditService] = useState<Service | null>(null);
+
+  // Protección para técnicos
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        if (userData.role === 'TECNICO') {
+          localStorage.setItem('toastMsg', 'Acceso denegado: solo puedes ver presupuestos.');
+          router.push('/admin/presupuestos');
+        }
+      } catch {}
+    }
+  }, [router]);
+
+  useEffect(() => {
+    async function fetchServices() {
+      const res = await fetch('/api/services');
+      const data = await res.json();
+      setServices(data);
+    }
+    fetchServices();
+  }, []);
 
   const handleAddService = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,11 +85,11 @@ export default function ServicesPage() {
     <AdminLayout>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold">Gestión de Servicios</h1>
-        <a href="/" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 font-semibold flex items-center gap-2">
+        <a href="/admin" className="px-4 py-2 bg-blue-700 text-white rounded-lg font-semibold flex items-center gap-2 shadow hover:bg-blue-800 transition-all">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 12l6-6M3 12l6 6" />
           </svg>
-          Ir al inicio
+          Ir al dashboard
         </a>
       </div>
       <div className="flex items-center justify-between mb-6">

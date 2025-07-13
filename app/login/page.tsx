@@ -44,6 +44,8 @@ export default function LoginPage() {
         // Redirigir según rol
         if (data.user.role === 'ADMIN') {
           router.push('/admin');
+        } else if (data.user.role === 'TECNICO') {
+          router.push('/admin/presupuestos');
         } else {
           router.push('/catalogo');
         }

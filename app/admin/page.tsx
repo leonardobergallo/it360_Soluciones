@@ -70,7 +70,7 @@ export default function AdminDashboard() {
       <div>
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <Link href="/" className="bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-blue-800 transition-all">Volver al inicio</Link>
+          <Link href="/admin" className="bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-blue-800 transition-all">Ir al dashboard</Link>
         </div>
         <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg shadow-sm">
           <h2 className="text-xl font-semibold text-blue-800 mb-2">¡Bienvenido al panel de administración de IT360!</h2>
