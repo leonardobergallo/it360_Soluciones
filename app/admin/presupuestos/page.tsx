@@ -1,7 +1,9 @@
-"use client";
-import { useEffect, useState } from "react";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
-import TecnicoLayout from '@/components/TecnicoLayout';
+import { toast } from 'react-hot-toast';
 
 interface Presupuesto {
   id: string;
@@ -13,136 +15,208 @@ interface Presupuesto {
   mensaje?: string;
   estado: string;
   createdAt: string;
-  updatedAt: string;
 }
 
-export default function PresupuestosAdminPage() {
+export default function PresupuestosPage() {
   const [presupuestos, setPresupuestos] = useState<Presupuesto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [userRole, setUserRole] = useState<string>('ADMIN');
-  const [toast, setToast] = useState<string | null>(null);
-
-  // Detectar el rol del usuario
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (user) {
-      try {
-        const userData = JSON.parse(user);
-        setUserRole(userData.role || 'ADMIN');
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-  }, []);
-
-  // Mostrar toast si hay mensaje de acceso denegado
-  useEffect(() => {
-    const msg = localStorage.getItem('toastMsg');
-    if (msg) {
-      setToast(msg);
-      localStorage.removeItem('toastMsg');
-      setTimeout(() => setToast(null), 3500);
-    }
-  }, []);
+  const [userRole, setUserRole] = useState<string>('');
+  const router = useRouter();
 
   useEffect(() => {
-    async function fetchPresupuestos() {
-      try {
-        console.log('🔄 Cargando presupuestos...');
-        const res = await fetch('/api/presupuestos');
-        const data = await res.json();
-        
-        console.log('📊 Respuesta del API:', data);
-        
-        // Verificar si la respuesta es un array
-        if (!Array.isArray(data)) {
-          console.error('❌ La respuesta no es un array:', data);
-          setError(`Error: La respuesta del servidor no es válida. ${data.error || ''}`);
-          return;
-        }
-        
-        setPresupuestos(data);
-        console.log(`✅ ${data.length} presupuestos cargados`);
-      } catch (err) {
-        console.error('❌ Error al cargar presupuestos:', err);
-        setError(`Error al cargar presupuestos: ${err instanceof Error ? err.message : 'Error desconocido'}`);
-      } finally {
-        setLoading(false);
-      }
+    // Verificar rol del usuario
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    setUserRole(user.role || '');
+
+    // Si es técnico, redirigir a presupuestos (ya estamos aquí)
+    // Si es admin, puede acceder a todas las páginas
+    if (user.role === 'USER') {
+      router.push('/');
+      return;
     }
+
     fetchPresupuestos();
-  }, []);
+  }, [router]);
 
-  // Determinar qué layout usar basado en el rol
-  const Layout = userRole === 'TECNICO' ? TecnicoLayout : AdminLayout;
+  const fetchPresupuestos = async () => {
+    try {
+      const response = await fetch('/api/presupuestos');
+      if (response.ok) {
+        const data = await response.json();
+        setPresupuestos(data);
+      } else {
+        toast.error('Error al cargar presupuestos');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al cargar presupuestos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateEstado = async (id: string, nuevoEstado: string) => {
+    try {
+      const response = await fetch(`/api/presupuestos/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ estado: nuevoEstado }),
+      });
+
+      if (response.ok) {
+        toast.success('Estado actualizado correctamente');
+        fetchPresupuestos(); // Recargar la lista
+      } else {
+        toast.error('Error al actualizar estado');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al actualizar estado');
+    }
+  };
+
+  const getEstadoColor = (estado: string) => {
+    switch (estado.toLowerCase()) {
+      case 'pendiente':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'en proceso':
+        return 'bg-blue-100 text-blue-800';
+      case 'completado':
+        return 'bg-green-100 text-green-800';
+      case 'rechazado':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
-    <Layout>
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce flex items-center gap-2">
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-          {toast}
+    <AdminLayout>
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Gestión de Presupuestos
+          </h1>
+          <div className="text-sm text-gray-600">
+            Total: {presupuestos.length} presupuestos
+          </div>
         </div>
-      )}
-      <div className="max-w-5xl mx-auto py-8">
-        <h1 className="text-2xl font-bold mb-6">Solicitudes de Presupuesto</h1>
-        {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2">Cargando presupuestos...</p>
-          </div>
-        ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h3 className="text-red-800 font-semibold">Error al cargar presupuestos</h3>
-            <p className="text-red-600 mt-1">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Reintentar
-            </button>
-          </div>
-        ) : presupuestos.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500">No hay solicitudes de presupuesto aún.</p>
-            <p className="text-sm text-gray-400 mt-1">Las solicitudes aparecerán aquí cuando los usuarios envíen el formulario de contacto.</p>
+
+        {presupuestos.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-500 text-lg">
+              No hay presupuestos registrados
+            </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border rounded-lg shadow">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 border">Nombre</th>
-                  <th className="px-4 py-2 border">Email</th>
-                  <th className="px-4 py-2 border">Teléfono</th>
-                  <th className="px-4 py-2 border">Empresa</th>
-                  <th className="px-4 py-2 border">Servicio</th>
-                  <th className="px-4 py-2 border">Mensaje</th>
-                  <th className="px-4 py-2 border">Estado</th>
-                  <th className="px-4 py-2 border">Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                {presupuestos.map(p => (
-                  <tr key={p.id} className="border-b hover:bg-blue-50">
-                    <td className="px-4 py-2 border">{p.nombre}</td>
-                    <td className="px-4 py-2 border">{p.email}</td>
-                    <td className="px-4 py-2 border">{p.telefono || '-'}</td>
-                    <td className="px-4 py-2 border">{p.empresa || '-'}</td>
-                    <td className="px-4 py-2 border">{p.servicio}</td>
-                    <td className="px-4 py-2 border">{p.mensaje || '-'}</td>
-                    <td className="px-4 py-2 border font-semibold capitalize">{p.estado}</td>
-                    <td className="px-4 py-2 border">{new Date(p.createdAt).toLocaleString()}</td>
+          <div className="bg-white shadow-md rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Cliente
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Contacto
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Servicio
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Estado
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Fecha
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Acciones
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {presupuestos.map((presupuesto) => (
+                    <tr key={presupuesto.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {presupuesto.nombre}
+                          </div>
+                          {presupuesto.empresa && (
+                            <div className="text-sm text-gray-500">
+                              {presupuesto.empresa}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm text-gray-900">
+                            {presupuesto.email}
+                          </div>
+                          {presupuesto.telefono && (
+                            <div className="text-sm text-gray-500">
+                              {presupuesto.telefono}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">
+                          {presupuesto.servicio}
+                        </div>
+                        {presupuesto.mensaje && (
+                          <div className="text-sm text-gray-500 mt-1">
+                            {presupuesto.mensaje.length > 50
+                              ? `${presupuesto.mensaje.substring(0, 50)}...`
+                              : presupuesto.mensaje}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEstadoColor(
+                            presupuesto.estado
+                          )}`}
+                        >
+                          {presupuesto.estado}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(presupuesto.createdAt).toLocaleDateString('es-ES')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <select
+                          value={presupuesto.estado}
+                          onChange={(e) => updateEstado(presupuesto.id, e.target.value)}
+                          className="text-sm border border-gray-300 rounded px-2 py-1"
+                        >
+                          <option value="pendiente">Pendiente</option>
+                          <option value="en proceso">En Proceso</option>
+                          <option value="completado">Completado</option>
+                          <option value="rechazado">Rechazado</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
-    </Layout>
+    </AdminLayout>
   );
 } 
