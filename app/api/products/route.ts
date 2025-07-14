@@ -18,11 +18,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, description, price, stock } = body;
+    const { name, description, price, stock, category, image } = body;
 
-    if (!name || !description || price === undefined || stock === undefined) {
+    if (!name || !description || price === undefined || stock === undefined || !category) {
       return NextResponse.json(
-        { error: 'Name, description, price y stock son requeridos' },
+        { error: 'Name, description, price, stock y category son requeridos' },
         { status: 400 }
       );
     }
@@ -33,6 +33,8 @@ export async function POST(request: NextRequest) {
         description,
         price: parseFloat(price),
         stock: parseInt(stock),
+        category,
+        image,
       },
     });
 
@@ -48,7 +50,7 @@ export async function POST(request: NextRequest) {
 // PUT - Actualizar un producto por id
 export async function PUT(request: NextRequest) {
   try {
-    const { id, name, description, price, stock } = await request.json();
+    const { id, name, description, price, stock, category, image } = await request.json();
     if (!id) {
       return NextResponse.json({ error: 'ID requerido' }, { status: 400 });
     }
@@ -57,6 +59,8 @@ export async function PUT(request: NextRequest) {
     if (description !== undefined) data.description = description;
     if (price !== undefined) data.price = parseFloat(price);
     if (stock !== undefined) data.stock = parseInt(stock);
+    if (category !== undefined) data.category = category;
+    if (image !== undefined) data.image = image;
     const product = await prisma.product.update({
       where: { id },
       data,

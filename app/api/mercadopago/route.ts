@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import mercadopago from 'mercadopago';
 
 const prisma = new PrismaClient();
+
+// Configurar MercadoPago
+mercadopago.configure({
+  access_token: process.env.MERCADOPAGO_ACCESS_TOKEN || ''
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,56 +30,72 @@ export async function POST(request: NextRequest) {
     }
 
     // Calcular total
-    const total = items.reduce((sum: number, item: any) => sum + (item.product.price * item.quantity), 0);
+    const total = items.reduce((sum: number, item: { product: { price: number }; quantity: number }) => sum + (item.product.price * item.quantity), 0);
     
-    // Crear preferencia
-    const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
+    // Crear preferencia usando la librería oficial
+    const preference = {
+      items: items.map((item: { product: { name: string; price: number; image?: string }; quantity: number }) => ({
+        title: item.product.name,
+        quantity: item.quantity,
+        unit_price: item.product.price,
+        currency_id: 'ARS',
+        picture_url: item.product.image || undefined,
+      })),
+      payer: {
+        name: nombre,
+        email,
+        phone: { number: telefono },
+        address: { street_name: direccion }
       },
-      body: JSON.stringify({
-        items: items.map((item: any) => ({
-          title: item.product.name,
-          quantity: item.quantity,
-          unit_price: item.product.price,
-          currency_id: 'ARS',
-          picture_url: item.product.image || undefined,
-        })),
-        payer: {
-          name: nombre,
-          email,
-          phone: { number: telefono },
-          address: { street_name: direccion }
-        },
-        back_urls: {
-          success: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/carrito?status=success&payment_id={payment_id}`,
-          failure: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/carrito?status=failure`,
-          pending: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/carrito?status=pending`,
-        },
-        auto_return: 'approved',
-        external_reference: userId ? `user_${userId}_${Date.now()}` : `guest_${Date.now()}`,
-        notification_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/mercadopago/webhook`,
-        expires: true,
-        expiration_date_to: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutos
-      })
-    });
-    
-    const mpData = await mpRes.json();
-    
-    if (!mpRes.ok) {
-      console.error('Error Mercado Pago:', mpData);
+      back_urls: {
+        success: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/carrito?status=success&payment_id={payment_id}`,
+        failure: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/carrito?status=failure`,
+        pending: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/carrito?status=pending`,
+      },
+      auto_return: 'approved',
+      external_reference: userId ? `user_${userId}_${Date.now()}` : `guest_${Date.now()}`,
+      notification_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/mercadopago/webhook`,
+      expires: true,
+      expiration_date_to: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutos
+    };
+
+    try {
+      const mpData = await mercadopago.preferences.create(preference);
+      
+      if (!mpData.body.init_point) {
+        return NextResponse.json({ 
+          error: 'No se pudo generar el enlace de pago', 
+          details: mpData.body 
+        }, { status: 500 });
+      }
+
+      // Guardar preferencia en base de datos para tracking
+      try {
+        await prisma.paymentPreference.create({
+          data: {
+            preferenceId: mpData.body.id,
+            userId: userId || null,
+            total,
+            status: 'pending',
+            items: JSON.stringify(items),
+            payerInfo: JSON.stringify({ nombre, email, telefono, direccion })
+          }
+        });
+      } catch (dbError) {
+        console.error('Error guardando preferencia:', dbError);
+        // No fallar si no se puede guardar en DB
+      }
+
+      return NextResponse.json({ 
+        url: mpData.body.init_point,
+        preferenceId: mpData.body.id 
+      });
+      
+    } catch (mpError) {
+      console.error('Error Mercado Pago:', mpError);
       return NextResponse.json({ 
         error: 'Error al crear preferencia de pago', 
-        details: mpData.error || mpData.message 
-      }, { status: 500 });
-    }
-    
-    if (!mpData.init_point) {
-      return NextResponse.json({ 
-        error: 'No se pudo generar el enlace de pago', 
-        details: mpData 
+        details: mpError 
       }, { status: 500 });
     }
 
