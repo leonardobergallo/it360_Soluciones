@@ -82,7 +82,47 @@ async function main() {
       category: 'Almacenamiento',
       stock: 20,
       image: '/servicio-productos.png'
-    }
+    },
+    {
+      name: 'Kit de Bombillas Inteligentes WiFi RGB',
+      description: 'Control desde app (Tuya, Smart Life) y por voz (Alexa, Google). Cambios de color, temporizador y escenas automáticas.',
+      price: 12990,
+      category: 'Domótica',
+      stock: 20,
+      image: '/servicio-productos.png'
+    },
+    {
+      name: 'Enchufe Inteligente WiFi',
+      description: 'Enciende/apaga dispositivos desde el celular. Programación horaria, control remoto e integración con asistentes de voz.',
+      price: 5990,
+      category: 'Domótica',
+      stock: 30,
+      image: '/servicio-apps.png'
+    },
+    {
+      name: 'Sensor de Movimiento PIR Inteligente',
+      description: 'Detecta presencia y envía alertas al celular. Ideal para automatizar luces o sistemas de seguridad.',
+      price: 7990,
+      category: 'Domótica',
+      stock: 25,
+      image: '/servicio-redes.png'
+    },
+    {
+      name: 'Cerradura Inteligente con Huella, PIN y App',
+      description: 'Acceso por huella digital, clave o desde el celular. Registro de aperturas y control remoto.',
+      price: 39990,
+      category: 'Domótica',
+      stock: 10,
+      image: '/servicio-software.png'
+    },
+    {
+      name: 'Cámara WiFi 360° con Visión Nocturna',
+      description: 'Visualización en vivo desde app. Detección de movimiento, audio bidireccional y almacenamiento en la nube o microSD.',
+      price: 18990,
+      category: 'Domótica',
+      stock: 15,
+      image: '/servicio-pc.png'
+    },
   ];
   for (const product of products) {
     await prisma.product.upsert({

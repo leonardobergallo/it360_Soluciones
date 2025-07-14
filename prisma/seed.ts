@@ -26,9 +26,15 @@ async function main() {
   // Productos
   await prisma.product.createMany({
     data: [
-      { name: 'Notebook Dell XPS 13', description: 'Ultrabook profesional', price: 1800, stock: 5 },
-      { name: 'Teclado Mecánico Logitech', description: 'Teclado retroiluminado para oficina', price: 120, stock: 30 },
-      { name: 'Monitor Samsung 27"', description: 'Monitor LED Full HD', price: 350, stock: 12 },
+      { name: 'Notebook Dell XPS 13', description: 'Ultrabook profesional', price: 1800, stock: 5, category: 'notebooks' },
+      { name: 'Teclado Mecánico Logitech', description: 'Teclado retroiluminado para oficina', price: 120, stock: 30, category: 'periféricos' },
+      { name: 'Monitor Samsung 27"', description: 'Monitor LED Full HD', price: 350, stock: 12, category: 'monitores' },
+      // Productos de domótica
+      { name: 'Enchufe WiFi Inteligente', description: 'Controla tus dispositivos desde el celular o con tu voz. Compatible con Alexa y Google Home.', price: 45, stock: 20, category: 'domótica', image: '/servicio-productos.png' },
+      { name: 'Lámpara LED RGB Smart', description: 'Iluminación inteligente multicolor, controlable por app y asistentes virtuales.', price: 30, stock: 25, category: 'domótica', image: '/servicio-productos.png' },
+      { name: 'Sensor de Movimiento WiFi', description: 'Automatiza luces y recibe alertas de seguridad en tu móvil.', price: 60, stock: 15, category: 'domótica', image: '/servicio-productos.png' },
+      { name: 'Cámara IP Smart 360°', description: 'Vigila tu hogar desde cualquier lugar con visión nocturna y detección de movimiento.', price: 95, stock: 10, category: 'domótica', image: '/servicio-productos.png' },
+      { name: 'Kit Domótica Starter', description: 'Pack de inicio con enchufe, lámpara y sensor para automatizar tu hogar.', price: 120, stock: 8, category: 'domótica', image: '/servicio-productos.png' },
     ],
     skipDuplicates: true,
   });
