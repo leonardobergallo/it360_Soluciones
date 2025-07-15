@@ -423,158 +423,321 @@ export default function CarritoPage() {
   const totalProductos = productos.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
   return (
-    <div className="container mx-auto py-12 px-4 min-h-screen pb-24">
-      <h1 className="text-3xl font-bold mb-8 text-blue-800">Carrito</h1>
-      {success && (
-        <div className="bg-green-100 border border-green-300 text-green-800 rounded px-4 py-3 mb-6 text-center font-semibold text-lg animate-fadeIn">
-          {success}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Fondo futurista con animaciones */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-20"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-bounce"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+      </div>
+
+      <div className="relative z-10 container mx-auto py-16 px-4 min-h-screen pb-24">
+        {/* Header futurista */}
+        <div className="text-center mb-12">
+          <div className="inline-block mb-6 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-lg opacity-50"></div>
+            <h1 className="relative text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-4">
+              Carrito de Compras
+            </h1>
+          </div>
+          <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
+            Revisa tus productos y servicios seleccionados
+          </p>
         </div>
-      )}
-      {error && (
-        <div className="bg-red-100 border border-red-300 text-red-800 rounded px-4 py-3 mb-6 text-center font-semibold text-lg animate-fadeIn">
-          {error}
-        </div>
-      )}
-      {loading ? (
-        <div className="text-center py-12">Cargando...</div>
-      ) : cartItems.length === 0 ? (
-        <div className="text-center text-gray-500 py-12">Tu carrito está vacío.</div>
-      ) : (
-        <>
-        {/* Sección de productos */}
-        {productos.length > 0 && (
-          <div className="bg-white rounded-xl shadow p-6 mb-8">
-            <ul className="divide-y divide-gray-200">
-              {productos.map((item: any, idx: number) => (
-                <li key={idx} className="flex flex-col md:flex-row md:items-center justify-between py-4 gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4">
-                      {item.product?.image && (
-                        <img src={item.product.image} alt={item.product.name} className="w-16 h-16 object-contain rounded" />
-                      )}
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-lg">{item.product.name}</span>
-                          <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">Producto</span>
+
+        {/* Mensajes de estado */}
+        {success && (
+          <div className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 rounded-2xl px-6 py-4 mb-8 text-center font-semibold text-lg animate-fadeIn flex items-center justify-center gap-3">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            {success}
+          </div>
+        )}
+        {error && (
+          <div className="backdrop-blur-md bg-red-500/20 border border-red-400/30 text-red-300 rounded-2xl px-6 py-4 mb-8 text-center font-semibold text-lg animate-fadeIn flex items-center justify-center gap-3">
+            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="text-center py-16">
+            <div className="inline-block">
+              <div className="w-8 h-8 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <p className="text-white/70 mt-4">Cargando tu carrito...</p>
+          </div>
+        ) : cartItems.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl p-12 max-w-md mx-auto">
+              <div className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Tu carrito está vacío</h3>
+              <p className="text-white/70">Agrega algunos productos para comenzar</p>
+            </div>
+          </div>
+        ) : (
+          <>
+          {/* Sección de productos */}
+          {productos.length > 0 && (
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  Productos en tu carrito
+                </h2>
+              </div>
+              <ul className="divide-y divide-white/20">
+                {productos.map((item: any, idx: number) => (
+                  <li key={idx} className="flex flex-col md:flex-row md:items-center justify-between py-6 gap-4 group">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-4">
+                        {item.product?.image && (
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl blur-sm opacity-50"></div>
+                            <img src={item.product.image} alt={item.product.name} className="relative w-16 h-16 object-contain rounded-xl" />
+                          </div>
+                        )}
+                        <div>
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="font-semibold text-xl text-white group-hover:text-cyan-400 transition-colors duration-300">
+                              {item.product.name}
+                            </span>
+                            <span className="backdrop-blur-md bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-xs px-3 py-1 rounded-full font-medium">
+                              Producto
+                            </span>
+                          </div>
+                          <div className="text-white/70 text-sm">{item.product.description}</div>
                         </div>
-                        <div className="text-gray-600 text-sm">{item.product.description}</div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-2 min-w-[120px]">
-                    <div className="text-blue-700 font-bold text-lg">${item.product.price.toLocaleString()}</div>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => updateQty(item.product.id, item.quantity - 1)} className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQty(item.product.id, item.quantity + 1)} className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                    <div className="flex flex-col items-end gap-3 min-w-[140px]">
+                      <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                        ${item.product.price.toLocaleString()}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button 
+                          onClick={() => updateQty(item.product.id, item.quantity - 1)} 
+                          className="w-8 h-8 backdrop-blur-md bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-all duration-300 flex items-center justify-center text-white hover:text-cyan-400"
+                        >
+                          -
+                        </button>
+                        <span className="text-white font-semibold min-w-[2rem] text-center">{item.quantity}</span>
+                        <button 
+                          onClick={() => updateQty(item.product.id, item.quantity + 1)} 
+                          className="w-8 h-8 backdrop-blur-md bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-all duration-300 flex items-center justify-center text-white hover:text-cyan-400"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <button 
+                        onClick={() => removeItem(item.product.id)} 
+                        className="text-xs text-red-400 hover:text-red-300 hover:underline transition-colors duration-300"
+                      >
+                        Eliminar
+                      </button>
                     </div>
-                    <button onClick={() => removeItem(item.product.id)} className="text-xs text-red-600 hover:underline">Eliminar</button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <div className="flex justify-between items-center mt-6">
-              <div className="text-xl font-bold text-blue-800">Total: ${totalProductos.toLocaleString()}</div>
-              <button onClick={clearCart} className="bg-red-100 text-red-700 px-4 py-2 rounded hover:bg-red-200 text-sm font-semibold">Vaciar carrito</button>
-            </div>
-          </div>
-        )}
-        {/* Sección de servicios a cotizar */}
-        {servicios.length > 0 && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
-            <h2 className="text-lg font-bold text-yellow-800 mb-2">Servicios a cotizar</h2>
-            <ul className="mb-2">
-              {servicios.map((item: any, idx: number) => (
-                <li key={idx} className="flex justify-between text-sm py-1 items-center">
-                  <span>{item.nombre || 'Servicio a cotizar'}</span>
-                  <button onClick={() => removeItem(item.nombre)} className="text-xs text-red-600 hover:underline ml-4">Eliminar</button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {/* Resumen de compra solo si hay productos */}
-        {productos.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <h2 className="text-lg font-bold text-blue-700 mb-2">Resumen de compra</h2>
-            <ul className="mb-2">
-              {productos.map((item: any, idx: number) => (
-                <li key={idx} className="flex justify-between text-sm py-1">
-                  <span>{item.product.name} x{item.quantity}</span>
-                  <span>${(item.product.price * item.quantity).toLocaleString()}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="text-right font-bold text-blue-800">Total: ${totalProductos.toLocaleString()}</div>
-            <button
-              className="w-full mt-6 bg-blue-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:bg-blue-800 transition-all duration-300 text-lg"
-              onClick={() => router.push('/checkout')}
-            >
-              Finalizar compra
-            </button>
-            <div className="text-center text-sm text-gray-600 mt-2">
-              Podrás elegir MercadoPago o Transferencia bancaria en el siguiente paso.
-            </div>
-          </div>
-        )}
-        </>
-      )}
-      {/* Mejoro la sección de contacto/cotización */}
-      {productos.length === 0 && (
-        <section className="max-w-lg mx-auto bg-gradient-to-br from-yellow-100 to-blue-50 rounded-2xl shadow-lg p-10 border border-blue-100 mt-12 mb-8">
-          <h2 className="text-2xl font-bold mb-4 text-blue-800 text-center">Solicitar Cotización</h2>
-          <p className="text-center text-gray-700 mb-6">¿Tienes servicios en el carrito? Completa tus datos y te enviaremos una cotización personalizada.</p>
-          <form onSubmit={handleMainCheckout} ref={formRef} className="flex flex-col gap-4">
-            <input name="nombre" type="text" placeholder="Nombre" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
-            <input name="email" type="email" placeholder="Email" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-            <input name="telefono" type="tel" placeholder="Teléfono" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
-            <input name="direccion" type="text" placeholder="Dirección" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" required value={form.direccion} onChange={e => setForm({ ...form, direccion: e.target.value })} />
-            <div className="flex flex-col gap-2">
-              <label className="text-blue-700 font-medium">Método de pago</label>
-              <select name="metodoPago" className="border border-blue-200 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none" value={form.metodoPago} onChange={e => setForm({ ...form, metodoPago: e.target.value })}>
-                <option value="reembolso">Cotización (solo servicios)</option>
-                <option value="mercadopago">Mercado Pago (solo productos)</option>
-              </select>
-            </div>
-            <button type="submit" className="bg-gradient-to-r from-blue-700 to-blue-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:from-blue-800 hover:to-blue-600 transition disabled:opacity-60 text-lg mt-2" disabled={processing}>
-              {processing ? 'Procesando...' : 'Solicitar cotización / Pagar productos'}
-            </button>
-            {error && <div className="text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2 font-semibold text-center mt-2">{error}</div>}
-          </form>
-        </section>
-      )}
-      {/* Sección de cotizaciones */}
-      {cotizacionesValidas.length > 0 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
-          <h2 className="text-xl font-bold text-yellow-800 mb-4">Solicitudes de cotización</h2>
-          <ul className="space-y-4">
-            {cotizacionesValidas.map((c, i) => (
-              <li key={i} className="bg-white rounded-lg shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                <div>
-                  <div className="font-semibold text-yellow-900">{c.servicio}</div>
-                  <div className="text-sm text-gray-700">{c.nombre} &lt;{c.email}&gt; {c.empresa && `- ${c.empresa}`}</div>
-                  <div className="text-sm text-gray-500">{c.telefono}</div>
-                  <div className="text-gray-600 mt-1">{c.mensaje}</div>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/20">
+                <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  Total: ${totalProductos.toLocaleString()}
                 </div>
-                <button
-                  onClick={() => removeCotizacion(i)}
-                  className="bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 text-xs font-semibold mt-2 md:mt-0"
+                <button 
+                  onClick={clearCart} 
+                  className="backdrop-blur-md bg-red-500/20 border border-red-400/30 text-red-300 px-6 py-3 rounded-2xl hover:bg-red-500/30 transition-all duration-300 text-sm font-semibold"
                 >
-                  Eliminar
+                  Vaciar carrito
                 </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {cotizaciones.length > 0 && cotizacionesValidas.length === 0 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8 text-yellow-900 font-semibold">
-          Hay cotizaciones incompletas en tu carrito. Por favor, elimínalas y vuelve a enviar tu solicitud desde el formulario de contacto.
-        </div>
-      )}
+              </div>
+            </div>
+          )}
 
-      {/* FooterNav: navegación inferior para usuarios */}
-      <FooterNav />
+          {/* Sección de servicios a cotizar */}
+          {servicios.length > 0 && (
+            <div className="backdrop-blur-md bg-yellow-500/10 border border-yellow-400/30 rounded-3xl p-8 mb-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                  Servicios a cotizar
+                </h2>
+              </div>
+              <ul className="space-y-3">
+                {servicios.map((item: any, idx: number) => (
+                  <li key={idx} className="flex justify-between text-sm py-2 items-center text-white/90">
+                    <span>{item.nombre || 'Servicio a cotizar'}</span>
+                    <button 
+                      onClick={() => removeItem(item.nombre)} 
+                      className="text-xs text-red-400 hover:text-red-300 hover:underline transition-colors duration-300"
+                    >
+                      Eliminar
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Resumen de compra solo si hay productos */}
+          {productos.length > 0 && (
+            <div className="backdrop-blur-md bg-cyan-500/10 border border-cyan-400/30 rounded-3xl p-8 mb-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  Resumen de compra
+                </h2>
+              </div>
+              <ul className="space-y-3 mb-6">
+                {productos.map((item: any, idx: number) => (
+                  <li key={idx} className="flex justify-between text-sm py-2 text-white/90">
+                    <span>{item.product.name} x{item.quantity}</span>
+                    <span className="font-semibold">${(item.product.price * item.quantity).toLocaleString()}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="text-right font-bold text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-6">
+                Total: ${totalProductos.toLocaleString()}
+              </div>
+              <button
+                className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 text-lg flex items-center justify-center gap-3 group"
+                onClick={() => router.push('/checkout')}
+              >
+                <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"></div>
+                Finalizar compra
+              </button>
+              <div className="text-center text-sm text-white/60 mt-4">
+                Podrás elegir MercadoPago o Transferencia bancaria en el siguiente paso.
+              </div>
+            </div>
+          )}
+          </>
+        )}
+
+        {/* Sección de contacto/cotización */}
+        {productos.length === 0 && (
+          <section className="max-w-lg mx-auto backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-10 mt-12 mb-8">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-4">
+                Solicitar Cotización
+              </h2>
+              <p className="text-white/70">¿Tienes servicios en el carrito? Completa tus datos y te enviaremos una cotización personalizada.</p>
+            </div>
+            <form onSubmit={handleMainCheckout} ref={formRef} className="flex flex-col gap-4">
+              <input 
+                name="nombre" 
+                type="text" 
+                placeholder="Nombre" 
+                className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none text-white placeholder-white/50 transition-all duration-300" 
+                required 
+                value={form.nombre} 
+                onChange={e => setForm({ ...form, nombre: e.target.value })} 
+              />
+              <input 
+                name="email" 
+                type="email" 
+                placeholder="Email" 
+                className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none text-white placeholder-white/50 transition-all duration-300" 
+                required 
+                value={form.email} 
+                onChange={e => setForm({ ...form, email: e.target.value })} 
+              />
+              <input 
+                name="telefono" 
+                type="tel" 
+                placeholder="Teléfono" 
+                className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none text-white placeholder-white/50 transition-all duration-300" 
+                required 
+                value={form.telefono} 
+                onChange={e => setForm({ ...form, telefono: e.target.value })} 
+              />
+              <input 
+                name="direccion" 
+                type="text" 
+                placeholder="Dirección" 
+                className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none text-white placeholder-white/50 transition-all duration-300" 
+                required 
+                value={form.direccion} 
+                onChange={e => setForm({ ...form, direccion: e.target.value })} 
+              />
+              <div className="flex flex-col gap-2">
+                <label className="text-cyan-300 font-medium">Método de pago</label>
+                <select 
+                  name="metodoPago" 
+                  className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none text-white transition-all duration-300" 
+                  value={form.metodoPago} 
+                  onChange={e => setForm({ ...form, metodoPago: e.target.value })}
+                >
+                  <option value="reembolso" className="bg-slate-800">Cotización (solo servicios)</option>
+                  <option value="mercadopago" className="bg-slate-800">Mercado Pago (solo productos)</option>
+                </select>
+              </div>
+              <button 
+                type="submit" 
+                className="backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 rounded-2xl font-semibold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 disabled:opacity-60 text-lg mt-4 flex items-center justify-center gap-3 group" 
+                disabled={processing}
+              >
+                <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"></div>
+                {processing ? 'Procesando...' : 'Solicitar cotización / Pagar productos'}
+              </button>
+              {error && (
+                <div className="backdrop-blur-md bg-red-500/20 border border-red-400/30 text-red-300 rounded-2xl px-4 py-3 font-semibold text-center mt-4 flex items-center justify-center gap-3">
+                  <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                  {error}
+                </div>
+              )}
+            </form>
+          </section>
+        )}
+
+        {/* Sección de cotizaciones */}
+        {cotizacionesValidas.length > 0 && (
+          <div className="backdrop-blur-md bg-yellow-500/10 border border-yellow-400/30 rounded-3xl p-8 mb-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                Solicitudes de cotización
+              </h2>
+            </div>
+            <ul className="space-y-4">
+              {cotizacionesValidas.map((c, i) => (
+                <li key={i} className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 group">
+                  <div>
+                    <div className="font-semibold text-yellow-300 text-lg">{c.servicio}</div>
+                    <div className="text-sm text-white/70">{c.nombre} &lt;{c.email}&gt; {c.empresa && `- ${c.empresa}`}</div>
+                    <div className="text-sm text-white/60">{c.telefono}</div>
+                    <div className="text-white/80 mt-2">{c.mensaje}</div>
+                  </div>
+                  <button
+                    onClick={() => removeCotizacion(i)}
+                    className="backdrop-blur-md bg-red-500/20 border border-red-400/30 text-red-300 px-4 py-2 rounded-2xl hover:bg-red-500/30 transition-all duration-300 text-sm font-semibold"
+                  >
+                    Eliminar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {cotizaciones.length > 0 && cotizacionesValidas.length === 0 && (
+          <div className="backdrop-blur-md bg-yellow-500/10 border border-yellow-400/30 rounded-3xl p-6 mb-8 text-yellow-300 font-semibold flex items-center gap-3">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+            Hay cotizaciones incompletas en tu carrito. Por favor, elimínalas y vuelve a enviar tu solicitud desde el formulario de contacto.
+          </div>
+        )}
+
+        {/* FooterNav: navegación inferior para usuarios */}
+        <FooterNav />
+      </div>
     </div>
   );
 } 

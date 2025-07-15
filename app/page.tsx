@@ -112,14 +112,26 @@ export default function Home() {
   const [toast, setToast] = useState("");
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 font-sans pb-16"> {/* pb-16 para espacio del footer */}
-      {/* Header principal */}
-      <header className="bg-white py-3 shadow">
-        <div className="container mx-auto flex items-center justify-between">
-          <Image src="/icono.png" alt="Logo IT360" width={50} height={50} className="rounded-lg" />
-          {/* Eliminado el input de búsqueda y el botón de lupa */}
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 font-sans pb-16 relative overflow-x-hidden">
+      {/* Animated background elements */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute w-96 h-96 bg-blue-500/10 rounded-full blur-3xl top-1/4 left-1/4 animate-float"></div>
+        <div className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl bottom-1/4 right-1/4 animate-float animation-delay-2000"></div>
+        <div className="absolute w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-float animation-delay-4000"></div>
+      </div>
+
+      {/* Header principal - Futurista */}
+      <header className="fixed top-0 left-0 w-full bg-white/5 backdrop-blur-xl border-b border-white/10 z-50 transition-all duration-300">
+        <div className="container mx-auto flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Image src="/icono.png" alt="Logo IT360" width={40} height={40} className="rounded-lg" />
+            <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              IT360 Soluciones
+            </span>
+          </div>
+          
           <div className="flex gap-6 items-center">
-            <span className="flex items-center gap-1 cursor-pointer">
+            <span className="flex items-center gap-1 cursor-pointer text-white/70 hover:text-cyan-400 transition-colors">
               <span role="img" aria-label="Usuario">👤</span> Mi cuenta
             </span>
             <CartIconWithBadge />
@@ -127,207 +139,222 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Barra de navegación - Responsive */}
-      <nav className="bg-white border-b">
-        <div className="container mx-auto flex items-center gap-6 py-2">
-          <button className="text-lg">☰</button>
-          <a href="#inicio" className="font-bold text-blue-700">Inicio</a>
-          <a href="#servicios" className="text-blue-700 font-semibold">Servicios</a>
-          <a href="#productos">Productos</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#testimonios">Testimonios</a>
-          <a href="#contacto">Contacto</a>
-          <Link href="/catalogo" className="ml-auto text-blue-700 hover:text-blue-800 font-medium transition-colors">Catálogo</Link>
-          <Link href="/login" className="flex items-center gap-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-yellow-500 transition-colors font-medium shadow">
+      {/* Barra de navegación - Futurista */}
+      <nav className="bg-white/5 backdrop-blur-xl border-b border-white/10 mt-16">
+        <div className="container mx-auto flex items-center gap-6 py-3 px-4">
+          <button className="text-lg text-white/70 hover:text-cyan-400 transition-colors">☰</button>
+          <a href="#inicio" className="font-bold text-cyan-400 hover:text-cyan-300 transition-colors">Inicio</a>
+          <a href="#servicios" className="text-white/70 hover:text-cyan-400 transition-colors font-medium">Servicios</a>
+          <a href="#productos" className="text-white/70 hover:text-cyan-400 transition-colors">Productos</a>
+          <a href="#nosotros" className="text-white/70 hover:text-cyan-400 transition-colors">Nosotros</a>
+          <a href="#testimonios" className="text-white/70 hover:text-cyan-400 transition-colors">Testimonios</a>
+          <a href="#contacto" className="text-white/70 hover:text-cyan-400 transition-colors">Contacto</a>
+          <Link href="/catalogo" className="ml-auto text-cyan-400 hover:text-cyan-300 font-medium transition-colors">Catálogo</Link>
+          <Link href="/login" className="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
             <span role="img" aria-label="Login">🔑</span> Login
           </Link>
         </div>
       </nav>
 
-      {/* Hero Section - Responsive */}
-      <section id="inicio" className="relative flex flex-col items-center justify-center flex-1 min-h-[50vh] sm:min-h-[55vh] py-8 sm:py-16 bg-gradient-to-br from-blue-900 via-blue-600 to-blue-200 text-center fade-in opacity-0 translate-y-8 transition-all duration-700 overflow-hidden">
-        {/* Imagen de fondo opcional, solo superpone con opacidad */}
-        <img src="/circuloazulbannerfondo.png" alt="Banner IT360" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" style={{ opacity: 0.32 }} onError={e => { e.currentTarget.style.display = 'none'; }} />
-        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 px-4" style={{ fontFamily: 'Poppins, Montserrat, Arial, sans-serif', letterSpacing: '-1px', color: '#fff', textShadow: '0 2px 16px #1a237e99' }}>
-            Bienvenido a IT360 Soluciones
+      {/* Hero Section - Futurista */}
+      <section id="inicio" className="relative flex flex-col items-center justify-center flex-1 min-h-[60vh] py-16 px-4 text-center fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6">
+            <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
+            <span className="text-sm text-white/80">Tecnología del Futuro</span>
+          </div>
+          
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 px-4 leading-tight">
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+              Bienvenido a IT360 Soluciones
+            </span>
           </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 max-w-2xl font-medium px-4" style={{ fontFamily: 'Poppins, Montserrat, Arial, sans-serif', color: '#e3e8f7', textShadow: '0 1px 8px #1a237e88' }}>
-            Soluciones tecnológicas integrales para tu empresa. Innovación, soporte y desarrollo a tu alcance.
+          
+          <p className="text-lg sm:text-xl md:text-2xl mb-8 max-w-3xl font-medium px-4 text-white/80 leading-relaxed">
+            Soluciones tecnológicas integrales para tu empresa. 
+            <span className="text-cyan-400 font-semibold"> Innovación, soporte y desarrollo</span> a tu alcance.
           </p>
-          <a href="#contacto" className="px-6 sm:px-8 py-3 bg-blue-700 text-white rounded-full font-semibold shadow hover:bg-blue-800 transition-colors text-sm sm:text-base">Contáctanos</a>
-        </div>
-      </section>
-
-      {/* Pasarela de tecnologías - Responsive */}
-      <section className="py-6 sm:py-8 bg-white fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 lg:gap-10 overflow-x-auto">
-            {/* Next.js */}
-            <svg width="80" height="30" viewBox="0 0 120 40" fill="none" className="sm:w-[120px] sm:h-[40px]"><text x="0" y="32" fontSize="40" fontWeight="bold" fill="#000">NEXT</text><text x="90" y="36" fontSize="16" fill="#000">.Js</text></svg>
-            {/* React */}
-            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><g><ellipse cx="16" cy="16" rx="14" ry="6" stroke="#61DAFB" strokeWidth="2" fill="none"/><ellipse cx="16" cy="16" rx="6" ry="14" stroke="#61DAFB" strokeWidth="2" fill="none"/><circle cx="16" cy="16" r="2.5" fill="#61DAFB"/></g></svg>
-            {/* React Native */}
-            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><g><ellipse cx="16" cy="16" rx="14" ry="6" stroke="#00D8FF" strokeWidth="2" fill="none"/><ellipse cx="16" cy="16" rx="6" ry="14" stroke="#00D8FF" strokeWidth="2" fill="none"/><circle cx="16" cy="16" r="2.5" fill="#00D8FF"/></g></svg>
-            {/* Node.js */}
-            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><polygon points="16,2 30,9 30,23 16,30 2,23 2,9" fill="#8CC84B"/><text x="8" y="22" fontSize="12" fill="#fff">Node</text></svg>
-            {/* PostgreSQL */}
-            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><ellipse cx="16" cy="16" rx="14" ry="14" fill="#336791"/><text x="7" y="22" fontSize="12" fill="#fff">PGSQL</text></svg>
-            {/* Tailwind */}
-            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><path d="M8 20c0-6 8-6 8 0s8 6 8 0" stroke="#38BDF8" strokeWidth="2" fill="none"/><path d="M8 12c0-6 8-6 8 0s8 6 8 0" stroke="#38BDF8" strokeWidth="2" fill="none"/></svg>
-            {/* Prisma */}
-            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><polygon points="16,2 30,30 2,30" fill="#0C344B"/><text x="8" y="24" fontSize="12" fill="#fff">Prisma</text></svg>
-            {/* TypeScript */}
-            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><rect width="32" height="32" rx="6" fill="#3178C6"/><text x="4" y="22" fontSize="16" fill="#fff">TS</text></svg>
-            {/* Docker */}
-            <svg width="36" height="36" viewBox="0 0 32 32" className="sm:w-12 sm:h-12"><rect width="32" height="32" rx="6" fill="#2496ED"/><text x="4" y="22" fontSize="16" fill="#fff">🐳</text></svg>
-            {/* Extra: file.svg */}
-            <img src="/file.svg" alt="File" className="h-8 sm:h-12 w-auto" />
-            {/* Extra: globe.svg */}
-            <img src="/globe.svg" alt="Globe" className="h-8 sm:h-12 w-auto" />
-            {/* Extra: window.svg */}
-            <img src="/window.svg" alt="Window" className="h-8 sm:h-12 w-auto" />
-            {/* Extra: vercel.svg */}
-            <img src="/vercel.svg" alt="Vercel" className="h-8 sm:h-12 w-auto" />
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            <a href="#contacto" className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 text-lg transform hover:scale-105">
+              Contáctanos
+            </a>
+            <a href="#servicios" className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-full font-semibold border border-white/20 hover:bg-white/20 transition-all duration-300 text-lg">
+              Ver Servicios
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Servicios con modal expandible - Responsive */}
-      <section id="servicios" className="max-w-7xl mx-auto py-12 sm:py-16 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8 sm:mb-10">Nuestros Servicios</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {/* Pasarela de tecnologías - Futurista */}
+      <section className="py-12 bg-white/5 backdrop-blur-sm fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-12 overflow-x-auto">
+            {/* Next.js */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <svg width="32" height="32" viewBox="0 0 120 40" fill="none" className="text-white">
+                <text x="0" y="32" fontSize="32" fontWeight="bold" fill="currentColor">NEXT</text>
+                <text x="72" y="36" fontSize="12" fill="currentColor">.Js</text>
+              </svg>
+            </div>
+            
+            {/* React */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <svg width="32" height="32" viewBox="0 0 32 32" className="text-cyan-400">
+                <g>
+                  <ellipse cx="16" cy="16" rx="14" ry="6" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  <ellipse cx="16" cy="16" rx="6" ry="14" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  <circle cx="16" cy="16" r="2.5" fill="currentColor"/>
+                </g>
+              </svg>
+              <span className="text-white font-medium">React</span>
+            </div>
+            
+            {/* Node.js */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <svg width="32" height="32" viewBox="0 0 32 32" className="text-green-400">
+                <polygon points="16,2 30,9 30,23 16,30 2,23 2,9" fill="currentColor"/>
+                <text x="8" y="22" fontSize="10" fill="white">Node</text>
+              </svg>
+              <span className="text-white font-medium">Node.js</span>
+            </div>
+            
+            {/* PostgreSQL */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <svg width="32" height="32" viewBox="0 0 32 32" className="text-blue-400">
+                <ellipse cx="16" cy="16" rx="14" ry="14" fill="currentColor"/>
+                <text x="7" y="22" fontSize="10" fill="white">PGSQL</text>
+              </svg>
+              <span className="text-white font-medium">PostgreSQL</span>
+            </div>
+            
+            {/* TypeScript */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <svg width="32" height="32" viewBox="0 0 32 32" className="text-blue-500">
+                <rect width="32" height="32" rx="6" fill="currentColor"/>
+                <text x="4" y="22" fontSize="14" fill="white">TS</text>
+              </svg>
+              <span className="text-white font-medium">TypeScript</span>
+            </div>
+            
+            {/* Docker */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <svg width="32" height="32" viewBox="0 0 32 32" className="text-blue-400">
+                <rect width="32" height="32" rx="6" fill="currentColor"/>
+                <text x="4" y="22" fontSize="16" fill="white">🐳</text>
+              </svg>
+              <span className="text-white font-medium">Docker</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Servicios con modal expandible - Futurista */}
+      <section id="servicios" className="max-w-7xl mx-auto py-16 px-4 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Nuestros <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Servicios</span>
+          </h2>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            Soluciones tecnológicas integrales para impulsar tu negocio hacia el futuro digital
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {Array.isArray(services) && services.map((serv, i) => (
-            <a
-              key={serv.id}
-              href="/contacto"
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              <div
-                className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
-              >
-                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <img src={serv.image || '/servicio-software.png'} alt={serv.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain" />
+            <div key={serv.id || i} className="group relative">
+              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 transform hover:scale-105">
+                <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl text-white">💻</span>
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-800">{serv.name}</h3>
-                <p className="text-gray-600 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">{serv.description}</p>
+                
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
+                  {serv.name || 'Servicio'}
+                </h3>
+                
+                <p className="text-white/70 mb-4 leading-relaxed">
+                  {serv.description || 'Descripción del servicio'}
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-cyan-400">
+                    ${serv.price || '0'}
+                  </span>
+                  <button 
+                    onClick={() => handleOpenService(i)}
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium"
+                  >
+                    Saber más
+                  </button>
+                </div>
               </div>
-            </a>
+            </div>
           ))}
         </div>
-        {/* Modal de servicio expandido */}
-        {openService !== null && (
-          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={() => setOpenService(null)}>
-            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative animate-fadeIn" onClick={e => e.stopPropagation()}>
-              <button onClick={() => setOpenService(null)} className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
-              <img src={servicios[openService].imagen} alt={servicios[openService].nombre} className="w-60 h-60 object-contain mx-auto mb-6 rounded-xl shadow" />
-              <h3 className="text-2xl font-bold text-blue-800 mb-4">{servicios[openService].nombre}</h3>
-              <p className="text-gray-700 text-lg mb-2">{servicios[openService].descripcionLarga}</p>
-              <button
-                onClick={e => { e.stopPropagation(); window.location.href = '/contacto'; }}
-                className="w-full bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium mt-4"
-              >
-                Solicitar cotización
-              </button>
-            </div>
-          </div>
-        )}
       </section>
 
-      {/* Productos con modal expandible - Responsive */}
-      <section id="productos" className="bg-blue-50 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8 sm:mb-10">Nuestros Productos</h2>
-          {loadingProducts ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto mb-4"></div>
-              <p className="text-gray-600">Cargando productos...</p>
-            </div>
-          ) : products.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">No hay productos disponibles en este momento.</p>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                {products.map((prod: any, i: number) => (
-                  <div
-                    key={prod.id}
-                    className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 text-center hover:scale-105 transition-all duration-300 overflow-hidden group cursor-pointer"
-                    onClick={() => setOpenProduct(i)}
-                  >
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <img src={prod.imagen} alt={prod.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain" />
-                    </div>
-                    <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-800">{prod.name}</h3>
-                    <p className="text-gray-600 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">{prod.description}</p>
-                    <div className="text-xl sm:text-2xl font-bold text-blue-700 mb-3 sm:mb-4">${prod.price.toLocaleString()}</div>
-                    <div className="text-sm text-gray-500 mb-3 sm:mb-4">Stock: {prod.stock}</div>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const stored = localStorage.getItem("carrito");
-                        let cart: any[] = stored ? JSON.parse(stored) : [];
-                        const existingItem = cart.find((item: any) => item.id === prod.id);
-                        if (existingItem) {
-                          existingItem.qty += 1;
-                        } else {
-                          cart.push({ ...prod, qty: 1, type: "product" });
-                        }
-                        localStorage.setItem("carrito", JSON.stringify(cart));
-                        setToast("¡Producto agregado al carrito!");
-                        setTimeout(() => setToast(""), 2000);
-                      }}
-                      className="w-full bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium"
-                    >
-                      Agregar al carrito
-                    </button>
-                  </div>
-                ))}
+      {/* Productos - Futurista */}
+      <section id="productos" className="max-w-7xl mx-auto py-16 px-4 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Nuestros <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Productos</span>
+          </h2>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            Tecnología de vanguardia para optimizar tu infraestructura empresarial
+          </p>
+        </div>
+        
+        {loadingProducts ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 animate-pulse">
+                <div className="w-full h-48 bg-white/10 rounded-lg mb-4"></div>
+                <div className="h-6 bg-white/10 rounded mb-2"></div>
+                <div className="h-4 bg-white/10 rounded mb-4"></div>
+                <div className="h-8 bg-white/10 rounded"></div>
               </div>
-              {/* Modal de producto expandido */}
-              {openProduct !== null && (
-                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                  <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative animate-fadeIn">
-                    <button onClick={() => setOpenProduct(null)} className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
-                    <img src={products[openProduct].imagen} alt={products[openProduct].name} className="w-60 h-60 object-contain mx-auto mb-6 rounded-xl shadow" />
-                    <h3 className="text-2xl font-bold text-blue-800 mb-4">{products[openProduct].name}</h3>
-                    <p className="text-gray-700 text-lg mb-4">{products[openProduct].descripcionLarga}</p>
-                    <div className="text-3xl font-bold text-blue-700 mb-2">${products[openProduct].price.toLocaleString()}</div>
-                    <div className="text-sm text-gray-500 mb-4">Stock disponible: {products[openProduct].stock}</div>
-                    <div className="flex gap-3">
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product, i) => (
+              <div key={product.id || i} className="group relative">
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 transform hover:scale-105">
+                  <div className="relative h-48 bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                    <Image 
+                      src={product.imagen || '/servicio-productos.png'} 
+                      alt={product.name || 'Producto'} 
+                      fill 
+                      className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
+                      {product.name || 'Producto'}
+                    </h3>
+                    
+                    <p className="text-white/70 mb-4 leading-relaxed">
+                      {product.description || 'Descripción del producto'}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-cyan-400">
+                        ${product.price || '0'}
+                      </span>
                       <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const stored = localStorage.getItem("carrito");
-                          let cart: any[] = stored ? JSON.parse(stored) : [];
-                          const existingItem = cart.find((item: any) => item.id === products[openProduct].id);
-                          if (existingItem) {
-                            existingItem.qty += 1;
-                          } else {
-                            cart.push({ ...products[openProduct], qty: 1, type: "product" });
-                          }
-                          localStorage.setItem("carrito", JSON.stringify(cart));
-                          setToast("¡Producto agregado al carrito!");
-                          setTimeout(() => setToast(""), 2000);
-                        }}
-                        className="flex-1 bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition-colors font-medium"
+                        onClick={() => setOpenProduct(i)}
+                        className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium"
                       >
-                        Agregar al carrito
+                        Ver Detalles
                       </button>
-                      <Link 
-                        href="/catalogo" 
-                        className="flex-1 bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors text-center font-medium"
-                      >
-                        Ver catálogo
-                      </Link>
                     </div>
                   </div>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Nosotros - Responsive */}
@@ -425,6 +452,16 @@ export default function Home() {
         </div>
       )}
       <FooterNav />
+
+      {/* WhatsApp Float Button - Futurista */}
+      <a 
+        href="https://wa.me/+5491112345678" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 z-50"
+      >
+        <span className="text-2xl">��</span>
+      </a>
     </div>
   );
 }
