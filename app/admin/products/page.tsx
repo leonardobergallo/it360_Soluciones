@@ -128,121 +128,184 @@ export default function ProductsPage() {
 
   return (
     <AdminLayout>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">Gestión de Productos</h1>
-        <a href="/admin" className="px-4 py-2 bg-blue-700 text-white rounded-lg font-semibold flex items-center gap-2 shadow hover:bg-blue-800 transition-all">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 12l6-6M3 12l6 6" />
-          </svg>
-          Ir al dashboard
-        </a>
-      </div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Productos</h1>
-        <button
-          onClick={() => { 
-            setShowForm(true); 
-            setEditProduct(null); 
-            setForm({ name: '', description: '', price: '', stock: '' }); 
-          }}
-          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-        >
-          Nuevo Producto
-        </button>
-      </div>
-      {showForm && (
-        <form onSubmit={editProduct ? handleEditProduct : handleAddProduct} className="mb-8 space-y-4 max-w-md">
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nombre</label>
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+        {/* Efectos de fondo animados */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-blue-500/5 to-transparent"></div>
+        
+        <div className="relative z-10 p-8">
+          {/* Header con glassmorphism */}
+          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 mb-8 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  Gestión de Productos
+                </h1>
+                <p className="text-blue-200/80 mt-2">Administra el catálogo de productos de IT360</p>
+              </div>
+              <a 
+                href="/admin" 
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 12l6-6M3 12l6 6" />
+                </svg>
+                Ir al dashboard
+              </a>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Descripción</label>
-            <input
-              type="text"
-              name="description"
-              value={form.description}
-              onChange={e => setForm({ ...form, description: e.target.value })}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Precio</label>
-            <input
-              type="number"
-              name="price"
-              value={form.price}
-              onChange={e => setForm({ ...form, price: e.target.value })}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Stock</label>
-            <input
-              type="number"
-              name="stock"
-              value={form.stock}
-              onChange={e => setForm({ ...form, stock: e.target.value })}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
-          <div className="flex gap-2">
+
+          {/* Botón Nuevo Producto */}
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-white">Productos</h2>
             <button
-              type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-            >
-              {editProduct ? 'Actualizar' : 'Crear'}
-            </button>
-            <button
-              type="button"
               onClick={() => { 
-                setShowForm(false); 
+                setShowForm(true); 
                 setEditProduct(null); 
                 setForm({ name: '', description: '', price: '', stock: '' }); 
               }}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20 flex items-center gap-2"
             >
-              Cancelar
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Nuevo Producto
             </button>
           </div>
-        </form>
-      )}
-      <Table
-        data={products}
-        columns={[
-          { key: 'name', label: 'Nombre' },
-          { key: 'description', label: 'Descripción' },
-          { key: 'price', label: 'Precio' },
-          { key: 'stock', label: 'Stock' },
-        ]}
-        actions={(row) => (
-          <div className="flex gap-2">
-            <button
-              onClick={() => openEditForm(row)}
-              className="px-2 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 text-xs"
-            >
-              Editar
-            </button>
-            <button
-              onClick={() => handleDeleteProduct(row.id.toString())}
-              className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs"
-            >
-              Eliminar
-            </button>
+
+          {/* Formulario con glassmorphism */}
+          {showForm && (
+            <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 mb-8 shadow-2xl animate-fadeIn">
+              <h3 className="text-xl font-bold text-white mb-6">
+                {editProduct ? 'Editar Producto' : 'Crear Nuevo Producto'}
+              </h3>
+              <form onSubmit={editProduct ? handleEditProduct : handleAddProduct} className="space-y-6 max-w-2xl">
+                {error && (
+                  <div className="backdrop-blur-sm bg-red-500/20 border border-red-400/30 rounded-xl p-4 text-red-200">
+                    {error}
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-blue-200 mb-2">Nombre</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={form.name}
+                      onChange={e => setForm({ ...form, name: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+                      placeholder="Nombre del producto"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-blue-200 mb-2">Precio</label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={form.price}
+                      onChange={e => setForm({ ...form, price: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+                      placeholder="0.00"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-blue-200 mb-2">Descripción</label>
+                  <input
+                    type="text"
+                    name="description"
+                    value={form.description}
+                    onChange={e => setForm({ ...form, description: e.target.value })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+                    placeholder="Descripción del producto"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-blue-200 mb-2">Stock</label>
+                  <input
+                    type="number"
+                    name="stock"
+                    value={form.stock}
+                    onChange={e => setForm({ ...form, stock: e.target.value })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+                    placeholder="0"
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20 flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {editProduct ? 'Actualizar' : 'Crear'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { 
+                      setShowForm(false); 
+                      setEditProduct(null); 
+                      setForm({ name: '', description: '', price: '', stock: '' }); 
+                    }}
+                    className="px-8 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Tabla de productos */}
+          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-2xl overflow-hidden">
+            <Table
+              data={products}
+              columns={[
+                { key: 'name', label: 'Nombre' },
+                { key: 'description', label: 'Descripción' },
+                { key: 'price', label: 'Precio' },
+                { key: 'stock', label: 'Stock' },
+              ]}
+              actions={(row) => (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => openEditForm(row)}
+                    className="px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 text-xs font-medium backdrop-blur-sm border border-white/20"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDeleteProduct(row.id.toString())}
+                    className="px-3 py-1.5 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 text-xs font-medium backdrop-blur-sm border border-white/20"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              )}
+            />
           </div>
-        )}
-      />
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out;
+        }
+      `}</style>
     </AdminLayout>
   );
 } 

@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const handleNav = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex">
       {/* Sidebar responsive */}
       {/* Overlay para móvil */}
       {sidebarOpen && (
@@ -59,27 +59,27 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </aside>
       {/* Main content con header superior */}
       <main className="flex-1 p-0 flex flex-col min-h-screen pb-16">
-        <header className="bg-white shadow flex items-center justify-between px-4 md:px-8 py-4 border-b relative">
+        <header className="backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-lg flex items-center justify-between px-4 md:px-8 py-4 relative z-20">
           <div className="flex items-center gap-3">
             {/* Botón hamburguesa solo en móvil */}
-            <button className="md:hidden mr-2 p-2 rounded hover:bg-blue-100 focus:outline-none" onClick={() => setSidebarOpen(true)} aria-label="Abrir menú">
-              <svg className="w-7 h-7 text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button className="md:hidden mr-2 p-2 rounded-lg hover:bg-white/10 focus:outline-none transition-colors" onClick={() => setSidebarOpen(true)} aria-label="Abrir menú">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <Image src="/icono.png" alt="IT360 Logo" width={36} height={36} className="rounded" />
-            <span className="text-lg font-bold text-blue-800">IT360 Soluciones</span>
-            <span className="text-sm text-gray-400 ml-2">
+            <span className="text-lg font-bold text-white">IT360 Soluciones</span>
+            <span className="text-sm text-blue-200 ml-2">
               {userRole === 'TECNICO' ? 'Panel Técnico' : 'Panel de Administración'}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-blue-700 hover:underline">Ir al sitio</Link>
-            <Link href="/catalogo" className="text-blue-700 hover:underline">Catálogo</Link>
-            <Link href="/carrito" className="text-blue-700 hover:underline">Carrito</Link>
+            <Link href="/" className="text-blue-200 hover:text-white transition-colors">Ir al sitio</Link>
+            <Link href="/catalogo" className="text-blue-200 hover:text-white transition-colors">Catálogo</Link>
+            <Link href="/carrito" className="text-blue-200 hover:text-white transition-colors">Carrito</Link>
           </div>
         </header>
-        <div className="flex-1 p-8">
+        <div className="flex-1">
           {children}
         </div>
         {/* FooterNav: navegación inferior homogénea para admin y usuarios */}

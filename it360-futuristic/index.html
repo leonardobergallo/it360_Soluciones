@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT360 Soluciones - Tecnología del Futuro</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Animated background elements -->
+    <div class="bg-animation">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <img src="/placeholder.svg?height=40&width=40" alt="IT360 Logo" class="brand-logo">
+                    <span class="brand-text">IT360 Soluciones</span>
+                </div>
+
+                <div class="nav-menu" id="nav-menu">
+                    <a href="#inicio" class="nav-link">Inicio</a>
+                    <a href="#servicios" class="nav-link">Servicios</a>
+                    <a href="#productos" class="nav-link">Productos</a>
+                    <a href="#nosotros" class="nav-link">Nosotros</a>
+                    <a href="#testimonios" class="nav-link">Testimonios</a>
+                    <a href="#contacto" class="nav-link">Contacto</a>
+                    
+                    <div class="nav-actions-desktop">
+                        <a href="#" class="nav-action-link"><i class="fas fa-user"></i> Mi cuenta</a>
+                        <a href="#productos" class="nav-action-link">Catálogo</a>
+                        <button class="login-btn">Login</button>
+                        <!-- Carrito -->
+                        <div class="cart-container">
+                            <button class="cart-btn" id="cart-btn">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="cart-count" id="cart-count">0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-toggle" id="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Bienvenido a IT360 Soluciones
+                </h1>
+                
+                <p class="hero-description">
+                    Soluciones tecnológicas integrales para tu empresa.
+                    Innovación, soporte y desarrollo a tu alcance.
+                </p>
+                
+                <div class="hero-actions">
+                    <button class="btn btn-primary">
+                        <span>Contáctanos</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Logos Section -->
+    <section class="tech-logos">
+        <div class="container">
+            <div class="logos-grid">
+                <img src="/placeholder.svg?height=40&width=80" alt="Next.js Logo" class="tech-logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="React Logo" class="tech-logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="Node.js Logo" class="tech-logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="PostgreSQL Logo" class="tech-logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="Prisma Logo" class="tech-logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="TypeScript Logo" class="tech-logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="Vercel Logo" class="tech-logo">
+                <img src="/placeholder.svg?height=40&width=40" alt="AWS Logo" class="tech-logo">
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="servicios" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Nuestros Servicios</h2>
+                <p class="section-description">
+                    Soluciones tecnológicas integrales para impulsar tu negocio hacia el futuro digital
+                </p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card" data-service="desarrollo">
+                    <div class="service-icon gradient-blue">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="service-title">Desarrollo Web</h3>
+                    <p class="service-description">
+                        Aplicaciones web modernas con React, Next.js y tecnologías de vanguardia
+                    </p>
+                    <div class="service-link">
+                        <span>Saber más</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card" data-service="mobile">
+                    <div class="service-icon gradient-purple">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="service-title">Apps Móviles</h3>
+                    <p class="service-description">
+                        Desarrollo nativo y multiplataforma para iOS y Android
+                    </p>
+                    <div class="service-link">
+                        <span>Saber más</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card" data-service="cloud">
+                    <div class="service-icon gradient-green">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3 class="service-title">Cloud Computing</h3>
+                    <p class="service-description">
+                        Migración y gestión de infraestructura en la nube (AWS, Azure, GCP)
+                    </p>
+                    <div class="service-link">
+                        <span>Saber más</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card" data-service="security">
+                    <div class="service-icon gradient-red">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="service-title">Ciberseguridad</h3>
+                    <p class="service-description">
+                        Protección integral de datos y sistemas empresariales
+                    </p>
+                    <div class="service-link">
+                        <span>Saber más</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card" data-service="data">
+                    <div class="service-icon gradient-indigo">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="service-title">Big Data & IA</h3>
+                    <p class="service-description">
+                        Análisis de datos e implementación de inteligencia artificial
+                    </p>
+                    <div class="service-link">
+                        <span>Saber más</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card" data-service="infrastructure">
+                    <div class="service-icon gradient-orange">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3 class="service-title">Infraestructura IT</h3>
+                    <p class="service-description">
+                        Diseño e implementación de redes y servidores empresariales
+                    </p>
+                    <div class="service-link">
+                        <span>Saber más</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="productos" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Nuestros Productos</h2>
+                <p class="section-description">
+                    Soluciones tecnológicas listas para implementar en tu empresa
+                </p>
+            </div>
+
+            <div class="products-grid" id="products-grid">
+                <!-- Los productos se cargarán dinámicamente desde JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-overlay" id="cart-overlay"></div>
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Carrito de Compras</h3>
+                <button class="cart-close" id="cart-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="cart-body" id="cart-body">
+                <div class="cart-empty" id="cart-empty">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Tu carrito está vacío</p>
+                </div>
+                
+                <div class="cart-items" id="cart-items">
+                    <!-- Items del carrito se cargarán aquí -->
+                </div>
+            </div>
+            
+            <div class="cart-footer" id="cart-footer">
+                <div class="cart-total">
+                    <span>Total: $<span id="cart-total">0</span></span>
+                </div>
+                <div class="cart-actions">
+                    <button class="btn btn-secondary" id="clear-cart">Vaciar</button>
+                    <button class="btn btn-primary" id="checkout">Finalizar Compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="nosotros" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <div class="section-badge">
+                        <span>Sobre IT360</span>
+                    </div>
+                    
+                    <h2 class="section-title">Innovación y Excelencia Tecnológica</h2>
+                    
+                    <p class="about-description">
+                        Con más de 10 años de experiencia, somos líderes en transformación digital. 
+                        Nuestro equipo de expertos combina creatividad y tecnología para entregar 
+                        soluciones que superan expectativas.
+                    </p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Proyectos Completados</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">98%</div>
+                            <div class="stat-label">Satisfacción Cliente</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary">Conocer Equipo</button>
+                </div>
+                
+                <div class="about-visual">
+                    <div class="tech-grid">
+                        <div class="tech-item"><i class="fas fa-desktop"></i></div>
+                        <div class="tech-item"><i class="fas fa-wifi"></i></div>
+                        <div class="tech-item"><i class="fas fa-lock"></i></div>
+                        <div class="tech-item"><i class="fas fa-bolt"></i></div>
+                        <div class="tech-item"><i class="fas fa-globe"></i></div>
+                        <div class="tech-item"><i class="fas fa-database"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contacto" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Contactanos</h2>
+                <p class="section-description">
+                    ¿Listo para transformar tu negocio? Hablemos de tu próximo proyecto
+                </p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon gradient-blue">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email</h3>
+                    <p>info@it360.com.ar</p>
+                    <p>ventas@it360.com.ar</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon gradient-purple">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h3>Teléfono</h3>
+                    <p>+54 11 4000-0000</p>
+                    <p>Lun - Vie: 9:00 - 18:00</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon gradient-green">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Ubicación</h3>
+                    <p>Buenos Aires, Argentina</p>
+                    <p>Microcentro</p>
+                </div>
+            </div>
+
+            <div class="contact-cta">
+                <button class="btn btn-primary btn-large">
+                    <span>Solicitar Consulta Gratuita</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <span class="brand-text">IT360</span>
+                    <p>Transformando negocios con tecnología de vanguardia desde 2014.</p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Servicios</h4>
+                        <ul>
+                            <li><a href="#">Desarrollo Web</a></li>
+                            <li><a href="#">Apps Móviles</a></li>
+                            <li><a href="#">Cloud Computing</a></li>
+                            <li><a href="#">Ciberseguridad</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Empresa</h4>
+                        <ul>
+                            <li><a href="#">Sobre Nosotros</a></li>
+                            <li><a href="#">Portfolio</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Blog</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Contacto</h4>
+                        <ul>
+                            <li>Buenos Aires, Argentina</li>
+                            <li>+54 11 4000-0000</li>
+                            <li>info@it360.com.ar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 IT360. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/TUNUMERODEWHATSAPP" target="_blank" class="whatsapp-float">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

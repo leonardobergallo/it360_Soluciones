@@ -20,24 +20,32 @@ export default function FooterNav() {
     router.push("/login");
   };
   return (
-    <footer className="fixed bottom-0 left-0 w-full bg-white border-t shadow-lg flex justify-around items-center py-2 z-50">
-      <Link href="/catalogo" className="flex flex-col items-center text-gray-700 hover:text-blue-700 text-sm">
-        <span role="img" aria-label="Catálogo" className="text-2xl">🛒</span>
-        Catálogo
+    <footer className="fixed bottom-0 left-0 w-full bg-white/10 backdrop-blur-xl border-t border-white/20 shadow-lg flex justify-around items-center py-3 z-50">
+      <Link href="/catalogo" className="flex flex-col items-center text-white/70 hover:text-cyan-400 text-sm transition-colors duration-300 group">
+        <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 flex items-center justify-center mb-1 group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">
+          <span role="img" aria-label="Catálogo" className="text-xl">🛒</span>
+        </div>
+        <span className="font-medium">Catálogo</span>
       </Link>
-      <Link href="/carrito" className="flex flex-col items-center text-gray-700 hover:text-blue-700 text-sm">
-        <span role="img" aria-label="Carrito" className="text-2xl">🛍️</span>
-        Carrito
+      <Link href="/carrito" className="flex flex-col items-center text-white/70 hover:text-cyan-400 text-sm transition-colors duration-300 group">
+        <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 flex items-center justify-center mb-1 group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">
+          <span role="img" aria-label="Carrito" className="text-xl">🛍️</span>
+        </div>
+        <span className="font-medium">Carrito</span>
       </Link>
       {!isLogged ? (
-        <Link href="/login" className="flex flex-col items-center text-gray-700 hover:text-blue-700 text-sm">
-          <span role="img" aria-label="Login" className="text-2xl">🔑</span>
-          Login
+        <Link href="/login" className="flex flex-col items-center text-white/70 hover:text-cyan-400 text-sm transition-colors duration-300 group">
+          <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-1 group-hover:from-cyan-600 group-hover:to-blue-600 group-hover:scale-110 transition-all duration-300">
+            <span role="img" aria-label="Login" className="text-xl">🔑</span>
+          </div>
+          <span className="font-medium">Login</span>
         </Link>
       ) : (
-        <button onClick={handleLogout} className="flex flex-col items-center text-gray-700 hover:text-red-600 text-sm focus:outline-none">
-          <span role="img" aria-label="Logout" className="text-2xl">🚪</span>
-          Logout
+        <button onClick={handleLogout} className="flex flex-col items-center text-white/70 hover:text-red-400 text-sm focus:outline-none transition-colors duration-300 group">
+          <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 flex items-center justify-center mb-1 group-hover:bg-red-500/20 group-hover:scale-110 transition-all duration-300">
+            <span role="img" aria-label="Logout" className="text-xl">🚪</span>
+          </div>
+          <span className="font-medium">Logout</span>
         </button>
       )}
     </footer>

@@ -139,19 +139,36 @@ export default function CatalogoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header con navegación */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Fondo futurista con animaciones */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-20"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-bounce"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+      </div>
+
+      {/* Header futurista con glassmorphism */}
+      <div className="relative z-10 backdrop-blur-md bg-white/10 border-b border-white/20 shadow-2xl">
+        <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src="/logo-it360.png" alt="IT360" className="w-10 h-10 rounded" />
-              <h1 className="text-2xl font-bold text-blue-700">Catálogo IT360</h1>
-            </div>
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-blue-700 hover:text-blue-800 transition-colors">← Volver al inicio</Link>
-              <a href="/carrito" className="relative text-blue-700 hover:text-blue-800 transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl blur-sm"></div>
+                <img src="/logo-it360.png" alt="IT360" className="relative w-12 h-12 rounded-xl" />
+              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                Catálogo IT360
+              </h1>
+            </div>
+            <div className="flex items-center gap-6">
+              <Link href="/" className="text-white/90 hover:text-cyan-400 transition-all duration-300 flex items-center gap-2 group">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full group-hover:animate-pulse"></div>
+                ← Volver al inicio
+              </Link>
+              <a href="/carrito" className="relative text-white/90 hover:text-cyan-400 transition-all duration-300 group">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <svg className="relative w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                 </svg>
               </a>
@@ -160,9 +177,11 @@ export default function CatalogoPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto py-12 px-4">
+      <div className="relative z-10 max-w-6xl mx-auto py-16 px-4">
+        {/* Toast futurista */}
         {toast && (
-          <div className="fixed top-6 right-6 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce flex items-center gap-2">
+          <div className="fixed top-6 right-6 backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 px-6 py-4 rounded-2xl shadow-2xl z-50 animate-bounce flex items-center gap-3">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
@@ -171,29 +190,54 @@ export default function CatalogoPage() {
         )}
 
         {/* Sección Productos */}
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-blue-800 mb-4">Nuestros Productos</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Descubre nuestra línea de productos tecnológicos de alta calidad diseñados para impulsar tu negocio</p>
+        <div className="mb-20">
+          <div className="text-center mb-16">
+            <div className="inline-block mb-6 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-lg opacity-50"></div>
+              <h2 className="relative text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-4">
+                Nuestros Productos
+              </h2>
+            </div>
+            <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
+              Descubre nuestra línea de productos tecnológicos de alta calidad diseñados para impulsar tu negocio hacia el futuro
+            </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {products.map(p => (
-              <div key={p.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden cursor-pointer" onClick={() => setSelectedProduct(p)}>
-                <div className="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center p-6">
-                  <img src={p.image} alt={p.name} className="w-32 h-32 object-contain" />
+            {products.map((p, index) => (
+              <div 
+                key={p.id} 
+                className="group backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl hover:shadow-cyan-500/25 transition-all duration-500 transform hover:-translate-y-4 overflow-hidden cursor-pointer relative"
+                onClick={() => setSelectedProduct(p)}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {/* Efecto de brillo en hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/20 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative h-56 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center p-8 backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-blue-500/10 rounded-t-3xl"></div>
+                  <img src={p.image} alt={p.name} className="relative w-32 h-32 object-contain group-hover:scale-110 transition-transform duration-500" />
                 </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-xl mb-2 text-gray-800">{p.name}</h3>
-                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">{p.description}</p>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-bold text-2xl text-blue-700">${p.price.toLocaleString()}</span>
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Disponible</span>
+                <div className="relative p-8">
+                  <h3 className="font-bold text-2xl mb-3 text-white group-hover:text-cyan-400 transition-colors duration-300">
+                    {p.name}
+                  </h3>
+                  <p className="text-white/70 mb-6 text-sm leading-relaxed">
+                    {p.description}
+                  </p>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="font-bold text-3xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                      ${p.price.toLocaleString()}
+                    </span>
+                    <span className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 text-xs px-3 py-1 rounded-full font-medium">
+                      Disponible
+                    </span>
                   </div>
                   <button 
                     onClick={e => { e.stopPropagation(); addToCart(p); }} 
-                    className="w-full bg-blue-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:bg-blue-800 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                    className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 group/btn"
                   >
+                    <div className="w-2 h-2 bg-white rounded-full group-hover/btn:animate-pulse"></div>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                     </svg>
@@ -207,27 +251,51 @@ export default function CatalogoPage() {
 
         {/* Sección Servicios */}
         <div>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-blue-800 mb-4">Nuestros Servicios</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Soluciones profesionales y personalizadas para todas tus necesidades tecnológicas</p>
+          <div className="text-center mb-16">
+            <div className="inline-block mb-6 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full blur-lg opacity-50"></div>
+              <h2 className="relative text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent mb-4">
+                Nuestros Servicios
+              </h2>
+            </div>
+            <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
+              Soluciones profesionales y personalizadas para todas tus necesidades tecnológicas del futuro
+            </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {services.map(s => (
-              <div key={s.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
-                <div className="h-48 bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center p-6">
-                  <img src={s.image} alt={s.name} className="w-32 h-32 object-contain" />
+            {services.map((s, index) => (
+              <div 
+                key={s.id} 
+                className="group backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-500 transform hover:scale-105 overflow-hidden relative"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {/* Efecto de brillo en hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-purple-400/20 to-purple-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative h-56 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center p-8 backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-pink-500/10 rounded-t-3xl"></div>
+                  <img src={s.image} alt={s.name} className="relative w-32 h-32 object-contain group-hover:scale-110 transition-transform duration-500" />
                 </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-xl mb-2 text-gray-800">{s.name}</h3>
-                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">{s.description}</p>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-bold text-2xl text-indigo-700">${s.price.toLocaleString()}</span>
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">Servicio</span>
+                <div className="relative p-8">
+                  <h3 className="font-bold text-2xl mb-3 text-white group-hover:text-purple-400 transition-colors duration-300">
+                    {s.name}
+                  </h3>
+                  <p className="text-white/70 mb-6 text-sm leading-relaxed">
+                    {s.description}
+                  </p>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="font-bold text-3xl bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+                      ${s.price.toLocaleString()}
+                    </span>
+                    <span className="backdrop-blur-md bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs px-3 py-1 rounded-full font-medium">
+                      Servicio
+                    </span>
                   </div>
                   <button 
                     onClick={() => window.location.href = '/contacto'} 
-                    className="w-full bg-indigo-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:bg-indigo-800 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                    className="w-full backdrop-blur-md bg-gradient-to-r from-purple-500 to-pink-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 group/btn"
                   >
+                    <div className="w-2 h-2 bg-white rounded-full group-hover/btn:animate-pulse"></div>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12H8m0 0l4-4m-4 4l4 4" />
                     </svg>
@@ -240,24 +308,37 @@ export default function CatalogoPage() {
         </div>
       </div>
 
-      {/* Modal de detalle de producto */}
+      {/* Modal futurista de detalle de producto */}
       {selectedProduct && selectedProduct.type === 'product' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" onClick={() => setSelectedProduct(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fadeIn" onClick={e => e.stopPropagation()}>
-            <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold" onClick={() => setSelectedProduct(null)} aria-label="Cerrar modal">&times;</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/50" onClick={() => setSelectedProduct(null)}>
+          <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl max-w-md w-full p-8 relative animate-fadeIn" onClick={e => e.stopPropagation()}>
+            <button className="absolute top-4 right-4 text-white/60 hover:text-cyan-400 text-2xl font-bold transition-colors duration-300" onClick={() => setSelectedProduct(null)} aria-label="Cerrar modal">&times;</button>
             <div className="flex flex-col items-center">
-              <img src={selectedProduct.image} alt={selectedProduct.name} className="w-40 h-40 object-contain mb-6" />
-              <h2 className="text-2xl font-bold text-blue-800 mb-2">{selectedProduct.name}</h2>
-              <p className="text-gray-700 mb-4 text-center">{selectedProduct.description}</p>
-              <div className="text-3xl font-bold text-blue-700 mb-2">${selectedProduct.price.toLocaleString()}</div>
+              <div className="relative mb-8">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-lg opacity-50"></div>
+                <img src={selectedProduct.image} alt={selectedProduct.name} className="relative w-40 h-40 object-contain" />
+              </div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4 text-center">
+                {selectedProduct.name}
+              </h2>
+              <p className="text-white/70 mb-6 text-center leading-relaxed">
+                {selectedProduct.description}
+              </p>
+              <div className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-6">
+                ${selectedProduct.price.toLocaleString()}
+              </div>
               <button
                 onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
-                className="w-full bg-blue-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:bg-blue-800 transition-all duration-300 mt-4"
-              >Agregar al carrito</button>
+                className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 mb-4"
+              >
+                Agregar al carrito
+              </button>
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="w-full mt-2 bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300"
-              >Ver catálogo</button>
+                className="w-full backdrop-blur-md bg-white/10 border border-white/20 text-white/90 py-4 rounded-2xl font-semibold hover:bg-white/20 transition-all duration-300"
+              >
+                Ver catálogo
+              </button>
             </div>
           </div>
         </div>
