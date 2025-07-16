@@ -313,14 +313,14 @@ export default function Home() {
             <a href="#contacto" className="text-white/80 hover:text-cyan-300 transition-colors text-base px-3 py-2 rounded-lg hover:bg-white/10">Contacto</a>
           </div>
 
-          {/* Mobile Menu Button - Uniforme */}
+          {/* Mobile Menu - Menú hamburguesa completo */}
           <div className="md:hidden flex items-center justify-between py-4">
-            <div className="flex items-center gap-6">
-              <a href="#inicio" className="font-bold text-cyan-300 hover:text-cyan-200 transition-colors text-base px-2 py-2 rounded-lg hover:bg-white/10">Inicio</a>
-              <a href="#servicios" className="text-white/80 hover:text-cyan-300 transition-colors font-medium text-base px-2 py-2 rounded-lg hover:bg-white/10">Servicios</a>
-              <a href="#productos" className="text-white/80 hover:text-cyan-300 transition-colors text-base px-2 py-2 rounded-lg hover:bg-white/10">Productos</a>
+            {/* Logo o título en móvil */}
+            <div className="flex items-center">
+              <span className="text-white font-bold text-lg">IT360</span>
             </div>
             
+            {/* Botón hamburguesa */}
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-white/80 hover:text-cyan-300 transition-colors p-3 rounded-lg hover:bg-white/10"
@@ -336,29 +336,56 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Mobile Menu Dropdown - Uniforme */}
+          {/* Mobile Menu Dropdown - Menú completo desplegable */}
           {isMobileMenuOpen && (
             <div className="md:hidden bg-slate-700/95 backdrop-blur-xl border-t border-white/20 py-4">
               <div className="flex flex-col gap-3 px-6">
                 <a 
-                  href="#nosotros" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-2 px-3 rounded-lg hover:bg-white/10 border-b border-white/10"
+                  href="#inicio" 
+                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
+                  <span className="text-cyan-400">🏠</span>
+                  Inicio
+                </a>
+                <a 
+                  href="#servicios" 
+                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span className="text-cyan-400">🔧</span>
+                  Servicios
+                </a>
+                <a 
+                  href="#productos" 
+                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span className="text-cyan-400">📦</span>
+                  Productos
+                </a>
+                <a 
+                  href="#nosotros" 
+                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span className="text-cyan-400">👥</span>
                   Nosotros
                 </a>
                 <a 
                   href="#testimonios" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-2 px-3 rounded-lg hover:bg-white/10 border-b border-white/10"
+                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
+                  <span className="text-cyan-400">⭐</span>
                   Testimonios
                 </a>
                 <a 
                   href="#contacto" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-2 px-3 rounded-lg hover:bg-white/10"
+                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
+                  <span className="text-cyan-400">📞</span>
                   Contacto
                 </a>
               </div>
