@@ -5,7 +5,7 @@ export default function WhatsAppButton() {
     const message = encodeURIComponent(
       "¡Hola! Me interesan los servicios de IT360 Soluciones. ¿Podrían ayudarme?"
     );
-    const phone = "5491123456789"; // Número de WhatsApp de IT360
+    const phone = "5493425089906"; // Número de WhatsApp de IT360 - Santa Fe, Argentina
     const url = `https://wa.me/${phone}?text=${message}`;
     window.open(url, '_blank');
   };

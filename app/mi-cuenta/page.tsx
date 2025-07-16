@@ -16,7 +16,7 @@ export default function MiCuentaPage() {
             </div>
             <h2 className="text-xl font-bold mb-2">Mis datos</h2>
             <p className="text-gray-700 mb-2">Editá tus datos personales, direcciones y contraseña.</p>
-            <Link href="#" className="text-blue-600 hover:underline text-sm opacity-50 cursor-not-allowed">Ir a Mis datos (próximamente)</Link>
+            <Link href="/mi-cuenta/mis-datos" className="text-blue-600 hover:underline text-sm">Ir a Mis datos</Link>
           </div>
           {/* Mis compras */}
           <div className="bg-white rounded-xl shadow p-6 flex flex-col items-start">
@@ -38,7 +38,7 @@ export default function MiCuentaPage() {
             </div>
             <h2 className="text-xl font-bold mb-2">Centro de ayuda</h2>
             <p className="text-gray-700 mb-2">Realizá consultas y reclamos. Contactanos para poder ayudarte.</p>
-            <Link href="#" className="text-blue-600 hover:underline text-sm opacity-50 cursor-not-allowed">Ir al Centro de ayuda (próximamente)</Link>
+            <Link href="/mi-cuenta/centro-ayuda" className="text-blue-600 hover:underline text-sm">Ir al Centro de ayuda</Link>
           </div>
         </div>
       </div>

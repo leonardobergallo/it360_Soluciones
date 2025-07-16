@@ -1,40 +1,34 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    // Intentar conectar a la base de datos
+    // Test database connection
     await prisma.$connect();
     
-    // Hacer una consulta simple
-    const userCount = await prisma.user.count();
+    // Test basic queries
     const productCount = await prisma.product.count();
     const serviceCount = await prisma.service.count();
+    const userCount = await prisma.user.count();
     
     return NextResponse.json({
       success: true,
-      message: 'Conexión a la base de datos exitosa',
-      data: {
-        users: userCount,
+      message: 'Database connection successful',
+      counts: {
         products: productCount,
         services: serviceCount,
-        database: 'PostgreSQL (Neon)',
-        timestamp: new Date().toISOString()
-      }
+        users: userCount
+      },
+      timestamp: new Date().toISOString()
     });
-    
   } catch (error) {
-    console.error('Error conectando a la base de datos:', error);
+    console.error('Database test error:', error);
     
     return NextResponse.json({
       success: false,
-      message: 'Error conectando a la base de datos',
-      error: error instanceof Error ? error.message : 'Error desconocido',
+      error: error instanceof Error ? error.message : 'Unknown database error',
       timestamp: new Date().toISOString()
     }, { status: 500 });
-    
   } finally {
     await prisma.$disconnect();
   }
