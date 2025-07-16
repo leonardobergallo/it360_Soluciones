@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import mercadopago from 'mercadopago';
+// import { PrismaClient } from '@prisma/client';
+// import mercadopago from 'mercadopago';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
-// Configurar MercadoPago
-if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
-  mercadopago.configure({
-    access_token: process.env.MERCADOPAGO_ACCESS_TOKEN
-  });
-}
+// Configurar MercadoPago - TEMPORALMENTE DESHABILITADO
+// if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
+//   mercadopago.configure({
+//     access_token: process.env.MERCADOPAGO_ACCESS_TOKEN
+//   });
+// }
 
 export async function POST(request: NextRequest) {
   try {
@@ -116,23 +116,23 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
       }
 
-      // Guardar preferencia en base de datos para tracking
-      try {
-        await prisma.paymentPreference.create({
-          data: {
-            preferenceId: mpData.id,
-            userId: userId || null,
-            total,
-            status: 'pending',
-            items: JSON.stringify(items),
-            payerInfo: JSON.stringify({ nombre, email, telefono, direccion })
-          }
-        });
-        console.log('Preferencia guardada en base de datos');
-      } catch (dbError) {
-        console.error('Error guardando preferencia en DB:', dbError);
-        // No fallar si no se puede guardar en DB
-      }
+      // Guardar preferencia en base de datos para tracking - TEMPORALMENTE DESHABILITADO
+      // try {
+      //   await prisma.paymentPreference.create({
+      //     data: {
+      //       preferenceId: mpData.id,
+      //       userId: userId || null,
+      //       total,
+      //       status: 'pending',
+      //       items: JSON.stringify(items),
+      //       payerInfo: JSON.stringify({ nombre, email, telefono, direccion })
+      //     }
+      //   });
+      //   console.log('Preferencia guardada en base de datos');
+      // } catch (dbError) {
+      //   console.error('Error guardando preferencia en DB:', dbError);
+      //   // No fallar si no se puede guardar en DB
+      // }
 
       console.log('Proceso completado exitosamente');
       return NextResponse.json({ 
@@ -204,44 +204,43 @@ export async function GET(request: NextRequest) {
           const paymentData = await paymentRes.json();
           console.log('Datos del pago:', paymentData);
           
-          // Actualizar estado en base de datos
-          if (paymentData.status === 'approved') {
-            // Registrar venta exitosa
-            const preference = await prisma.paymentPreference.findFirst({
-              where: { preferenceId: paymentData.external_reference?.split('_')[1] }
-            });
-            
-            if (preference) {
-              const items = JSON.parse(preference.items);
-              const payerInfo = JSON.parse(preference.payerInfo);
-              
-              // Registrar ventas
-              for (const item of items) {
-                await prisma.sale.create({
-                  data: {
-                    userId: preference.userId,
-                    productId: item.product.id,
-                    amount: item.product.price * item.quantity,
-                    nombre: payerInfo.nombre,
-                    email: payerInfo.email,
-                    telefono: payerInfo.telefono,
-                    direccion: payerInfo.direccion,
-                    metodoPago: 'mercadopago',
-                    paymentId: paymentId,
-                    status: 'completed'
-                  }
-                });
-              }
-              
-              // Actualizar preferencia
-              await prisma.paymentPreference.update({
-                where: { id: preference.id },
-                data: { status: 'completed' }
-              });
-              
-              console.log('Venta registrada exitosamente');
-            }
-          }
+          // Actualizar estado en base de datos - TEMPORALMENTE DESHABILITADO
+          // if (paymentData.status === 'approved') {
+          //   // Registrar venta exitosa
+          //   const preference = await prisma.paymentPreference.findFirst({
+          //     where: { preferenceId: paymentData.external_reference?.split('_')[1] }
+          //   });
+          //   
+          //   if (preference) {
+          //     const items = JSON.parse(preference.items);
+          //     const payerInfo = JSON.parse(preference.payerInfo);
+          //     
+          //     // Registrar ventas
+          //     for (const item of items) {
+          //       await prisma.sale.create({
+          //         data: {
+          //           userId: preference.userId,
+          //           productId: item.product.id,
+          //           amount: item.product.price * item.quantity,
+          //           nombre: payerInfo.nombre,
+          //           email: payerInfo.email,
+          //           telefono: payerInfo.telefono,
+          //           direccion: payerInfo.direccion,
+          //           metodoPago: 'mercadopago',
+          //           paymentId: paymentId,
+          //           status: 'completed'
+          //         }
+          //       });
+          //   }
+          //   
+          //   // Actualizar preferencia
+          //   await prisma.paymentPreference.update({
+          //     where: { id: preference.id },
+          //     data: { status: 'completed' }
+          //   });
+          //   
+          //   console.log('Venta registrada exitosamente');
+          // }
         } else {
           console.error('Error obteniendo datos del pago:', paymentRes.status);
         }
