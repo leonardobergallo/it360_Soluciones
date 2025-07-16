@@ -5,47 +5,71 @@ import mercadopago from 'mercadopago';
 const prisma = new PrismaClient();
 
 // Configurar MercadoPago
-mercadopago.configure({
-  access_token: process.env.MERCADOPAGO_ACCESS_TOKEN || ''
-});
+if (process.env.MERCADOPAGO_ACCESS_TOKEN) {
+  mercadopago.configure({
+    access_token: process.env.MERCADOPAGO_ACCESS_TOKEN
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
     // Log para depuración
-    console.log('MERCADOPAGO_ACCESS_TOKEN:', process.env.MERCADOPAGO_ACCESS_TOKEN);
+    console.log('Iniciando proceso de Mercado Pago...');
+    console.log('MERCADOPAGO_ACCESS_TOKEN:', process.env.MERCADOPAGO_ACCESS_TOKEN ? 'Configurado' : 'NO CONFIGURADO');
+    
     const body = await request.json();
     const { items, nombre, email, telefono, direccion, userId } = body;
     
     // Validaciones
     if (!items || !Array.isArray(items) || items.length === 0) {
-      return NextResponse.json({ error: 'No hay items en el carrito' }, { status: 400 });
+      return NextResponse.json({ 
+        error: 'No hay items en el carrito',
+        success: false 
+      }, { status: 400 });
     }
+    
     if (!nombre || !email || !telefono || !direccion) {
-      return NextResponse.json({ error: 'Faltan datos del comprador' }, { status: 400 });
+      return NextResponse.json({ 
+        error: 'Faltan datos del comprador',
+        success: false 
+      }, { status: 400 });
     }
     
     const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
     if (!accessToken) {
-      return NextResponse.json({ error: 'Configuración de Mercado Pago incompleta' }, { status: 500 });
+      console.error('Error: MERCADOPAGO_ACCESS_TOKEN no configurado');
+      return NextResponse.json({ 
+        error: 'Configuración de Mercado Pago incompleta. Contacte al administrador.',
+        success: false 
+      }, { status: 500 });
     }
 
     // Calcular total
-    const total = items.reduce((sum: number, item: { product: { price: number }; quantity: number }) => sum + (item.product.price * item.quantity), 0);
+    const total = items.reduce((sum: number, item: { product: { price: number }; quantity: number }) => {
+      return sum + (item.product.price * item.quantity);
+    }, 0);
     
-    // Crear preferencia usando la librería oficial
+    console.log('Total calculado:', total);
+    console.log('Items:', items.length);
+    
+    // Crear preferencia usando la API REST directamente
     const preference = {
       items: items.map((item: { product: { name: string; price: number; image?: string }; quantity: number }) => ({
         title: item.product.name,
         quantity: item.quantity,
-        unit_price: item.product.price,
+        unit_price: Number(item.product.price),
         currency_id: 'ARS',
         picture_url: item.product.image || undefined,
       })),
       payer: {
         name: nombre,
-        email,
-        phone: { number: telefono },
-        address: { street_name: direccion }
+        email: email,
+        phone: { 
+          number: telefono.toString() 
+        },
+        address: { 
+          street_name: direccion 
+        }
       },
       back_urls: {
         success: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/carrito?status=success&payment_id={payment_id}`,
@@ -59,13 +83,36 @@ export async function POST(request: NextRequest) {
       expiration_date_to: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutos
     };
 
+    console.log('Creando preferencia de Mercado Pago...');
+    
     try {
-      const mpData = await mercadopago.preferences.create(preference);
+      // Usar fetch directamente en lugar de la librería
+      const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(preference)
+      });
       
-      if (!mpData.body.init_point) {
+      console.log('Respuesta de Mercado Pago:', mpResponse.status, mpResponse.statusText);
+      
+      if (!mpResponse.ok) {
+        const errorData = await mpResponse.text();
+        console.error('Error response from MP:', errorData);
+        throw new Error(`Mercado Pago error: ${mpResponse.status} - ${errorData}`);
+      }
+      
+      const mpData = await mpResponse.json();
+      console.log('Datos de MP:', mpData);
+      
+      if (!mpData.init_point) {
+        console.error('Error: No se pudo generar el enlace de pago');
         return NextResponse.json({ 
-          error: 'No se pudo generar el enlace de pago', 
-          details: mpData.body 
+          error: 'No se pudo generar el enlace de pago. Intente nuevamente.',
+          success: false,
+          details: mpData 
         }, { status: 500 });
       }
 
@@ -73,7 +120,7 @@ export async function POST(request: NextRequest) {
       try {
         await prisma.paymentPreference.create({
           data: {
-            preferenceId: mpData.body.id,
+            preferenceId: mpData.id,
             userId: userId || null,
             total,
             status: 'pending',
@@ -81,112 +128,132 @@ export async function POST(request: NextRequest) {
             payerInfo: JSON.stringify({ nombre, email, telefono, direccion })
           }
         });
+        console.log('Preferencia guardada en base de datos');
       } catch (dbError) {
-        console.error('Error guardando preferencia:', dbError);
+        console.error('Error guardando preferencia en DB:', dbError);
         // No fallar si no se puede guardar en DB
       }
 
+      console.log('Proceso completado exitosamente');
       return NextResponse.json({ 
-        url: mpData.body.init_point,
-        preferenceId: mpData.body.id 
+        success: true,
+        url: mpData.init_point,
+        preferenceId: mpData.id 
       });
       
-    } catch (mpError) {
+    } catch (mpError: unknown) {
       console.error('Error Mercado Pago:', mpError);
+      
+      // Manejar errores específicos de Mercado Pago
+      let errorMessage = 'Error al crear preferencia de pago';
+      if (mpError && typeof mpError === 'object' && 'message' in mpError) {
+        errorMessage = String(mpError.message);
+      }
+      
       return NextResponse.json({ 
-        error: 'Error al crear preferencia de pago', 
-        details: mpError 
+        error: errorMessage,
+        success: false,
+        details: mpError
       }, { status: 500 });
     }
-
-    // Guardar preferencia en base de datos para tracking
-    try {
-      await prisma.paymentPreference.create({
-        data: {
-          preferenceId: mpData.id,
-          userId: userId || null,
-          total,
-          status: 'pending',
-          items: JSON.stringify(items),
-          payerInfo: JSON.stringify({ nombre, email, telefono, direccion })
-        }
-      });
-    } catch (dbError) {
-      console.error('Error guardando preferencia:', dbError);
-      // No fallar si no se puede guardar en DB
-    }
-
-    return NextResponse.json({ 
-      url: mpData.init_point,
-      preferenceId: mpData.id 
-    });
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error en endpoint Mercado Pago:', error);
+    
+    // Manejar errores de parsing JSON
+    if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string' && error.message.includes('JSON')) {
+      return NextResponse.json({ 
+        error: 'Error en el formato de datos enviados',
+        success: false
+      }, { status: 400 });
+    }
+    
     return NextResponse.json({ 
-      error: 'Error interno del servidor' 
+      error: 'Error interno del servidor. Intente nuevamente.',
+      success: false
     }, { status: 500 });
   }
 }
 
 // Webhook para recibir notificaciones de Mercado Pago
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const topic = searchParams.get('topic');
-  const paymentId = searchParams.get('data.id');
-  
-  if (topic === 'payment' && paymentId) {
-    try {
-      // Obtener información del pago
-      const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-      const paymentRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      
-      if (paymentRes.ok) {
-        const paymentData = await paymentRes.json();
-        
-        // Actualizar estado en base de datos
-        if (paymentData.status === 'approved') {
-          // Registrar venta exitosa
-          const preference = await prisma.paymentPreference.findFirst({
-            where: { preferenceId: paymentData.external_reference?.split('_')[1] }
-          });
-          
-          if (preference) {
-            const items = JSON.parse(preference.items);
-            const payerInfo = JSON.parse(preference.payerInfo);
-            
-            // Registrar ventas
-            for (const item of items) {
-              await prisma.sale.create({
-                data: {
-                  userId: preference.userId,
-                  productId: item.product.id,
-                  amount: item.product.price * item.quantity,
-                  nombre: payerInfo.nombre,
-                  email: payerInfo.email,
-                  telefono: payerInfo.telefono,
-                  direccion: payerInfo.direccion,
-                  metodoPago: 'mercadopago',
-                  paymentId: paymentId,
-                  status: 'completed'
-                }
-              });
-            }
-            
-            // Actualizar preferencia
-            await prisma.paymentPreference.update({
-              where: { id: preference.id },
-              data: { status: 'completed' }
-            });
-          }
+  try {
+    const { searchParams } = new URL(request.url);
+    const topic = searchParams.get('topic');
+    const paymentId = searchParams.get('data.id');
+    
+    console.log('Webhook recibido:', { topic, paymentId });
+    
+    if (topic === 'payment' && paymentId) {
+      try {
+        // Obtener información del pago
+        const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+        if (!accessToken) {
+          console.error('Error: No hay access token para webhook');
+          return NextResponse.json({ error: 'Configuración incompleta' }, { status: 500 });
         }
+        
+        const paymentRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+          headers: { 
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (paymentRes.ok) {
+          const paymentData = await paymentRes.json();
+          console.log('Datos del pago:', paymentData);
+          
+          // Actualizar estado en base de datos
+          if (paymentData.status === 'approved') {
+            // Registrar venta exitosa
+            const preference = await prisma.paymentPreference.findFirst({
+              where: { preferenceId: paymentData.external_reference?.split('_')[1] }
+            });
+            
+            if (preference) {
+              const items = JSON.parse(preference.items);
+              const payerInfo = JSON.parse(preference.payerInfo);
+              
+              // Registrar ventas
+              for (const item of items) {
+                await prisma.sale.create({
+                  data: {
+                    userId: preference.userId,
+                    productId: item.product.id,
+                    amount: item.product.price * item.quantity,
+                    nombre: payerInfo.nombre,
+                    email: payerInfo.email,
+                    telefono: payerInfo.telefono,
+                    direccion: payerInfo.direccion,
+                    metodoPago: 'mercadopago',
+                    paymentId: paymentId,
+                    status: 'completed'
+                  }
+                });
+              }
+              
+              // Actualizar preferencia
+              await prisma.paymentPreference.update({
+                where: { id: preference.id },
+                data: { status: 'completed' }
+              });
+              
+              console.log('Venta registrada exitosamente');
+            }
+          }
+        } else {
+          console.error('Error obteniendo datos del pago:', paymentRes.status);
+        }
+      } catch (error) {
+        console.error('Error procesando webhook:', error);
       }
-    } catch (error) {
-      console.error('Error procesando webhook:', error);
     }
+    
+    return NextResponse.json({ success: true });
+    
+  } catch (error) {
+    console.error('Error en webhook:', error);
+    return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }
-  
-  return NextResponse.json({ ok: true });
 } 

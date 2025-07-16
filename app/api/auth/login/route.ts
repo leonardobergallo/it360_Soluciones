@@ -7,7 +7,26 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    // Verificar que el request tenga el content-type correcto
+    const contentType = request.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return NextResponse.json(
+        { message: 'Content-Type debe ser application/json' },
+        { status: 400 }
+      );
+    }
+
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      return NextResponse.json(
+        { message: 'JSON inválido en el body' },
+        { status: 400 }
+      );
+    }
+
+    const { email, password } = body;
 
     if (!email || !password) {
       return NextResponse.json(
