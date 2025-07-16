@@ -290,11 +290,20 @@ export default function Home() {
             <ModernLogo size="lg" />
           </div>
           
-          <div className="flex gap-6 items-center">
+          {/* Desktop - Iconos completos */}
+          <div className="hidden md:flex gap-6 items-center">
             <span className="flex items-center gap-2 cursor-pointer text-white/80 hover:text-cyan-300 transition-colors text-sm font-medium">
               <span role="img" aria-label="Usuario" className="text-base">👤</span> 
               <span>Mi cuenta</span>
             </span>
+            <CartIconWithBadge />
+          </div>
+
+          {/* Mobile - Solo iconos sin texto */}
+          <div className="md:hidden flex gap-4 items-center">
+            <button className="text-white/80 hover:text-cyan-300 transition-colors p-2 rounded-lg hover:bg-white/10">
+              <span role="img" aria-label="Usuario" className="text-xl">👤</span>
+            </button>
             <CartIconWithBadge />
           </div>
         </div>
@@ -323,16 +332,14 @@ export default function Home() {
             {/* Botón hamburguesa */}
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-white/80 hover:text-cyan-300 transition-colors p-3 rounded-lg hover:bg-white/10"
+              className="text-white/80 hover:text-cyan-300 transition-colors p-3 rounded-lg hover:bg-white/10 w-12 h-12 flex items-center justify-center"
               aria-label="Toggle menu"
             >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
+              <div className="relative w-6 h-6">
+                <span className={`absolute top-0 left-0 w-6 h-0.5 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2.5' : ''}`}></span>
+                <span className={`absolute top-2.5 left-0 w-6 h-0.5 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`absolute top-5 left-0 w-6 h-0.5 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2.5' : ''}`}></span>
+              </div>
             </button>
           </div>
 
