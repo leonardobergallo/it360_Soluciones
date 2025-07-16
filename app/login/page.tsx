@@ -103,7 +103,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
+      {/* Animated background elements - Homogenizado con la página principal */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute w-96 h-96 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-full blur-3xl top-1/4 left-1/4 animate-float"></div>
         <div className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl bottom-1/4 right-1/4 animate-float animation-delay-2000"></div>
@@ -112,7 +112,7 @@ export default function LoginPage() {
 
       <div className="max-w-md w-full space-y-8 relative z-10">
         <div className="flex items-center justify-between mb-2">
-          <div className="mx-auto h-20 w-20 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-110">
+          <div className="mx-auto h-20 w-20 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-110">
             <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -126,15 +126,15 @@ export default function LoginPage() {
           <h2 className="text-4xl font-display font-extrabold text-white mb-2">
             Bienvenido de vuelta
           </h2>
-          <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent mb-4">
+          <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
             Iniciar Sesión
           </h3>
-          <p className="text-lg text-white/80 font-medium">
+          <p className="text-lg text-white/90 font-medium">
             Accede a tu cuenta de IT360 Soluciones
           </p>
         </div>
         {success && (
-          <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 text-green-300 px-6 py-4 rounded-xl text-center font-semibold shadow-lg">
+          <div className="bg-white/15 backdrop-blur-sm border border-green-500/30 text-green-300 px-6 py-4 rounded-xl text-center font-semibold shadow-lg">
             <div className="flex items-center justify-center gap-2">
               <span className="text-xl">✅</span>
               {success}
@@ -158,7 +158,7 @@ export default function LoginPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none relative block w-full pl-10 pr-4 py-4 bg-white/10 backdrop-blur-xl border border-white/20 placeholder-white/50 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 focus:z-10 text-base transition-all duration-300 hover:bg-white/15"
+                  className="appearance-none relative block w-full pl-10 pr-4 py-4 bg-white/15 backdrop-blur-sm border border-white/30 placeholder-white/50 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 focus:z-10 text-base transition-all duration-300 hover:bg-white/25"
                   placeholder="tu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -180,7 +180,7 @@ export default function LoginPage() {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="appearance-none relative block w-full pl-10 pr-4 py-4 bg-white/10 backdrop-blur-xl border border-white/20 placeholder-white/50 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 focus:z-10 text-base transition-all duration-300 hover:bg-white/15"
+                  className="appearance-none relative block w-full pl-10 pr-4 py-4 bg-white/15 backdrop-blur-sm border border-white/30 placeholder-white/50 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 focus:z-10 text-base transition-all duration-300 hover:bg-white/25"
                   placeholder="Tu contraseña"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -190,7 +190,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur-xl border border-red-500/30 text-red-300 px-6 py-4 rounded-xl shadow-lg">
+            <div className="bg-white/15 backdrop-blur-sm border border-red-500/30 text-red-300 px-6 py-4 rounded-xl shadow-lg">
               <div className="flex items-center justify-center gap-2">
                 <span className="text-xl">❌</span>
                 {error}
@@ -202,7 +202,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-4 px-6 border border-transparent text-lg font-bold rounded-xl text-white bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 hover:from-cyan-600 hover:via-blue-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+              className="group relative w-full flex justify-center py-4 px-6 border border-transparent text-lg font-bold rounded-xl text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               {loading ? (
                 <div className="flex items-center gap-2">
