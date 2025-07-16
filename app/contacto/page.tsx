@@ -184,7 +184,7 @@ export default function ContactoPage() {
                       value={form.nombre}
                       onChange={handleChange}
                       required
-                      className="w-full backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all duration-300 text-white placeholder-white/50"
+                      className="w-full bg-white/15 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all duration-300 text-white placeholder-white/50 hover:bg-white/25"
                       placeholder="Tu nombre completo"
                     />
                   </div>
@@ -198,7 +198,7 @@ export default function ContactoPage() {
                       value={form.email}
                       onChange={handleChange}
                       required
-                      className="w-full backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all duration-300 text-white placeholder-white/50"
+                      className="w-full bg-white/15 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all duration-300 text-white placeholder-white/50 hover:bg-white/25"
                       placeholder="tu@email.com"
                     />
                   </div>
