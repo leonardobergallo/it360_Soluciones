@@ -142,13 +142,13 @@ async function enviarEmailConsulta(data: {
 
     await resend.emails.send({
       from: 'IT360 Soluciones <noreply@it360.com.ar>',
-      to: ['info@it360.com.ar'],
+      to: ['leonardobergallo@gmail.com'],
       subject: `🤖 Nueva consulta de Hogar Inteligente - ${data.nombre}`,
       html: htmlContent,
       replyTo: data.email,
     });
 
-    console.log('✅ Email enviado exitosamente a info@it360.com.ar');
+    console.log('✅ Email enviado exitosamente a leonardobergallo@gmail.com');
   } catch (error) {
     console.error('❌ Error al enviar email:', error);
     // No lanzamos el error para no fallar el endpoint completo

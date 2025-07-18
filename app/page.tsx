@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import CartIconWithBadge from "@/components/CartIconWithBadge";
 import FooterNav from "@/components/FooterNav";
 import ModernLogo from "@/components/ModernLogo";
+import ContactVendorModal from "@/components/ContactVendorModal";
 
 export default function Home() {
   // Estado para el menú móvil
@@ -28,6 +29,31 @@ export default function Home() {
     }
   }, []);
 
+  // Verificar autenticación al cargar la página
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem('authToken');
+      const userData = localStorage.getItem('user');
+      
+      if (token && userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setIsLoggedIn(true);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    }
+  }, []);
+
   // Estado para modal de servicio
   const [openService, setOpenService] = useState<null | number>(null);
   const handleOpenService = (i: number) => setOpenService(i);
@@ -35,6 +61,12 @@ export default function Home() {
   // Estado para modal de detalles de producto
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [contactModalOpen, setContactModalOpen] = useState(false); // Estado para el modal de contacto
+  const [contactProduct, setContactProduct] = useState<Product | null>(null); // Producto para el modal de contacto
+  
+  // Estado para autenticación
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   // Cerrar modal con Escape
   useEffect(() => {
@@ -210,6 +242,12 @@ export default function Home() {
     setCurrentImageIndex(0);
   };
 
+  // Función para abrir el modal de contacto con un producto específico
+  const handleContactVendor = (product: Product) => {
+    setContactProduct(product);
+    setContactModalOpen(true);
+  };
+
   // Función para generar múltiples imágenes para un producto
   const generateProductImages = (productName: string, mainImage: string) => {
     const images = [mainImage];
@@ -260,6 +298,87 @@ export default function Home() {
 
   const formRef = useRef<HTMLFormElement>(null);
   const [success, setSuccess] = useState(false);
+  
+  // Estados para el carrito y notificaciones
+  const [toast, setToast] = useState<string | null>(null);
+
+  // Función para agregar productos al carrito
+  const addToCart = async (product: Product) => {
+    const token = localStorage.getItem('authToken');
+    
+    if (token) {
+      // Usuario logueado: usar API del backend
+      try {
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            productId: product.id,
+            quantity: 1,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setToast('✅ Producto agregado al carrito exitosamente');
+          // Recargar la página para actualizar el badge del carrito
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          if (data.error === 'Token expirado') {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            setToast('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            setTimeout(() => {
+              window.location.href = '/login?message=Sesion expirada. Inicia sesión de nuevo.';
+            }, 1500);
+            return;
+          }
+          setToast(data.error || 'No se pudo agregar al carrito');
+        }
+      } catch (error) {
+        console.error('Error al agregar al carrito:', error);
+        setToast('Error de conexión al agregar al carrito');
+      }
+    } else {
+      // Usuario no logueado: usar localStorage
+      try {
+        const stored = localStorage.getItem('carrito');
+        const cart = stored ? JSON.parse(stored) : [];
+        
+        // Verificar si el producto ya está en el carrito
+        const existingIndex = cart.findIndex((cartItem: { productId: string; type?: string }) => 
+          cartItem.productId === product.id && cartItem.type !== 'cotizacion'
+        );
+        
+        if (existingIndex >= 0) {
+          // Incrementar cantidad
+          cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + 1;
+        } else {
+          // Agregar nuevo producto
+          cart.push({
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: 1,
+            type: 'product'
+          });
+        }
+        
+        localStorage.setItem('carrito', JSON.stringify(cart));
+        setToast("✅ Agregado al carrito (modo local)");
+        setTimeout(() => setToast(""), 2000);
+      } catch (error) {
+        console.error('Error al guardar en carrito local:', error);
+        setToast('Error al guardar en carrito local');
+      }
+    }
+  };
 
   // Enviar presupuesto
   const handlePresupuesto = async (e: React.FormEvent) => {
@@ -607,13 +726,22 @@ export default function Home() {
                       <span className="text-2xl font-bold text-cyan-300">
                         ${product.price || '0'}
                       </span>
-                      <button 
-                        onClick={() => handleProductSelect(product)}
-                        className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-base w-full sm:w-auto shadow-lg flex items-center gap-2"
-                      >
-                        <span>Ver Detalles</span>
-                        <span className="text-sm">→</span>
-                      </button>
+                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <button 
+                          onClick={() => handleProductSelect(product)}
+                          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-sm shadow-lg flex items-center justify-center gap-1"
+                        >
+                          <span>Ver</span>
+                          <span className="text-xs">→</span>
+                        </button>
+                        <button 
+                          onClick={() => handleContactVendor(product)}
+                          className="px-4 py-2 bg-white border border-cyan-500 text-cyan-600 rounded-lg hover:bg-cyan-50 transition-all duration-300 font-medium text-sm shadow-lg flex items-center justify-center gap-1"
+                        >
+                          <span>Contactar</span>
+                          <span className="text-xs">📞</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -751,13 +879,22 @@ export default function Home() {
                       <span className="text-2xl font-bold text-cyan-300">
                         ${product.price}
                       </span>
-                      <button 
-                        onClick={() => handleProductSelect(product)}
-                        className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-base w-full sm:w-auto shadow-lg flex items-center gap-2"
-                      >
-                        <span>Ver Detalles</span>
-                        <span className="text-sm">→</span>
-                      </button>
+                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <button 
+                          onClick={() => handleProductSelect(product)}
+                          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-sm shadow-lg flex items-center justify-center gap-1"
+                        >
+                          <span>Ver</span>
+                          <span className="text-xs">→</span>
+                        </button>
+                        <button 
+                          onClick={() => handleContactVendor(product)}
+                          className="px-4 py-2 bg-white border border-cyan-500 text-cyan-600 rounded-lg hover:bg-cyan-50 transition-all duration-300 font-medium text-sm shadow-lg flex items-center justify-center gap-1"
+                        >
+                          <span>Contactar</span>
+                          <span className="text-xs">📞</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -950,10 +1087,18 @@ export default function Home() {
                       ${selectedProduct.price}
                     </div>
                     <div className="space-y-2 mb-3">
-                      <button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-1.5 px-3 rounded-md font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 text-xs">
+                      <button 
+                        onClick={() => addToCart(selectedProduct)}
+                        className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-1.5 px-3 rounded-md font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 text-xs flex items-center justify-center gap-2"
+                      >
+                        <span>🛒</span>
                         Agregar al Carrito
+                        {!isLoggedIn && <span className="text-xs opacity-75">(Local)</span>}
                       </button>
-                      <button className="w-full bg-white border border-cyan-500 text-cyan-600 py-1.5 px-3 rounded-md font-semibold hover:bg-cyan-50 transition-all duration-300 text-xs">
+                      <button 
+                        onClick={() => handleContactVendor(selectedProduct)}
+                        className="w-full bg-white border border-cyan-500 text-cyan-600 py-1.5 px-3 rounded-md font-semibold hover:bg-cyan-50 transition-all duration-300 text-xs"
+                      >
                         Contactar Vendedor
                       </button>
                     </div>
@@ -1058,6 +1203,51 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de contacto con vendedor */}
+      <ContactVendorModal
+        isOpen={contactModalOpen}
+        onClose={() => {
+          setContactModalOpen(false);
+          setContactProduct(null);
+        }}
+        product={contactProduct ? {
+          name: contactProduct.name,
+          price: contactProduct.price,
+          description: contactProduct.description
+        } : undefined}
+      />
+
+      {/* Toast de notificación */}
+      {toast && (
+        <div className="fixed top-20 right-4 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                toast.includes('✅') || toast.includes('exitosamente') 
+                  ? 'bg-green-500' 
+                  : toast.includes('Error') || toast.includes('expirado')
+                  ? 'bg-red-500'
+                  : 'bg-blue-500'
+              }`}>
+                <span className="text-white text-xs">
+                  {toast.includes('✅') || toast.includes('exitosamente') ? '✓' : 
+                   toast.includes('Error') || toast.includes('expirado') ? '✕' : 'ℹ'}
+                </span>
+              </div>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-gray-800">{toast}</p>
+            </div>
+            <button
+              onClick={() => setToast(null)}
+              className="flex-shrink-0 text-gray-400 hover:text-gray-600"
+            >
+              ×
+            </button>
           </div>
         </div>
       )}

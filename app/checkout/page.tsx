@@ -27,12 +27,13 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [paymentConfig, setPaymentConfig] = useState<any>(null);
   const [form, setForm] = useState<FormState>({
     nombre: "",
     email: "",
     telefono: "",
     direccion: "",
-    metodoPago: "mercadopago"
+    metodoPago: "transferencia"
   });
   const router = useRouter();
 
@@ -84,6 +85,22 @@ export default function CheckoutPage() {
     fetchCart();
   }, [router]);
 
+  // Cargar configuración de métodos de pago
+  useEffect(() => {
+    async function fetchPaymentConfig() {
+      try {
+        const res = await fetch('/api/checkout');
+        const data = await res.json();
+        if (res.ok) {
+          setPaymentConfig(data);
+        }
+      } catch (error) {
+        console.error('Error al cargar configuración de pagos:', error);
+      }
+    }
+    fetchPaymentConfig();
+  }, []);
+
   // Manejar cambios en el formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -95,6 +112,7 @@ export default function CheckoutPage() {
     setError("");
     setSuccess("");
     setProcessing(true);
+    
     const token = localStorage.getItem('authToken');
     const userStr = localStorage.getItem('user');
     let userId = null;
@@ -107,35 +125,135 @@ export default function CheckoutPage() {
         return;
       }
     }
+
     try {
-      if (form.metodoPago === 'mercadopago') {
-        // Llamar a /api/mercadopago y redirigir
-        const res = await fetch('/api/mercadopago', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items: cartItems,
-            nombre: form.nombre,
-            email: form.email,
-            telefono: form.telefono,
-            direccion: form.direccion,
-            userId: userId
-          })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.url) {
-          setError(data.error || 'Error al iniciar pago con Mercado Pago');
-          setProcessing(false);
-          return;
-        }
-        window.location.href = data.url;
+      // Enviar solicitud de checkout a la nueva API
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          email: form.email,
+          telefono: form.telefono,
+          direccion: form.direccion,
+          metodoPago: form.metodoPago,
+          items: cartItems,
+          total: total,
+          userId: userId
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Error al procesar la solicitud');
+        setProcessing(false);
         return;
       }
-      // Si es transferencia, mostrar datos y mensaje de éxito
-      if (form.metodoPago === 'transferencia') {
-        setSuccess("Por favor, realiza la transferencia al alias: GENIA.GRAMO.PERSA y envía el comprobante por WhatsApp. ¡Gracias por tu compra!");
+
+      // Si es MercadoPago, mostrar mensaje de solicitud enviada y luego redirigir
+      if (form.metodoPago === 'mercadopago') {
+        setSuccess(`
+          ✅ Solicitud enviada con éxito!
+          
+          💳 PROCESANDO PAGO CON MERCADOPAGO:
+          
+          Tu solicitud ha sido registrada y ahora serás redirigido a MercadoPago.
+          
+          📋 Proceso de gestión:
+          • Se ha creado una solicitud de gestión para tu compra
+          • Serás redirigido a MercadoPago para completar el pago
+          • Nuestro equipo gestionará tu pedido después del pago
+          • Te contactaremos para coordinar la entrega
+          
+          💬 Contacta con nosotros:
+          • WhatsApp: +54 9 342 508-9906
+          • Email: leonardobergallo@gmail.com
+          
+          Redirigiendo a MercadoPago en 3 segundos...
+        `);
+        
+        // Limpiar carrito después de enviar la solicitud
+        if (token) {
+          try {
+            await fetch('/api/cart', {
+              method: 'DELETE',
+              headers: { Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ clearAll: true })
+            });
+          } catch (error) {
+            console.error('Error al limpiar carrito:', error);
+          }
+        } else {
+          localStorage.removeItem('carrito');
+        }
+        
+        // Redirigir a MercadoPago después de 3 segundos
+        setTimeout(async () => {
+          const mercadopagoRes = await fetch('/api/mercadopago', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: cartItems,
+              nombre: form.nombre,
+              email: form.email,
+              telefono: form.telefono,
+              direccion: form.direccion,
+              userId: userId
+            })
+          });
+          const mercadopagoData = await mercadopagoRes.json();
+          if (!mercadopagoRes.ok || !mercadopagoData.url) {
+            setError(mercadopagoData.error || 'Error al iniciar pago con Mercado Pago');
+            setProcessing(false);
+            return;
+          }
+          window.location.href = mercadopagoData.url;
+        }, 3000);
+        
         setProcessing(false);
-        // Aquí podrías registrar la venta en el backend si lo deseas
+        return;
+      }
+
+      // Si es transferencia, mostrar mensaje de aprobación pendiente
+      if (form.metodoPago === 'transferencia') {
+        setSuccess(`
+          ✅ Solicitud enviada con éxito!
+          
+          ⚠️ IMPORTANTE - PENDIENTE DE APROBACIÓN:
+          
+          Tu solicitud está siendo revisada por nuestro equipo.
+          
+          📋 Proceso de aprobación:
+          • Verificaremos el stock disponible de los productos
+          • Te contactaremos para confirmar la disponibilidad
+          • Solo después de la confirmación podrás proceder con el pago
+          
+          💬 Contacta con nosotros:
+          • WhatsApp: +54 9 342 508-9906
+          • Email: leonardobergallo@gmail.com
+          
+          Te enviaremos un email con los datos bancarios una vez aprobada tu solicitud.
+        `);
+        
+        // Limpiar carrito después de enviar la solicitud
+        if (token) {
+          // Si está logueado, limpiar carrito del backend
+          try {
+            await fetch('/api/cart', {
+              method: 'DELETE',
+              headers: { Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ clearAll: true })
+            });
+          } catch (error) {
+            console.error('Error al limpiar carrito:', error);
+          }
+        } else {
+          // Si no está logueado, limpiar localStorage
+          localStorage.removeItem('carrito');
+        }
+        
+        setProcessing(false);
         return;
       }
     } catch (err: unknown) {
@@ -176,9 +294,30 @@ export default function CheckoutPage() {
             </div>
           )}
           {success && (
-            <div className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 rounded-2xl px-6 py-4 mb-6 text-center font-semibold flex items-center justify-center gap-3">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              {success}
+            <div className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 rounded-2xl px-6 py-4 mb-6">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="font-semibold">¡Solicitud enviada con éxito!</span>
+              </div>
+              <div className="text-sm whitespace-pre-line text-center">
+                {success}
+              </div>
+              <div className="mt-4 flex justify-center gap-4">
+                <a 
+                  href="https://wa.me/5493425089906" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  📱 Contactar por WhatsApp
+                </a>
+                <a 
+                  href="mailto:leonardobergallo@gmail.com" 
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  📧 Enviar Email
+                </a>
+              </div>
             </div>
           )}
 
@@ -286,9 +425,28 @@ export default function CheckoutPage() {
                     value={form.metodoPago} 
                     onChange={handleChange}
                   >
-                    <option value="mercadopago" className="bg-slate-800">MercadoPago</option>
-                    <option value="transferencia" className="bg-slate-800">Transferencia bancaria</option>
+                    {paymentConfig?.mercadopago?.habilitado && (
+                      <option value="mercadopago" className="bg-slate-800">
+                        💳 {paymentConfig.mercadopago.nombre} - {paymentConfig.mercadopago.descripcion}
+                      </option>
+                    )}
+                    {paymentConfig?.transferencia?.habilitado && (
+                      <option value="transferencia" className="bg-slate-800">
+                        🏦 {paymentConfig.transferencia.nombre} - Requiere aprobación previa
+                      </option>
+                    )}
+                    {(!paymentConfig?.mercadopago?.habilitado && !paymentConfig?.transferencia?.habilitado) && (
+                      <option value="" className="bg-slate-800" disabled>
+                        No hay métodos de pago disponibles
+                      </option>
+                    )}
                   </select>
+                  {paymentConfig && (
+                    <p className="text-white/60 text-xs mt-2">
+                      {form.metodoPago === 'mercadopago' && paymentConfig.mercadopago?.descripcion}
+                      {form.metodoPago === 'transferencia' && '⚠️ Primero verificaremos stock y te contactaremos para confirmar disponibilidad antes de proceder con el pago.'}
+                    </p>
+                  )}
                 </div>
 
                 <button 
