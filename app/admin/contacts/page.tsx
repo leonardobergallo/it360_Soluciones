@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from 'next/navigation';
+import AdminLayout from '@/components/AdminLayout';
+import Link from 'next/link';
 
 interface Contact {
   id: string;
@@ -79,77 +81,124 @@ export default function ContactsAdminPage() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">Gestión de Contactos</h1>
-        <a href="/admin" className="px-4 py-2 bg-blue-700 text-white rounded-lg font-semibold flex items-center gap-2 shadow hover:bg-blue-800 transition-all">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 12l6-6M3 12l6 6" />
-          </svg>
-          Ir al dashboard
-        </a>
-      </div>
-      <h1 className="text-3xl font-extrabold mb-8 text-blue-800">Mensajes de Contacto</h1>
-      {/* Formulario de presupuesto de servicios (versión mejorada y más compacta) */}
-      <div className="bg-white rounded-xl shadow p-8 mb-10 max-w-lg mx-auto">
-        <h2 className="text-xl font-bold mb-4 text-blue-700">Solicitar Presupuesto</h2>
-        <form ref={formRef} onSubmit={handlePresupuesto} className="flex flex-col gap-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <input name="nombre" type="text" placeholder="Nombre" className="border rounded px-4 py-2" required />
-            <input name="email" type="email" placeholder="Email" className="border rounded px-4 py-2" required />
-            <input name="telefono" type="tel" placeholder="Teléfono" className="border rounded px-4 py-2" required />
-            <input name="empresa" type="text" placeholder="Empresa (opcional)" className="border rounded px-4 py-2" />
+    <AdminLayout>
+      <div className="p-6">
+        {/* Header con título y botones */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestión de Contactos</h1>
+            <p className="text-gray-600">Administrá los mensajes de contacto del sistema</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <select name="servicio" className="border rounded px-4 py-2" required>
-              <option value="">Tipo de servicio</option>
-              <option value="Desarrollo de Software">Desarrollo de Software</option>
-              <option value="Ciberseguridad">Ciberseguridad</option>
-              <option value="Soporte Técnico">Soporte Técnico</option>
-              <option value="Infraestructura">Infraestructura</option>
-              <option value="Consultoría">Consultoría</option>
-            </select>
-            <input name="presupuesto" type="number" min="0" step="1000" placeholder="Presupuesto estimado (opcional)" className="border rounded px-4 py-2" />
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/admin" 
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold flex items-center gap-2 shadow-sm hover:bg-blue-700 transition-all duration-300"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              ← Ir al dashboard
+            </Link>
           </div>
-          <textarea name="mensaje" placeholder="Describe brevemente tu necesidad o proyecto..." className="border rounded px-4 py-2" rows={3} required />
-          <button type="submit" className="bg-blue-700 text-white py-2 rounded font-semibold hover:bg-blue-800 transition disabled:opacity-60" disabled={sending}>{sending ? "Enviando..." : "Solicitar presupuesto"}</button>
-          {success && <div className="text-green-600 font-semibold">¡Presupuesto enviado correctamente!</div>}
-        </form>
-      </div>
-      {/* Tabla de mensajes */}
-      {loading ? (
-        <div className="text-blue-700 font-semibold">Cargando...</div>
-      ) : contacts.length === 0 ? (
-        <div className="text-gray-500">No hay mensajes.</div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-xl shadow">
-            <thead>
-              <tr className="bg-blue-100 text-blue-800">
-                <th className="px-4 py-2 font-semibold">Nombre</th>
-                <th className="px-4 py-2 font-semibold">Email</th>
-                <th className="px-4 py-2 font-semibold">Mensaje</th>
-                <th className="px-4 py-2 font-semibold">Fecha</th>
-                <th className="px-4 py-2 font-semibold">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contacts.map((c) => (
-                <tr key={c.id} className={c.read ? "bg-gray-100" : "hover:bg-blue-50 transition"}>
-                  <td className="border px-4 py-2 text-blue-900 font-medium">{c.name}</td>
-                  <td className="border px-4 py-2 text-blue-700">{c.email}</td>
-                  <td className="border px-4 py-2 max-w-xs truncate text-gray-700" title={c.message}>{c.message}</td>
-                  <td className="border px-4 py-2 text-gray-500">{new Date(c.createdAt).toLocaleString()}</td>
-                  <td className="border px-4 py-2 flex gap-2">
-                    <button onClick={() => handleMarkRead(c.id)} className="px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200">Marcar leído</button>
-                    <button onClick={() => handleDelete(c.id)} className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200">Eliminar</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
-      )}
-    </div>
+
+        {/* Formulario de presupuesto */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Solicitar Presupuesto</h2>
+          <form ref={formRef} onSubmit={handlePresupuesto} className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <input name="nombre" type="text" placeholder="Nombre" className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
+              <input name="email" type="email" placeholder="Email" className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
+              <input name="telefono" type="tel" placeholder="Teléfono" className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
+              <input name="empresa" type="text" placeholder="Empresa (opcional)" className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <select name="servicio" className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <option value="">Tipo de servicio</option>
+                <option value="Desarrollo de Software">Desarrollo de Software</option>
+                <option value="Ciberseguridad">Ciberseguridad</option>
+                <option value="Soporte Técnico">Soporte Técnico</option>
+                <option value="Infraestructura">Infraestructura</option>
+                <option value="Consultoría">Consultoría</option>
+              </select>
+              <input name="presupuesto" type="number" min="0" step="1000" placeholder="Presupuesto estimado (opcional)" className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <textarea name="mensaje" placeholder="Describe brevemente tu necesidad o proyecto..." className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full" rows={3} required />
+            <button type="submit" className="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-60" disabled={sending}>
+              {sending ? "Enviando..." : "Solicitar presupuesto"}
+            </button>
+            {success && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800 font-semibold">¡Presupuesto enviado correctamente!</p>
+              </div>
+            )}
+          </form>
+        </div>
+
+        {/* Tabla de mensajes */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-pink-500 to-rose-600 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8a9 9 0 1118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-white">Mensajes de Contacto</h2>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="text-gray-600 font-semibold">Cargando...</div>
+              </div>
+            ) : contacts.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-gray-500">No hay mensajes.</div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nombre</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Mensaje</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Fecha</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {contacts.map((c) => (
+                      <tr key={c.id} className={c.read ? "bg-gray-50" : "hover:bg-blue-50 transition-colors"}>
+                        <td className="px-4 py-3 text-gray-900 font-medium">{c.name}</td>
+                        <td className="px-4 py-3 text-gray-700">{c.email}</td>
+                        <td className="px-4 py-3 max-w-xs truncate text-gray-700" title={c.message}>{c.message}</td>
+                        <td className="px-4 py-3 text-gray-500">{new Date(c.createdAt).toLocaleString()}</td>
+                        <td className="px-4 py-3 flex gap-2">
+                          <button 
+                            onClick={() => handleMarkRead(c.id)} 
+                            className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm font-medium transition-colors"
+                          >
+                            Marcar leído
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(c.id)} 
+                            className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-medium transition-colors"
+                          >
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
   );
 } 

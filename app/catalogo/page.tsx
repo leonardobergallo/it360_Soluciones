@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import ContactVendorModal from "../../components/ContactVendorModal";
 
 interface Item {
   id: string;
@@ -30,6 +31,7 @@ export default function CatalogoPage() {
   const [toast, setToast] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // Estado para la galería de imágenes
+  const [contactModalOpen, setContactModalOpen] = useState(false); // Estado para el modal de contacto
 
   // Función para generar múltiples imágenes para un producto
   const generateProductImages = (productName: string, mainImage: string) => {
@@ -497,7 +499,7 @@ export default function CatalogoPage() {
                         Agregar al Carrito
                       </button>
                       <button 
-                        onClick={() => window.location.href = '/contacto'}
+                        onClick={() => setContactModalOpen(true)}
                         className="w-full bg-white border-2 border-cyan-500 text-cyan-600 py-2 px-3 rounded-lg font-semibold hover:bg-cyan-50 transition-all duration-300 text-xs sm:text-sm"
                       >
                         Contactar Vendedor
@@ -515,6 +517,17 @@ export default function CatalogoPage() {
           </div>
         </div>
       )}
+
+      {/* Modal de contacto con vendedor */}
+      <ContactVendorModal
+        isOpen={contactModalOpen}
+        onClose={() => setContactModalOpen(false)}
+        product={selectedProduct ? {
+          name: selectedProduct.name,
+          price: selectedProduct.price,
+          description: selectedProduct.description
+        } : undefined}
+      />
     </div>
   );
 } 

@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const handleNav = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen flex bg-gray-50">
       {/* Overlay para móvil */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden" onClick={() => setSidebarOpen(false)}></div>
@@ -43,15 +43,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         
         {/* Header del sidebar */}
         <div className="flex flex-col items-center py-8 px-6 border-b border-white/10">
-          <div className="relative mb-4">
-            <div className="w-20 h-20 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-110">
-              <ModernLogo size="lg" className="text-white" />
-            </div>
-            <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
-              <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-            </div>
+          <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg mb-4">
+            <span className="text-white font-bold text-xl">IT</span>
           </div>
-          
           <h2 className="text-2xl font-display font-bold text-white mb-2 tracking-wide">
             IT360 {userRole === 'TECNICO' ? 'Técnico' : 'Admin'}
           </h2>
@@ -124,42 +118,56 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <span>Ventas</span>
             <div className="ml-auto w-2 h-2 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </Link>
+          
+          {userRole === 'ADMIN' && (
+            <Link 
+              href="/admin/transferencias" 
+              className="flex items-center gap-3 text-cyan-100 hover:bg-white/10 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-105 group" 
+              onClick={handleNav}
+            >
+              <svg className="w-6 h-6 text-cyan-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              <span>Transferencias</span>
+              <div className="ml-auto w-2 h-2 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </Link>
+          )}
         </nav>
 
         {/* Footer del sidebar */}
         <div className="mt-auto p-4 border-t border-white/10">
           <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl p-3 border border-cyan-500/30">
-                          <div className="flex items-center gap-2 text-cyan-300 text-base">
-                <span className="text-lg">⚡</span>
-                <span className="font-medium">Sistema Activo</span>
-              </div>
-              <div className="text-sm text-cyan-200 mt-1">Panel de administración IT360</div>
+            <div className="flex items-center gap-2 text-cyan-300 text-base">
+              <span className="text-lg">⚡</span>
+              <span className="font-medium">Sistema Activo</span>
+            </div>
+            <div className="text-sm text-cyan-200 mt-1">Panel de administración IT360</div>
           </div>
         </div>
       </aside>
 
       {/* Contenido principal */}
-      <main className="flex-1 flex flex-col min-h-screen pb-16">
-        {/* Header mejorado */}
-        <header className="bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg flex items-center justify-between px-6 py-4 relative z-20">
+      <main className="flex-1 flex flex-col min-h-screen">
+        {/* Header simplificado */}
+        <header className="bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
             <button 
-              className="md:hidden p-2 rounded-xl hover:bg-white/20 focus:outline-none transition-all duration-300" 
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none transition-all duration-300" 
               onClick={() => setSidebarOpen(true)} 
               aria-label="Abrir menú"
             >
-              <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-                <ModernLogo size="sm" className="text-white" />
+              <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center shadow-sm">
+                <span className="text-white font-bold text-sm">IT</span>
               </div>
               <div>
-                <h1 className="text-xl font-display font-bold text-slate-800">IT360 Soluciones</h1>
-                <p className="text-sm text-slate-600">
+                <h1 className="text-xl font-bold text-gray-900">IT360 Soluciones</h1>
+                <p className="text-sm text-gray-600">
                   {userRole === 'TECNICO' ? 'Panel Técnico' : 'Panel de Administración'}
                 </p>
               </div>
@@ -169,21 +177,21 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center gap-3">
             <Link 
               href="/" 
-              className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-white/50 rounded-xl transition-all duration-300"
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-300"
             >
               <span>🏠</span>
               <span className="hidden sm:inline">Ir al sitio</span>
             </Link>
             <Link 
               href="/catalogo" 
-              className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-white/50 rounded-xl transition-all duration-300"
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-300"
             >
               <span>📋</span>
               <span className="hidden sm:inline">Catálogo</span>
             </Link>
             <Link 
               href="/carrito" 
-              className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-white/50 rounded-xl transition-all duration-300"
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-300"
             >
               <span>🛒</span>
               <span className="hidden sm:inline">Carrito</span>
@@ -191,8 +199,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         </header>
 
-        {/* Contenido */}
-        <div className="flex-1 p-6">
+        {/* Contenido con fondo blanco */}
+        <div className="flex-1 bg-white">
           {children}
         </div>
 
