@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 // PUT - Actualizar un producto por id
 export async function PUT(request: NextRequest) {
   try {
-    const { id, name, description, price, stock, category, image } = await request.json();
+    const { id, name, description, price, stock, category, image, active } = await request.json();
     if (!id) {
       return NextResponse.json({ error: 'ID requerido' }, { status: 400 });
     }
@@ -61,6 +61,7 @@ export async function PUT(request: NextRequest) {
     if (stock !== undefined) data.stock = parseInt(stock);
     if (category !== undefined) data.category = category;
     if (image !== undefined) data.image = image;
+    if (active !== undefined) data.active = active;
     const product = await prisma.product.update({
       where: { id },
       data,

@@ -633,31 +633,7 @@ export default function Home() {
             </a>
           </div>
           
-          {/* Botón de Tablero para Admin/Técnicos - EXTRA GRANDE Y VISIBLE */}
-          {isLoggedIn && (user?.role === 'ADMIN' || user?.role === 'TECNICO') && (
-            <div className="mt-12 mb-8 animate-bounce">
-              <a 
-                href={user?.role === 'ADMIN' ? '/admin' : '/admin/presupuestos'}
-                className="inline-flex items-center gap-4 px-16 py-8 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white rounded-2xl font-black text-3xl shadow-2xl hover:shadow-purple-500/50 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-110 border-6 border-white/30 backdrop-blur-sm animate-pulse"
-                style={{
-                  backgroundSize: '200% 200%',
-                  animation: 'gradient 3s ease infinite, pulse 2s infinite'
-                }}
-              >
-                <span className="text-4xl">{user?.role === 'ADMIN' ? '👑' : '🔧'}</span>
-                <span className="uppercase tracking-wider">ACCEDER AL TABLERO</span>
-                <span className="text-4xl animate-bounce">→</span>
-              </a>
-              <p className="text-center text-white/90 mt-4 text-lg font-semibold">
-                Panel de {user?.role === 'ADMIN' ? 'Administración' : 'Técnico'} - Gestión completa del sistema
-              </p>
-              <div className="text-center mt-2">
-                <span className="inline-block px-4 py-2 bg-white/20 rounded-full text-white/80 text-sm font-medium">
-                  ⚡ Acceso directo al panel de control
-                </span>
-              </div>
-            </div>
-          )}
+
         </div>
       </section>
 

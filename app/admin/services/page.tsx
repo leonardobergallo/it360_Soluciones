@@ -37,43 +37,113 @@ export default function ServicesPage() {
 
   useEffect(() => {
     async function fetchServices() {
-      const res = await fetch('/api/services');
-      const data = await res.json();
-      setServices(data);
+      try {
+        const res = await fetch('/api/services');
+        if (res.ok) {
+          const data = await res.json();
+          console.log('Servicios cargados:', data);
+          setServices(data);
+        } else {
+          console.error('Error cargando servicios:', res.status);
+          setError('Error al cargar servicios');
+        }
+      } catch (error) {
+        console.error('Error en fetchServices:', error);
+        setError('Error de conexión');
+      }
     }
     fetchServices();
   }, []);
 
-  const handleAddService = (e: React.FormEvent) => {
+  const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.description || !form.price) {
       setError('Todos los campos son obligatorios');
       return;
     }
-    setServices([
-      ...services,
-      { id: services.length + 1, name: form.name, description: form.description, price: Number(form.price) },
-    ]);
-    setForm({ name: '', description: '', price: '' });
-    setShowForm(false);
-    setError(null);
+    
+    try {
+      const res = await fetch('/api/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          description: form.description,
+          price: Number(form.price)
+        })
+      });
+      
+      if (res.ok) {
+        const newService = await res.json();
+        setServices([...services, newService]);
+        setForm({ name: '', description: '', price: '' });
+        setShowForm(false);
+        setError(null);
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || 'Error al crear servicio');
+      }
+    } catch (error) {
+      console.error('Error al crear servicio:', error);
+      setError('Error de conexión');
+    }
   };
 
-  const handleEditService = (e: React.FormEvent) => {
+  const handleEditService = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.description || !form.price || !editService) {
       setError('Todos los campos son obligatorios');
       return;
     }
-    setServices(services.map(s => s.id === editService.id ? { ...s, ...form, price: Number(form.price) } : s));
-    setEditService(null);
-    setForm({ name: '', description: '', price: '' });
-    setShowForm(false);
-    setError(null);
+    
+    try {
+      const res = await fetch(`/api/services/${editService.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          description: form.description,
+          price: Number(form.price)
+        })
+      });
+      
+      if (res.ok) {
+        const updatedService = await res.json();
+        setServices(services.map(s => s.id === editService.id ? updatedService : s));
+        setEditService(null);
+        setForm({ name: '', description: '', price: '' });
+        setShowForm(false);
+        setError(null);
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || 'Error al actualizar servicio');
+      }
+    } catch (error) {
+      console.error('Error al actualizar servicio:', error);
+      setError('Error de conexión');
+    }
   };
 
-  const handleDeleteService = (id: number) => {
-    setServices(services.filter(s => s.id !== id));
+  const handleDeleteService = async (id: number) => {
+    if (!confirm('¿Estás seguro de que quieres eliminar este servicio?')) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/services/${id}`, {
+        method: 'DELETE'
+      });
+      
+      if (res.ok) {
+        setServices(services.filter(s => s.id !== id));
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || 'Error al eliminar servicio');
+      }
+    } catch (error) {
+      console.error('Error al eliminar servicio:', error);
+      setError('Error de conexión');
+    }
   };
 
   const openEditForm = (service: Service) => {

@@ -35,12 +35,12 @@ export default function MisDatosPage() {
           setFormData({
             nombre: data.user.name || "",
             email: data.user.email || "",
-            telefono: data.user.phone || "",
-            empresa: data.user.company || "",
-            direccion: data.user.address || "",
-            ciudad: data.user.city || "",
-            provincia: data.user.province || "",
-            codigoPostal: data.user.postalCode || ""
+            telefono: "",
+            empresa: "",
+            direccion: "",
+            ciudad: "",
+            provincia: "",
+            codigoPostal: ""
           });
         }
       })
@@ -75,7 +75,10 @@ export default function MisDatosPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          nombre: formData.nombre,
+          email: formData.email
+        })
       });
 
       if (response.ok) {
