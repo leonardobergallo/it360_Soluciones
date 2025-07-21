@@ -44,6 +44,7 @@ model Product {
   stock       Int
   category    String
   image       String?
+  active      Boolean  @default(true)
   sales       Sale[]
   cartItems   CartItem[]
   createdAt   DateTime @default(now())

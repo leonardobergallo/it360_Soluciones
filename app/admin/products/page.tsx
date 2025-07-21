@@ -11,6 +11,7 @@ interface Product {
   description: string;
   price: number;
   stock: number;
+  active?: boolean;
 }
 
 export default function ProductsPage() {
@@ -39,8 +40,14 @@ export default function ProductsPage() {
     async function fetchProducts() {
       try {
         const res = await fetch('/api/products');
-        const data = await res.json();
-        setProducts(data);
+        if (res.ok) {
+          const data = await res.json();
+          console.log('Productos cargados:', data);
+          setProducts(data);
+        } else {
+          console.error('Error cargando productos:', res.status);
+          setProducts([]);
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
         setProducts([]);
@@ -113,6 +120,22 @@ export default function ProductsPage() {
       } catch {
         setError('Error al eliminar producto');
       }
+    }
+  };
+
+  const handleToggleActive = async (id: number, currentActive: boolean) => {
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, active: !currentActive }),
+      });
+      if (!res.ok) throw new Error('Error al actualizar producto');
+      // Refrescar lista
+      const productsRes = await fetch('/api/products');
+      setProducts(await productsRes.json());
+    } catch {
+      setError('Error al actualizar producto');
     }
   };
 
@@ -269,6 +292,16 @@ export default function ProductsPage() {
                     className="px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm font-medium transition-colors"
                   >
                     Editar
+                  </button>
+                  <button
+                    onClick={() => handleToggleActive(row.id, row.active || false)}
+                    className={`px-3 py-1 text-white rounded-lg text-sm font-medium transition-colors ${
+                      row.active 
+                        ? 'bg-orange-500 hover:bg-orange-600' 
+                        : 'bg-green-500 hover:bg-green-600'
+                    }`}
+                  >
+                    {row.active ? 'Desactivar' : 'Activar'}
                   </button>
                   <button
                     onClick={() => handleDeleteProduct(row.id)}

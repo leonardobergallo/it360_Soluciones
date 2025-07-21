@@ -18,6 +18,29 @@ export default function CartIconWithBadge() {
             const data = await res.json();
             const total = (data.items || []).reduce((acc: number, item: { quantity?: number }) => acc + (item.quantity || 1), 0);
             setCount(total);
+          } else if (res.status === 401) {
+            // Token expirado o inválido - limpiar y usar localStorage
+            console.log('Token expirado, usando carrito local');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            // Continuar con localStorage
+            try {
+              const stored = localStorage.getItem('carrito');
+              if (stored) {
+                const cart = JSON.parse(stored);
+                const total = cart.reduce((acc: number, item: { quantity?: number; type?: string }) => {
+                  if (item.type !== 'cotizacion') {
+                    return acc + (item.quantity || 1);
+                  }
+                  return acc;
+                }, 0);
+                setCount(total);
+              } else {
+                setCount(0);
+              }
+            } catch {
+              setCount(0);
+            }
           } else {
             setCount(0);
           }
@@ -46,7 +69,8 @@ export default function CartIconWithBadge() {
       }
     }
     updateCount();
-    const interval = setInterval(updateCount, 1000);
+    // Reducir la frecuencia de actualización para evitar muchos errores 401
+    const interval = setInterval(updateCount, 5000); // Cambiar de 1 segundo a 5 segundos
     return () => clearInterval(interval);
   }, []);
 
