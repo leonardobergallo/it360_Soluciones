@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
 import FooterNav from './FooterNav';
-import ModernLogo from './ModernLogo';
+import QuickNavBanner from './QuickNavBanner';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -29,6 +29,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen flex bg-gray-50">
+      {/* QuickNavBanner para admin y técnicos */}
+      <QuickNavBanner userRole={userRole as 'ADMIN' | 'TECNICO' | 'USER'} />
+      
       {/* Overlay para móvil */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden" onClick={() => setSidebarOpen(false)}></div>
@@ -119,6 +122,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <div className="ml-auto w-2 h-2 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </Link>
           
+          <Link 
+            href="/admin/tickets" 
+            className="flex items-center gap-3 text-cyan-100 hover:bg-white/10 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-105 group" 
+            onClick={handleNav}
+          >
+            <svg className="w-6 h-6 text-cyan-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Tickets</span>
+            <div className="ml-auto w-2 h-2 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </Link>
+          
           {userRole === 'ADMIN' && (
             <Link 
               href="/admin/transferencias" 
@@ -177,10 +192,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center gap-3">
             <Link 
               href="/" 
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-300"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              <span>🏠</span>
-              <span className="hidden sm:inline">Ir al sitio</span>
+              <span className="text-lg">🏠</span>
+              <span className="hidden sm:inline">Volver al Sitio</span>
             </Link>
             <Link 
               href="/catalogo" 

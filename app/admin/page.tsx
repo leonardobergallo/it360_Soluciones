@@ -3,6 +3,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 
+// Interfaz para el tipo de usuario
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'ADMIN' | 'TECNICO' | 'USER';
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function AdminDashboard() {
   const [counts, setCounts] = useState({
     users: 0,
@@ -35,10 +45,10 @@ export default function AdminDashboard() {
           return [];
         });
 
-        // Contar usuarios por rol
-        const admins = users.filter((user: any) => user.role === 'admin').length;
-        const tecnicos = users.filter((user: any) => user.role === 'tecnico').length;
-        const clientes = users.filter((user: any) => user.role === 'cliente').length;
+        // Contar usuarios por rol - CORREGIDO: usar roles en mayúsculas
+        const admins = users.filter((user: User) => user.role === 'ADMIN').length;
+        const tecnicos = users.filter((user: User) => user.role === 'TECNICO').length;
+        const clientes = users.filter((user: User) => user.role === 'USER').length; // USER = clientes
 
         setCounts({
           users: users.length,
@@ -104,6 +114,7 @@ export default function AdminDashboard() {
 
   const actionCards = [
     { label: "Productos", count: counts.products, href: "/admin/products", color: "bg-green-50 text-green-800", icon: "📦" },
+    { label: "Importar Productos", count: "CSV/Excel", href: "/admin/import-products", color: "bg-blue-50 text-blue-800", icon: "📥" },
     { label: "Servicios", count: counts.services, href: "/admin/services", color: "bg-yellow-50 text-yellow-800", icon: "🔧" },
     { label: "Ventas", count: counts.sales, href: "/admin/sales", color: "bg-purple-50 text-purple-800", icon: "💰" },
     { label: "Contactos", count: counts.contacts, href: "/admin/contacts", color: "bg-pink-50 text-pink-800", icon: "📞" },
@@ -113,6 +124,20 @@ export default function AdminDashboard() {
   return (
     <AuthGuard requiredRole="ADMIN">
       <div className="p-6">
+        {/* Botón de volver al sitio principal */}
+        <div className="mb-6">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            <span className="text-lg">🏠</span>
+            <span>Volver al Sitio Principal</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+        </div>
+
         {/* Tarjetas de métricas en la parte superior */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {metricCards.map((card, index) => (
