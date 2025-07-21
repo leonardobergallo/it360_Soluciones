@@ -197,7 +197,7 @@ async function enviarEmailAprobacion({
                style="background: #25d366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 0 10px;">
               📱 Enviar comprobante por WhatsApp
             </a>
-            <a href="mailto:leonardobergallo@gmail.com" 
+            <a href="mailto:it360tecnologia@gmail.com" 
                style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 0 10px;">
               📧 Enviar comprobante por Email
             </a>
@@ -280,7 +280,7 @@ async function enviarEmailAprobacionMercadoPago({
                style="background: #25d366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 0 10px;">
               📱 Consultar por WhatsApp
             </a>
-            <a href="mailto:leonardobergallo@gmail.com" 
+            <a href="mailto:it360tecnologia@gmail.com" 
                style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 0 10px;">
               📧 Consultar por Email
             </a>
@@ -354,7 +354,7 @@ async function enviarEmailRechazo({
                style="background: #25d366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 0 10px;">
               📱 Consultar por WhatsApp
             </a>
-            <a href="mailto:leonardobergallo@gmail.com" 
+            <a href="mailto:it360tecnologia@gmail.com" 
                style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 0 10px;">
               📧 Consultar por Email
             </a>

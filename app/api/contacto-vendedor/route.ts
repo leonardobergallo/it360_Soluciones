@@ -206,7 +206,7 @@ async function enviarEmailAdmin({
 
   const { data, error } = await resend.emails.send({
     from: 'IT360 Soluciones <info@it360.com>',
-    to: ['leonardobergallo@gmail.com'], // Email del administrador
+    to: ['it360tecnologia@gmail.com'], // Email principal de IT360
     subject: `Nueva consulta de ${nombre} - ${producto || 'Producto'}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

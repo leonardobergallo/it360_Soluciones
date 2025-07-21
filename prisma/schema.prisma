@@ -123,6 +123,27 @@ model Presupuesto {
   updatedAt   DateTime @updatedAt
 }
 
+model Ticket {
+  id          String   @id @default(uuid())
+  ticketNumber String  @unique // Número de ticket único
+  nombre      String
+  email       String
+  telefono    String?
+  empresa     String?
+  tipo        String   // "presupuesto", "soporte", "contacto", "venta", "consulta"
+  categoria   String   // Categoría específica del tipo
+  asunto      String
+  descripcion String
+  urgencia    String   @default("normal") // "baja", "normal", "alta", "critica"
+  estado      String   @default("abierto") // "abierto", "en_proceso", "resuelto", "cerrado"
+  prioridad   String   @default("media") // "baja", "media", "alta"
+  asignadoA   String?  // ID del técnico asignado
+  notas       String?  // Notas internas del equipo
+  resueltoEn  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model TestTable {
   id String @id @default(uuid())
   name String

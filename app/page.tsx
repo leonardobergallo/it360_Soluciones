@@ -380,27 +380,92 @@ export default function Home() {
     }
   };
 
-  // Enviar presupuesto
+  // Enviar presupuesto (ahora como ticket unificado)
   const handlePresupuesto = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccess(false);
+    
     const form = formRef.current;
     if (!form) return;
     
-    // Simula envío
-    await new Promise(r => setTimeout(r, 1200));
-    setSuccess(true);
-    form.reset();
+    const formData = new FormData(form);
+    const ticketData = {
+      nombre: formData.get('nombre') as string,
+      email: formData.get('email') as string,
+      telefono: formData.get('telefono') as string,
+      empresa: formData.get('empresa') as string,
+      tipo: 'presupuesto',
+      categoria: formData.get('servicio') as string,
+      asunto: `Solicitud de presupuesto - ${formData.get('servicio')}`,
+      descripcion: formData.get('mensaje') as string,
+      urgencia: formData.get('urgencia') as string || 'normal',
+      presupuesto: formData.get('presupuesto') ? Number(formData.get('presupuesto')) : undefined,
+    };
+
+    try {
+      const response = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticketData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess(true);
+        form.reset();
+        
+        // Mostrar mensaje de éxito con número de ticket
+        const ticketNumber = data.ticket?.ticketNumber;
+        if (ticketNumber) {
+          alert(`✅ Ticket creado exitosamente!\n\nNúmero de ticket: ${ticketNumber}\n\nNos pondremos en contacto contigo pronto.`);
+        }
+        
+        // Mostrar mensaje de éxito por 5 segundos
+        setTimeout(() => {
+          setSuccess(false);
+        }, 5000);
+      } else {
+        console.error('Error al enviar ticket:', data.error);
+        alert('Error al enviar el ticket. Por favor, intenta nuevamente.');
+      }
+    } catch (error) {
+      console.error('Error de conexión:', error);
+      alert('Error de conexión. Por favor, verifica tu conexión e intenta nuevamente.');
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-800 via-purple-800 to-slate-700 font-sans pb-16 relative overflow-x-hidden">
+      <style jsx>{`
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
       {/* Animated background elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute w-96 h-96 bg-blue-400/20 rounded-full blur-3xl top-1/4 left-1/4 animate-float"></div>
         <div className="absolute w-96 h-96 bg-purple-400/20 rounded-full blur-3xl bottom-1/4 right-1/4 animate-float animation-delay-2000"></div>
         <div className="absolute w-96 h-96 bg-cyan-400/15 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-float animation-delay-4000"></div>
       </div>
+
+      {/* Botón flotante fijo para Admin/Técnicos - EXTRA GRANDE */}
+      {isLoggedIn && (user?.role === 'ADMIN' || user?.role === 'TECNICO') && (
+        <div className="fixed top-20 right-4 z-50">
+          <a 
+            href={user?.role === 'ADMIN' ? '/admin' : '/admin/presupuestos'}
+            className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-black text-lg shadow-2xl hover:shadow-purple-500/50 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-110 border-3 border-white/30 animate-pulse"
+            title={`Panel de ${user?.role === 'ADMIN' ? 'Administración' : 'Técnico'}`}
+          >
+            <span className="text-2xl">{user?.role === 'ADMIN' ? '👑' : '🔧'}</span>
+            <span className="hidden sm:inline font-bold">TABLERO</span>
+          </a>
+        </div>
+      )}
 
       {/* Header principal - Sin fondo y uniforme */}
       <header className="fixed top-0 left-0 w-full z-50 transition-all duration-300">
@@ -411,6 +476,16 @@ export default function Home() {
           
           {/* Desktop - Iconos completos */}
           <div className="hidden md:flex gap-6 items-center">
+            {/* Botón de acceso al tablero para admin/técnicos */}
+            {isLoggedIn && (user?.role === 'ADMIN' || user?.role === 'TECNICO') && (
+              <a 
+                href={user?.role === 'ADMIN' ? '/admin' : '/admin/presupuestos'}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <span className="text-lg">{user?.role === 'ADMIN' ? '👑' : '🔧'}</span>
+                <span className="font-medium">Tablero</span>
+              </a>
+            )}
             <span className="flex items-center gap-2 cursor-pointer text-white/80 hover:text-cyan-300 transition-colors text-sm font-medium">
               <span role="img" aria-label="Usuario" className="text-base">👤</span> 
               <span>Mi cuenta</span>
@@ -420,6 +495,16 @@ export default function Home() {
 
           {/* Mobile - Solo iconos sin texto */}
           <div className="md:hidden flex gap-4 items-center">
+            {/* Botón de acceso al tablero para admin/técnicos en móvil */}
+            {isLoggedIn && (user?.role === 'ADMIN' || user?.role === 'TECNICO') && (
+              <a 
+                href={user?.role === 'ADMIN' ? '/admin' : '/admin/presupuestos'}
+                className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                title={user?.role === 'ADMIN' ? 'Panel Admin' : 'Panel Técnico'}
+              >
+                <span className="text-lg">{user?.role === 'ADMIN' ? '👑' : '🔧'}</span>
+              </a>
+            )}
             <button className="text-white/80 hover:text-cyan-300 transition-colors p-2 rounded-lg hover:bg-white/10">
               <span role="img" aria-label="Usuario" className="text-xl">👤</span>
             </button>
@@ -547,6 +632,32 @@ export default function Home() {
               Ver Servicios
             </a>
           </div>
+          
+          {/* Botón de Tablero para Admin/Técnicos - EXTRA GRANDE Y VISIBLE */}
+          {isLoggedIn && (user?.role === 'ADMIN' || user?.role === 'TECNICO') && (
+            <div className="mt-12 mb-8 animate-bounce">
+              <a 
+                href={user?.role === 'ADMIN' ? '/admin' : '/admin/presupuestos'}
+                className="inline-flex items-center gap-4 px-16 py-8 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white rounded-2xl font-black text-3xl shadow-2xl hover:shadow-purple-500/50 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-110 border-6 border-white/30 backdrop-blur-sm animate-pulse"
+                style={{
+                  backgroundSize: '200% 200%',
+                  animation: 'gradient 3s ease infinite, pulse 2s infinite'
+                }}
+              >
+                <span className="text-4xl">{user?.role === 'ADMIN' ? '👑' : '🔧'}</span>
+                <span className="uppercase tracking-wider">ACCEDER AL TABLERO</span>
+                <span className="text-4xl animate-bounce">→</span>
+              </a>
+              <p className="text-center text-white/90 mt-4 text-lg font-semibold">
+                Panel de {user?.role === 'ADMIN' ? 'Administración' : 'Técnico'} - Gestión completa del sistema
+              </p>
+              <div className="text-center mt-2">
+                <span className="inline-block px-4 py-2 bg-white/20 rounded-full text-white/80 text-sm font-medium">
+                  ⚡ Acceso directo al panel de control
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -965,27 +1076,135 @@ export default function Home() {
           <span>Contacto</span>
           <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">y Presupuesto</span>
         </h2>
-        <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-12 border border-blue-100">
-          <h3 className="text-xl sm:text-2xl font-bold mb-8 text-blue-700 text-center">Solicitar Presupuesto</h3>
+        <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-12 border border-blue-100">
+          <h3 className="text-xl sm:text-2xl font-bold mb-8 text-blue-700 text-center">Sistema de Tickets Unificado</h3>
+          <p className="text-center text-gray-600 mb-8">Todos los tipos de peticiones se procesan a través de nuestro sistema de tickets de soporte</p>
+          
           <form ref={formRef} onSubmit={handlePresupuesto} className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            <input name="nombre" type="text" placeholder="Nombre" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" required />
-            <input name="email" type="email" placeholder="Email" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" required />
-            <input name="telefono" type="tel" placeholder="Teléfono" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" required />
-            <input name="empresa" type="text" placeholder="Empresa (opcional)" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" />
-            <select name="servicio" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" required>
-              <option value="">Selecciona una opción</option>
-              <option value="Desarrollo de Software">Desarrollo de Software</option>
-              <option value="Ciberseguridad">Ciberseguridad</option>
-              <option value="Soporte Técnico">Soporte Técnico</option>
-              <option value="Infraestructura">Infraestructura</option>
-              <option value="Consultoría">Consultoría</option>
+            {/* Información personal */}
+            <div className="md:col-span-2">
+              <h4 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
+                <span>👤</span>
+                Información Personal
+              </h4>
+            </div>
+            
+            <input 
+              name="nombre" 
+              type="text" 
+              placeholder="Nombre completo *" 
+              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
+              required 
+            />
+            
+            <input 
+              name="email" 
+              type="email" 
+              placeholder="Email *" 
+              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
+              required 
+            />
+            
+            <input 
+              name="telefono" 
+              type="tel" 
+              placeholder="Teléfono *" 
+              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
+              required 
+            />
+            
+            <input 
+              name="empresa" 
+              type="text" 
+              placeholder="Empresa (opcional)" 
+              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
+            />
+            
+            {/* Tipo de servicio */}
+            <div className="md:col-span-2">
+              <h4 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
+                <span>🔧</span>
+                Tipo de Servicio
+              </h4>
+            </div>
+            
+            <select 
+              name="servicio" 
+              className="col-span-2 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
+              required
+            >
+              <option value="">Selecciona el tipo de servicio *</option>
+              <option value="Desarrollo Web">🌐 Desarrollo Web</option>
+              <option value="Desarrollo de Software">💻 Desarrollo de Software</option>
+              <option value="Aplicaciones Móviles">📱 Aplicaciones Móviles</option>
+              <option value="Ciberseguridad">🔒 Ciberseguridad</option>
+              <option value="Soporte Técnico">🛠️ Soporte Técnico</option>
+              <option value="Infraestructura y Redes">🌐 Infraestructura y Redes</option>
+              <option value="Consultoría IT">📊 Consultoría IT</option>
+              <option value="Mantenimiento de Sistemas">⚙️ Mantenimiento de Sistemas</option>
+              <option value="Migración de Datos">📦 Migración de Datos</option>
+              <option value="Capacitación">🎓 Capacitación</option>
+              <option value="Otro">❓ Otro</option>
             </select>
-            <input name="presupuesto" type="number" min="0" step="1000" placeholder="Presupuesto estimado (opcional)" className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" />
-            <textarea name="mensaje" className="col-span-2 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" rows={4} required placeholder="Describe brevemente tu necesidad o proyecto..." />
-            <button type="submit" className="col-span-2 bg-gradient-to-r from-blue-700 to-blue-500 text-white py-4 sm:py-5 rounded-xl font-bold text-lg sm:text-xl shadow-lg hover:from-blue-800 hover:to-blue-600 transition mt-4">Solicitar presupuesto</button>
-            {success && <div className="col-span-2 text-green-600 bg-green-50 border border-green-200 rounded px-6 py-4 font-semibold text-center mt-4 text-lg">¡Presupuesto enviado correctamente!</div>}
+            
+            {/* Presupuesto estimado */}
+            <div className="md:col-span-2">
+              <h4 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
+                <span>💰</span>
+                Presupuesto y Detalles
+              </h4>
+            </div>
+            
+            <input 
+              name="presupuesto" 
+              type="number" 
+              min="0" 
+              step="1000" 
+              placeholder="Presupuesto estimado (opcional)" 
+              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
+            />
+            
+            <select 
+              name="urgencia" 
+              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl"
+            >
+              <option value="">Nivel de urgencia</option>
+              <option value="Baja">🟢 Baja (1-2 meses)</option>
+              <option value="Media">🟡 Media (2-4 semanas)</option>
+              <option value="Alta">🔴 Alta (1-2 semanas)</option>
+              <option value="Crítica">⚫ Crítica (inmediata)</option>
+            </select>
+            
+            {/* Mensaje detallado */}
+            <textarea 
+              name="mensaje" 
+              className="col-span-2 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
+              rows={6} 
+              required 
+              placeholder="Describe detalladamente tu proyecto, necesidades específicas, requisitos técnicos, plazos, y cualquier información adicional que consideres importante... *"
+            />
+            
+            {/* Botón de envío */}
+            <button 
+              type="submit" 
+              className="col-span-2 bg-gradient-to-r from-blue-700 to-blue-500 text-white py-4 sm:py-5 rounded-xl font-bold text-lg sm:text-xl shadow-lg hover:from-blue-800 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <span>🎫</span>
+              Crear Ticket de Soporte
+            </button>
+            
+            {success && (
+              <div className="col-span-2 text-green-600 bg-green-50 border border-green-200 rounded-xl px-6 py-4 font-semibold text-center mt-4 text-lg flex items-center justify-center gap-2">
+                <span>✅</span>
+                ¡Ticket creado correctamente! Nos pondremos en contacto contigo pronto.
+              </div>
+            )}
           </form>
-          <div className="text-center text-base text-gray-500 mt-8">O escríbenos a <a href="mailto:info@it360.com" className="underline">info@it360.com</a></div>
+          
+          <div className="text-center text-base text-gray-500 mt-8">
+            <p>📧 O escríbenos directamente a <a href="mailto:info@it360.com" className="underline text-blue-600 hover:text-blue-800">info@it360.com</a></p>
+            <p className="mt-2">📱 WhatsApp: <a href="https://wa.me/5493425089906" className="underline text-green-600 hover:text-green-800">+54 9 342 508-9906</a></p>
+          </div>
         </div>
       </section>
 
