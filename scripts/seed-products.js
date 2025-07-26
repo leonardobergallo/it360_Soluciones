@@ -1,121 +1,134 @@
 const { PrismaClient } = require('@prisma/client');
-
 const prisma = new PrismaClient();
 
-const products = [
-  {
-    name: "Laptop HP Pavilion",
-    description: "Laptop de alto rendimiento con procesador Intel i7, 16GB RAM, 512GB SSD. Ideal para trabajo y gaming.",
-    price: 899.99,
-    stock: 15
-  },
-  {
-    name: "Monitor Samsung 27\"",
-    description: "Monitor curvo Full HD con resolución 1920x1080, tiempo de respuesta 1ms, perfecto para gaming y trabajo.",
-    price: 299.99,
-    stock: 25
-  },
-  {
-    name: "Teclado Mecánico RGB",
-    description: "Teclado gaming con switches Cherry MX Blue, iluminación RGB personalizable, teclas anti-ghosting.",
-    price: 89.99,
-    stock: 30
-  },
-  {
-    name: "Mouse Gaming Logitech",
-    description: "Mouse inalámbrico con sensor HERO 25K, 6 botones programables, hasta 25,600 DPI ajustables.",
-    price: 79.99,
-    stock: 20
-  },
-  {
-    name: "Auriculares Sony WH-1000XM4",
-    description: "Auriculares inalámbricos con cancelación de ruido activa, 30 horas de batería, calidad de sonido premium.",
-    price: 349.99,
-    stock: 12
-  },
-  {
-    name: "Webcam Logitech C920",
-    description: "Webcam Full HD 1080p con micrófono integrado, autofocus, perfecta para videoconferencias y streaming.",
-    price: 69.99,
-    stock: 18
-  }
-];
-
-const services = [
-  {
-    name: "Instalación de Software",
-    description: "Instalación y configuración de software empresarial, antivirus, y herramientas de productividad.",
-    price: 49.99
-  },
-  {
-    name: "Mantenimiento de PC",
-    description: "Limpieza física, optimización del sistema, actualización de drivers y diagnóstico completo.",
-    price: 39.99
-  },
-  {
-    name: "Configuración de Red",
-    description: "Instalación y configuración de routers, switches, puntos de acceso WiFi y seguridad de red.",
-    price: 79.99
-  },
-  {
-    name: "Recuperación de Datos",
-    description: "Recuperación de archivos eliminados, reparación de discos duros y backup de información importante.",
-    price: 99.99
-  },
-  {
-    name: "Desarrollo Web",
-    description: "Creación de sitios web profesionales, e-commerce, aplicaciones web y optimización SEO.",
-    price: 299.99
-  },
-  {
-    name: "Soporte Técnico Remoto",
-    description: "Asistencia técnica remota para resolver problemas de software, configuración y optimización.",
-    price: 29.99
-  }
-];
-
-async function seedData() {
+async function seedProducts() {
   try {
-    console.log('🌱 Iniciando seed de datos...');
+    console.log('🌱 Poblando base de datos con productos de ejemplo...\n');
 
-    // Limpiar datos existentes
-    await prisma.sale.deleteMany();
-    await prisma.product.deleteMany();
-    await prisma.service.deleteMany();
+    const products = [
+      {
+        name: 'Laptop HP Pavilion',
+        description: 'Laptop HP Pavilion 15.6" Intel Core i5, 8GB RAM, 512GB SSD, Windows 11',
+        price: 899.99,
+        stock: 15,
+        category: 'hardware',
+        image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400',
+        active: true
+      },
+      {
+        name: 'Mouse Inalámbrico Logitech',
+        description: 'Mouse inalámbrico Logitech M185, 1000 DPI, batería de 12 meses',
+        price: 25.99,
+        stock: 50,
+        category: 'perifericos',
+        image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400',
+        active: true
+      },
+      {
+        name: 'Teclado Mecánico RGB',
+        description: 'Teclado mecánico gaming con switches Cherry MX Red y retroiluminación RGB',
+        price: 129.99,
+        stock: 20,
+        category: 'perifericos',
+        image: 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400',
+        active: true
+      },
+      {
+        name: 'Monitor Samsung 24"',
+        description: 'Monitor Samsung 24" Full HD, 75Hz, FreeSync, HDMI, VGA',
+        price: 199.99,
+        stock: 30,
+        category: 'monitores',
+        image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400',
+        active: true
+      },
+      {
+        name: 'Disco Duro Externo 1TB',
+        description: 'Disco duro externo Western Digital 1TB, USB 3.0, compatible con PC y Mac',
+        price: 59.99,
+        stock: 25,
+        category: 'almacenamiento',
+        image: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400',
+        active: true
+      },
+      {
+        name: 'Webcam HD 1080p',
+        description: 'Webcam Logitech C920 HD 1080p, micrófono integrado, compatible con Zoom/Teams',
+        price: 79.99,
+        stock: 40,
+        category: 'perifericos',
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+        active: true
+      },
+      {
+        name: 'Router WiFi 6',
+        description: 'Router TP-Link Archer AX10 WiFi 6, 1500 Mbps, 4 antenas, fácil configuración',
+        price: 89.99,
+        stock: 12,
+        category: 'redes',
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+        active: true
+      },
+      {
+        name: 'Impresora Multifunción',
+        description: 'Impresora HP DeskJet 3755 multifunción, WiFi, escáner, copiadora',
+        price: 149.99,
+        stock: 18,
+        category: 'impresoras',
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+        active: true
+      },
+      {
+        name: 'Cable HDMI 2.0',
+        description: 'Cable HDMI 2.0 de alta velocidad, 4K, 3 metros, dorado',
+        price: 12.99,
+        stock: 100,
+        category: 'cables',
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+        active: true
+      },
+      {
+        name: 'Soporte para Monitor',
+        description: 'Soporte para monitor articulado, hasta 27", ajustable, VESA 75x75/100x100',
+        price: 45.99,
+        stock: 35,
+        category: 'accesorios',
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+        active: true
+      }
+    ];
 
-    console.log('🗑️ Datos anteriores eliminados');
+    let createdCount = 0;
+    let errorCount = 0;
 
-    // Crear productos
     for (const product of products) {
-      await prisma.product.create({
-        data: product
-      });
+      try {
+        await prisma.product.create({
+          data: product
+        });
+        createdCount++;
+        console.log(`✅ Creado producto: ${product.name} - $${product.price}`);
+      } catch (error) {
+        errorCount++;
+        console.error(`❌ Error creando producto ${product.name}:`, error.message);
+      }
     }
-    console.log(`✅ ${products.length} productos creados`);
 
-    // Crear servicios
-    for (const service of services) {
-      await prisma.service.create({
-        data: service
-      });
+    console.log('\n📊 Resumen de creación de productos:');
+    console.log(`   ✅ Creados exitosamente: ${createdCount}`);
+    console.log(`   ❌ Errores: ${errorCount}`);
+    console.log(`   📋 Total procesados: ${products.length}`);
+
+    if (createdCount > 0) {
+      console.log('\n🎉 Productos de ejemplo creados exitosamente!');
+      console.log('💡 Ahora puedes probar la funcionalidad de subir Excel.');
     }
-    console.log(`✅ ${services.length} servicios creados`);
-
-    console.log('🎉 Seed completado exitosamente!');
-    
-    // Mostrar resumen
-    const totalProducts = await prisma.product.count();
-    const totalServices = await prisma.service.count();
-    
-    console.log(`\n📊 Resumen:`);
-    console.log(`- Productos: ${totalProducts}`);
-    console.log(`- Servicios: ${totalServices}`);
 
   } catch (error) {
-    console.error('❌ Error durante el seed:', error);
+    console.error('❌ Error durante la creación de productos:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-seedData(); 
+seedProducts(); 

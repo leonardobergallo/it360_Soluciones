@@ -22,6 +22,7 @@
     "get-users": "node scripts/get-users.js",
     "migrate-presupuestos": "node scripts/migrate-presupuestos-to-tickets.js",
     "seed-tickets": "node scripts/seed-tickets.js",
+    "seed-products": "node scripts/seed-products.js",
     "get-tickets": "node scripts/get-tickets.js",
     "create-test-users": "node scripts/create-test-users.js",
     "migrate-neon": "node scripts/migrate-neon-presupuestos.js",
@@ -37,12 +38,14 @@
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
     "mercadopago": "^2.8.0",
+    "multer": "^2.0.2",
     "next": "15.3.4",
     "prisma": "^6.10.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
-    "resend": "^4.6.0"
+    "resend": "^4.6.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

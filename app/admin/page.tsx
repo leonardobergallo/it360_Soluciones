@@ -118,7 +118,7 @@ export default function AdminDashboard() {
 
   const actionCards = [
     { label: "Productos", count: counts.products, href: "/admin/products", color: "bg-green-50 text-green-800", icon: "📦" },
-    { label: "Importar Productos", count: "CSV/Excel", href: "/admin/import-products", color: "bg-blue-50 text-blue-800", icon: "📥" },
+    { label: "Subir Excel", count: "Productos", href: "/admin/upload-products", color: "bg-blue-50 text-blue-800", icon: "📊" },
     { label: "Servicios", count: counts.services, href: "/admin/services", color: "bg-yellow-50 text-yellow-800", icon: "🔧" },
     { label: "Tickets", count: counts.tickets, href: "/admin/tickets", color: "bg-indigo-50 text-indigo-800", icon: "🎫" },
     { label: "Ventas", count: counts.sales, href: "/admin/sales", color: "bg-purple-50 text-purple-800", icon: "💰" },
