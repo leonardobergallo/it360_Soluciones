@@ -23,6 +23,7 @@ export default function AdminDashboard() {
     services: 0,
     sales: 0,
     contacts: 0,
+    tickets: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,9 +37,10 @@ export default function AdminDashboard() {
           fetch("/api/services").then(r => r.ok ? r.json() : []),
           fetch("/api/sales").then(r => r.ok ? r.json() : []),
           fetch("/api/contact").then(r => r.ok ? r.json() : []),
+          fetch("/api/tickets").then(r => r.ok ? r.json() : []),
         ]);
 
-        const [users, products, services, sales, contacts] = results.map(result => {
+        const [users, products, services, sales, contacts, tickets] = results.map(result => {
           if (result.status === 'fulfilled') {
             return Array.isArray(result.value) ? result.value : [];
           }
@@ -59,6 +61,7 @@ export default function AdminDashboard() {
           services: services.length,
           sales: sales.length,
           contacts: contacts.length,
+          tickets: tickets.length,
         });
         setError(null);
       } catch (err) {
@@ -73,6 +76,7 @@ export default function AdminDashboard() {
           services: 0,
           sales: 0,
           contacts: 0,
+          tickets: 0,
         });
       } finally {
         setLoading(false);
@@ -116,6 +120,7 @@ export default function AdminDashboard() {
     { label: "Productos", count: counts.products, href: "/admin/products", color: "bg-green-50 text-green-800", icon: "📦" },
     { label: "Importar Productos", count: "CSV/Excel", href: "/admin/import-products", color: "bg-blue-50 text-blue-800", icon: "📥" },
     { label: "Servicios", count: counts.services, href: "/admin/services", color: "bg-yellow-50 text-yellow-800", icon: "🔧" },
+    { label: "Tickets", count: counts.tickets, href: "/admin/tickets", color: "bg-indigo-50 text-indigo-800", icon: "🎫" },
     { label: "Ventas", count: counts.sales, href: "/admin/sales", color: "bg-purple-50 text-purple-800", icon: "💰" },
     { label: "Contactos", count: counts.contacts, href: "/admin/contacts", color: "bg-pink-50 text-pink-800", icon: "📞" },
     { label: "Transferencias", count: "Gestionar", href: "/admin/transferencias", color: "bg-orange-50 text-orange-800", icon: "💳" },

@@ -18,7 +18,16 @@
     "verify:neon": "node scripts/verify-neon-setup.js",
     "verify:env": "node scripts/verify-env.js",
     "setup:env": "node scripts/setup-env.js",
-    "diagnose:login": "node scripts/diagnose-login.js"
+    "diagnose:login": "node scripts/diagnose-login.js",
+    "get-users": "node scripts/get-users.js",
+    "migrate-presupuestos": "node scripts/migrate-presupuestos-to-tickets.js",
+    "seed-tickets": "node scripts/seed-tickets.js",
+    "get-tickets": "node scripts/get-tickets.js",
+    "create-test-users": "node scripts/create-test-users.js",
+    "migrate-neon": "node scripts/migrate-neon-presupuestos.js",
+    "migrate-neon-direct": "node scripts/migrate-neon-direct.js",
+    "backup-neon": "node scripts/backup-neon.js",
+    "backup-list": "node scripts/backup-neon.js --list"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
