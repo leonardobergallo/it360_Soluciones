@@ -4,7 +4,7 @@ import { Resend } from 'resend';
 import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // POST - Aprobar o rechazar solicitud de transferencia
 export async function POST(request: NextRequest) {
@@ -139,7 +139,7 @@ async function enviarEmailAprobacion({
   direccion: string;
   mensaje: string;
 }) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!resend) {
     console.log('RESEND_API_KEY no configurada, solo logueando email de aprobación');
     console.log('Email que se enviaría al cliente:', { nombre, email, mensaje });
     return;
@@ -233,7 +233,7 @@ async function enviarEmailAprobacionMercadoPago({
   direccion: string;
   mensaje: string;
 }) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!resend) {
     console.log('RESEND_API_KEY no configurada, solo logueando email de aprobación MercadoPago');
     console.log('Email que se enviaría al cliente:', { nombre, email, mensaje });
     return;
@@ -312,7 +312,7 @@ async function enviarEmailRechazo({
   email: string;
   motivo: string;
 }) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!resend) {
     console.log('RESEND_API_KEY no configurada, solo logueando email de rechazo');
     console.log('Email que se enviaría al cliente:', { nombre, email, motivo });
     return;
