@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Resend } from 'resend';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
 
 // Función para generar número de ticket único
 function generateTicketNumber(): string {
@@ -196,7 +195,7 @@ async function enviarEmailTicket(ticket: any) {
   }
 
   const { data, error } = await resend.emails.send({
-    from: 'IT360 Soluciones <info@it360.com>',
+    from: 'IT360 Soluciones <it360tecnologia@gmail.com>',
     to: ['it360tecnologia@gmail.com'], // Email principal de IT360
     subject: `🎫 Nuevo Ticket ${ticket.ticketNumber} - ${ticket.tipo}`,
     html: `

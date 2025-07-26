@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
-import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+
 
 // GET: Listar todos los mensajes
 export async function GET() {
@@ -59,7 +59,7 @@ async function enviarEmailAdmin({
   }
 
   const { data, error } = await resend.emails.send({
-    from: 'IT360 Soluciones <info@it360.com>',
+    from: 'IT360 Soluciones <it360tecnologia@gmail.com>',
     to: ['it360tecnologia@gmail.com'], // Email principal de IT360
     subject: `Nuevo mensaje de contacto de ${name}`,
     html: `

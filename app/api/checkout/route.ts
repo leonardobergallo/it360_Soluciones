@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { Resend } from 'resend';
+
 
 const prisma = new PrismaClient();
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 // POST - Procesar solicitud de checkout
 export async function POST(request: NextRequest) {
@@ -172,7 +172,7 @@ async function enviarEmailCliente({
   }
 
   const { data, error } = await resend.emails.send({
-    from: 'IT360 Soluciones <info@it360.com>',
+    from: 'IT360 Soluciones <it360tecnologia@gmail.com>',
     to: [email],
     subject: 'Solicitud de compra recibida - IT360 Soluciones',
     html: `
@@ -292,7 +292,7 @@ async function enviarEmailAdmin({
   }
 
   const { data, error } = await resend.emails.send({
-    from: 'IT360 Soluciones <info@it360.com>',
+    from: 'IT360 Soluciones <it360tecnologia@gmail.com>',
     to: ['it360tecnologia@gmail.com'], // Email principal de IT360
     subject: `Nueva solicitud de compra de ${nombre} - $${total.toLocaleString()}`,
     html: `

@@ -104,7 +104,7 @@ export default function CentroAyudaPage() {
                   </div>
                   <div>
                     <p className="text-sm text-white/60">Email</p>
-                    <p className="text-white">info@it360.com</p>
+                    <p className="text-white">it360tecnologia@gmail.com</p>
                   </div>
                 </div>
 
