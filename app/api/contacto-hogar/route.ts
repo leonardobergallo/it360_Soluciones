@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { Resend } from 'resend';
+
 
 const prisma = new PrismaClient();
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 // POST - Crear una nueva consulta de Hogar Inteligente
 export async function POST(request: NextRequest) {
@@ -75,7 +75,7 @@ async function enviarEmailConsulta(data: {
     if (!process.env.RESEND_API_KEY) {
       console.log('RESEND_API_KEY no configurada, solo logueando email');
       console.log('=== EMAIL DE CONSULTA HOGAR INTELIGENTE ===');
-      console.log('Para: info@it360.com.ar');
+      console.log('Para: it360tecnologia@gmail.com.ar');
       console.log('Asunto: Nueva consulta de Hogar Inteligente');
       console.log('Contenido:', data);
       console.log('==========================================');

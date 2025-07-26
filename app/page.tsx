@@ -1178,7 +1178,7 @@ export default function Home() {
           </form>
           
           <div className="text-center text-base text-gray-500 mt-8">
-            <p>📧 O escríbenos directamente a <a href="mailto:info@it360.com" className="underline text-blue-600 hover:text-blue-800">info@it360.com</a></p>
+            <p>📧 O escríbenos directamente a <a href="mailto:it360tecnologia@gmail.com" className="underline text-blue-600 hover:text-blue-800">it360tecnologia@gmail.com</a></p>
             <p className="mt-2">📱 WhatsApp: <a href="https://wa.me/5493425089906" className="underline text-green-600 hover:text-green-800">+54 9 342 508-9906</a></p>
           </div>
         </div>

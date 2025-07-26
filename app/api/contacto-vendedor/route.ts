@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { Resend } from 'resend';
+
 
 const prisma = new PrismaClient();
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 // POST - Crear una nueva consulta de contacto con vendedor
 export async function POST(request: NextRequest) {
@@ -125,9 +125,9 @@ async function enviarEmailCliente({
     return;
   }
 
-  const { data, error } = await resend.emails.send({
-    from: 'IT360 Soluciones <info@it360.com>',
-    to: [email],
+      const { data, error } = await resend.emails.send({
+      from: 'IT360 Soluciones <it360tecnologia@gmail.com>',
+      to: [email],
     subject: 'Consulta recibida - IT360 Soluciones',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -205,7 +205,7 @@ async function enviarEmailAdmin({
   }
 
   const { data, error } = await resend.emails.send({
-    from: 'IT360 Soluciones <info@it360.com>',
+    from: 'IT360 Soluciones <it360tecnologia@gmail.com>',
     to: ['it360tecnologia@gmail.com'], // Email principal de IT360
     subject: `Nueva consulta de ${nombre} - ${producto || 'Producto'}`,
     html: `
