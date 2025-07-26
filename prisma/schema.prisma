@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -111,26 +111,17 @@ model PaymentPreference {
   updatedAt     DateTime @updatedAt
 }
 
-model Presupuesto {
-  id          String   @id @default(uuid())
-  nombre      String
-  email       String
-  telefono    String?
-  empresa     String?
-  servicio    String
-  mensaje     String?
-  estado      String   @default("pendiente")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 model Ticket {
   id          String   @id @default(uuid())
   ticketNumber String  @unique // Número de ticket único
   nombre      String
   email       String
   telefono    String?
-  empresa     String?
+  // --- Campos de presupuesto ---
+  empresa     String?  // Solo para presupuestos
+  servicio    String?  // Solo para presupuestos
+  mensaje     String?  // Solo para presupuestos
+  // --- Fin campos de presupuesto ---
   tipo        String   // "presupuesto", "soporte", "contacto", "venta", "consulta"
   categoria   String   // Categoría específica del tipo
   asunto      String

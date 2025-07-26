@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // Función para generar número de ticket único
 function generateTicketNumber(): string {
@@ -189,7 +189,7 @@ async function enviarNotificacionTicket(ticket: any) {
 
 // Función para enviar email del ticket
 async function enviarEmailTicket(ticket: any) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!resend) {
     console.log('RESEND_API_KEY no configurada, solo logueando email del ticket');
     console.log('Email que se enviaría:', { ticket });
     return;
