@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-
+import { Resend } from 'resend';
 
 const prisma = new PrismaClient();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Función para generar número de ticket único
+function generateTicketNumber(): string {
+  const timestamp = Date.now().toString();
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `HOGAR-${timestamp}-${random}`;
+}
 
 // POST - Crear una nueva consulta de Hogar Inteligente
 export async function POST(request: NextRequest) {
@@ -19,38 +26,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Crear el presupuesto en la base de datos
-    const presupuesto = await prisma.presupuesto.create({
+    // Generar número de ticket único
+    const ticketNumber = generateTicketNumber();
+
+    // Crear ticket en lugar de presupuesto
+    const ticket = await prisma.ticket.create({
       data: {
+        ticketNumber,
         nombre,
         email,
-        telefono: telefono || '',
+        telefono: telefono || null,
         empresa: tipoConsulta || 'Hogar Inteligente',
         servicio: 'Hogar Inteligente',
         mensaje,
-        estado: 'pendiente',
+        tipo: 'presupuesto',
+        categoria: 'hogar-inteligente',
+        asunto: `Consulta de Hogar Inteligente - ${tipoConsulta || 'General'}`,
+        descripcion: mensaje,
+        urgencia: 'normal',
+        prioridad: 'media',
+        estado: 'abierto'
       },
     });
 
-    // Enviar email (función simple por ahora)
-    try {
-      await enviarEmailConsulta({
-        nombre,
-        email,
-        telefono,
-        mensaje,
-        tipoConsulta,
-      });
-    } catch (emailError) {
-      console.error('Error al enviar email:', emailError);
-      // No fallamos si el email no se envía, solo lo registramos
-    }
+    // Enviar notificación
+    await enviarNotificacionTicket(ticket);
 
     return NextResponse.json(
       { 
         success: true, 
         message: 'Consulta enviada con éxito',
-        presupuesto 
+        ticket 
       }, 
       { status: 201 }
     );

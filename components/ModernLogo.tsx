@@ -22,7 +22,7 @@ export default function ModernLogo({ size = 'md', className = '' }: ModernLogoPr
 
   // Usar un ID fijo para evitar problemas de hidratación
   const gradientId = "logo-gradient-fixed";
-
+  
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       {/* Logo SVG moderno */}
@@ -101,7 +101,7 @@ export default function ModernLogo({ size = 'md', className = '' }: ModernLogoPr
         {/* Efecto de brillo */}
         <div className="absolute inset-0 bg-white/20 rounded-full blur-sm animate-pulse"></div>
       </div>
-
+      
       {/* Texto del logo */}
       <div className="flex flex-col">
         <span className={`font-display font-bold tracking-tight ${textSizes[size]} bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent`}>
@@ -111,60 +111,6 @@ export default function ModernLogo({ size = 'md', className = '' }: ModernLogoPr
           SOLUCIONES
         </span>
       </div>
-    </div>
-  );
-}
-
-// Variante minimalista
-export function MinimalLogo({ size = 'md', className = '' }: { size?: 'sm' | 'md' | 'lg' | 'xl'; className?: string }) {
-  const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12',
-    xl: 'w-16 h-16'
-  };
-
-  return (
-    <div className={`${sizeClasses[size]} relative ${className}`}>
-      <svg
-        viewBox="0 0 100 100"
-        className="w-full h-full"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <linearGradient id="minimal-gradient-fixed" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#06b6d4" />
-            <stop offset="100%" stopColor="#8b5cf6" />
-          </linearGradient>
-        </defs>
-        
-        {/* Círculo con gradiente */}
-        <circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="url(#minimal-gradient-fixed)"
-          className="drop-shadow-lg"
-        />
-        
-        {/* Elemento central minimalista */}
-        <circle
-          cx="50"
-          cy="50"
-          r="12"
-          fill="white"
-          opacity="0.9"
-        />
-        
-        {/* Punto central */}
-        <circle
-          cx="50"
-          cy="50"
-          r="4"
-          fill="url(#minimal-gradient-fixed)"
-        />
-      </svg>
     </div>
   );
 } 

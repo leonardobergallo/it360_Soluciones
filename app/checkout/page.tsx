@@ -154,15 +154,16 @@ export default function CheckoutPage() {
       // Si es MercadoPago, mostrar mensaje de solicitud enviada y luego redirigir
       if (form.metodoPago === 'mercadopago') {
         setSuccess(`
-          ✅ Solicitud enviada con éxito!
+          ✅ ¡Solicitud enviada con éxito!
           
           💳 PROCESANDO PAGO CON MERCADOPAGO:
           
           Tu solicitud ha sido registrada y ahora serás redirigido a MercadoPago.
           
-          📋 Proceso de gestión:
-          • Se ha creado una solicitud de gestión para tu compra
-          • Serás redirigido a MercadoPago para completar el pago
+          📋 Proceso que seguiremos:
+          • Verificaremos stock disponible de los productos
+          • Si hay disponibilidad, procesaremos tu pago
+          • Si no hay stock, te contactaremos para alternativas
           • Nuestro equipo gestionará tu pedido después del pago
           • Te contactaremos para coordinar la entrega
           
@@ -170,7 +171,7 @@ export default function CheckoutPage() {
           • WhatsApp: +54 9 342 508-9906
           • Email: leonardobergallo@gmail.com
           
-          Redirigiendo a MercadoPago en 3 segundos...
+          ⏰ Redirigiendo a MercadoPago en 3 segundos...
         `);
         
         // Limpiar carrito después de enviar la solicitud
@@ -218,22 +219,32 @@ export default function CheckoutPage() {
       // Si es transferencia, mostrar mensaje de aprobación pendiente
       if (form.metodoPago === 'transferencia') {
         setSuccess(`
-          ✅ Solicitud enviada con éxito!
+          ✅ ¡Solicitud enviada con éxito!
           
-          ⚠️ IMPORTANTE - PENDIENTE DE APROBACIÓN:
+          📋 Tu solicitud está siendo procesada por nuestro equipo.
           
-          Tu solicitud está siendo revisada por nuestro equipo.
+          ⚠️ IMPORTANTE - PROCESO DE VERIFICACIÓN:
           
-          📋 Proceso de aprobación:
-          • Verificaremos el stock disponible de los productos
-          • Te contactaremos para confirmar la disponibilidad
-          • Solo después de la confirmación podrás proceder con el pago
+          🔍 PASO 1: Verificación de stock
+          • Revisaremos la disponibilidad de cada producto
+          • Confirmaremos precios actualizados
+          • Verificaremos tiempos de entrega
+          
+          📞 PASO 2: Contacto contigo
+          • Te llamaremos o enviaremos WhatsApp
+          • Confirmaremos disponibilidad y precio final
+          • Te daremos opciones de pago disponibles
+          
+          💳 PASO 3: Proceso de pago
+          • Solo después de tu confirmación
+          • Te enviaremos los datos bancarios
+          • Procesaremos tu transferencia
           
           💬 Contacta con nosotros:
           • WhatsApp: +54 9 342 508-9906
           • Email: leonardobergallo@gmail.com
           
-          Te enviaremos un email con los datos bancarios una vez aprobada tu solicitud.
+          ⏰ Tiempo estimado de respuesta: 2-4 horas hábiles
         `);
         
         // Limpiar carrito después de enviar la solicitud
@@ -286,6 +297,32 @@ export default function CheckoutPage() {
             <p className="text-white/70 text-lg">Completa tus datos para finalizar la compra de tus productos.</p>
           </div>
 
+          {/* Aviso importante sobre verificación de stock */}
+          <div className="backdrop-blur-md bg-yellow-500/10 border border-yellow-400/30 rounded-2xl p-6 mb-8">
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-yellow-300 mb-2">⚠️ Proceso de verificación de stock</h3>
+                <p className="text-white/90 text-sm leading-relaxed mb-3">
+                  <strong>Importante:</strong> Tu compra no se procesará inmediatamente. Nuestro equipo verificará la disponibilidad de stock antes de proceder con el pago.
+                </p>
+                <div className="bg-white/5 rounded-xl p-4">
+                  <h4 className="text-yellow-300 font-semibold mb-2">📋 Proceso que seguiremos:</h4>
+                  <ol className="text-white/80 text-sm space-y-1">
+                    <li>1. Recibimos tu solicitud de compra</li>
+                    <li>2. Verificamos el stock disponible de cada producto</li>
+                    <li>3. Te contactamos para confirmar disponibilidad y precio final</li>
+                    <li>4. Solo después de tu confirmación procedemos con el pago</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Mensajes de estado */}
           {error && (
             <div className="backdrop-blur-md bg-red-500/20 border border-red-400/30 text-red-300 rounded-2xl px-6 py-4 mb-6 text-center font-semibold flex items-center justify-center gap-3">
@@ -293,33 +330,7 @@ export default function CheckoutPage() {
               {error}
             </div>
           )}
-          {success && (
-            <div className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 rounded-2xl px-6 py-4 mb-6">
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="font-semibold">¡Solicitud enviada con éxito!</span>
-              </div>
-              <div className="text-sm whitespace-pre-line text-center">
-                {success}
-              </div>
-              <div className="mt-4 flex justify-center gap-4">
-                <a 
-                  href="https://wa.me/5493425089906" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  📱 Contactar por WhatsApp
-                </a>
-                <a 
-                  href="mailto:leonardobergallo@gmail.com" 
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  📧 Enviar Email
-                </a>
-              </div>
-            </div>
-          )}
+
 
           {loading ? (
             <div className="text-center py-12">
@@ -327,6 +338,49 @@ export default function CheckoutPage() {
                 <div className="w-8 h-8 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
               </div>
               <p className="text-white/70 mt-4">Cargando tu carrito...</p>
+            </div>
+          ) : success ? (
+            // Mostrar solo el mensaje de éxito cuando se haya enviado la solicitud
+            <div className="text-center py-8">
+              <div className="backdrop-blur-md bg-green-500/20 border border-green-400/30 rounded-2xl p-8">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-green-300">¡Solicitud Enviada!</h2>
+                </div>
+                <div className="text-sm whitespace-pre-line text-center text-white/90 mb-6">
+                  {success}
+                </div>
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <a 
+                    href="https://wa.me/5493425089906" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    <span>📱</span>
+                    Contactar por WhatsApp
+                  </a>
+                  <a 
+                    href="mailto:leonardobergallo@gmail.com" 
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    <span>📧</span>
+                    Enviar Email
+                  </a>
+                </div>
+                <div className="mt-6">
+                  <a 
+                    href="/catalogo" 
+                    className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors"
+                  >
+                    ← Volver al catálogo
+                  </a>
+                </div>
+              </div>
             </div>
           ) : (
             <>
@@ -441,31 +495,67 @@ export default function CheckoutPage() {
                       </option>
                     )}
                   </select>
+                  
+                  {/* Información específica del método de pago */}
                   {paymentConfig && (
-                    <p className="text-white/60 text-xs mt-2">
-                      {form.metodoPago === 'mercadopago' && paymentConfig.mercadopago?.descripcion}
-                      {form.metodoPago === 'transferencia' && '⚠️ Primero verificaremos stock y te contactaremos para confirmar disponibilidad antes de proceder con el pago.'}
-                    </p>
+                    <div className="mt-3 p-4 rounded-xl border border-white/10">
+                      {form.metodoPago === 'mercadopago' && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-green-300 font-semibold text-sm mb-1">💳 Pago inmediato disponible</p>
+                            <p className="text-white/70 text-xs">{paymentConfig.mercadopago?.descripcion}</p>
+                            <p className="text-white/60 text-xs mt-1">⚠️ Nota: Aún así verificaremos stock antes de procesar</p>
+                          </div>
+                        </div>
+                      )}
+                      {form.metodoPago === 'transferencia' && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-yellow-300 font-semibold text-sm mb-1">🏦 Transferencia bancaria</p>
+                            <p className="text-white/70 text-xs">Primero verificaremos stock y te contactaremos para confirmar disponibilidad antes de proceder con el pago.</p>
+                            <p className="text-white/60 text-xs mt-1">📞 Te enviaremos los datos bancarios después de la verificación</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 
                 <button 
                   type="submit" 
                   disabled={processing} 
-                  className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-5 px-6 rounded-2xl font-semibold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 group mt-6" 
+                  className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-5 px-6 rounded-2xl font-semibold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 group mt-6 border border-cyan-400/30 hover:border-cyan-300/50" 
                 >
                   {processing ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Procesando...
+                      Procesando solicitud...
                     </>
                   ) : (
                     <>
-                      <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"></div>
-                      Finalizar compra
+                      <div className="w-3 h-3 bg-white rounded-full group-hover:animate-pulse"></div>
+                      <span>📋 Enviar solicitud de compra</span>
+                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
                     </>
                   )}
                 </button>
+                
+                <div className="text-center text-sm text-white/60 mt-4 flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                  Recuerda: Verificaremos stock antes de procesar el pago
+                </div>
               </form>
             </>
           )}

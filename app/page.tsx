@@ -7,7 +7,7 @@ import ContactVendorModal from "@/components/ContactVendorModal";
 
 export default function Home() {
   // Estado para el menú móvil
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
 
   // Animación simple de fade-in al cargar
   useEffect(() => {
@@ -471,7 +471,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 w-full z-50 transition-all duration-300">
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <ModernLogo size="lg" />
+                            <ModernLogo size="lg" />
           </div>
           
           {/* Desktop - Iconos completos */}
@@ -513,127 +513,50 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Barra de navegación - Completamente uniforme */}
-      <nav className="bg-gradient-to-r from-slate-700/90 to-slate-600/90 backdrop-blur-xl border-b border-white/20 mt-20">
-        <div className="container mx-auto px-6">
-          {/* Desktop Menu - Uniforme */}
-          <div className="hidden md:flex items-center justify-center gap-8 py-4">
-            <a href="#inicio" className="font-bold text-cyan-300 hover:text-cyan-200 transition-colors text-base px-3 py-2 rounded-lg hover:bg-white/10">Inicio</a>
-            <a href="#servicios" className="text-white/80 hover:text-cyan-300 transition-colors font-medium text-base px-3 py-2 rounded-lg hover:bg-white/10">Servicios</a>
-            <a href="#productos" className="text-white/80 hover:text-cyan-300 transition-colors text-base px-3 py-2 rounded-lg hover:bg-white/10">Productos</a>
-            <a href="#nosotros" className="text-white/80 hover:text-cyan-300 transition-colors text-base px-3 py-2 rounded-lg hover:bg-white/10">Nosotros</a>
-            <a href="#testimonios" className="text-white/80 hover:text-cyan-300 transition-colors text-base px-3 py-2 rounded-lg hover:bg-white/10">Testimonios</a>
-            <a href="#contacto" className="text-white/80 hover:text-cyan-300 transition-colors text-base px-3 py-2 rounded-lg hover:bg-white/10">Contacto</a>
-          </div>
 
-          {/* Mobile Menu - Menú hamburguesa completo */}
-          <div className="md:hidden flex items-center justify-between py-4">
-            {/* Logo o título en móvil */}
-            <div className="flex items-center">
-              <span className="text-white font-bold text-lg">IT360</span>
-            </div>
-            
-            {/* Botón hamburguesa */}
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-white/80 hover:text-cyan-300 transition-colors p-3 rounded-lg hover:bg-white/10 w-12 h-12 flex items-center justify-center"
-              aria-label="Toggle menu"
-            >
-              <div className="relative w-6 h-6">
-                <span className={`absolute top-0 left-0 w-6 h-0.5 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2.5' : ''}`}></span>
-                <span className={`absolute top-2.5 left-0 w-6 h-0.5 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
-                <span className={`absolute top-5 left-0 w-6 h-0.5 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2.5' : ''}`}></span>
-              </div>
-            </button>
-          </div>
 
-          {/* Mobile Menu Dropdown - Menú completo desplegable */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden bg-slate-700/95 backdrop-blur-xl border-t border-white/20 py-4">
-              <div className="flex flex-col gap-3 px-6">
-                <a 
-                  href="#inicio" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <span className="text-cyan-400">🏠</span>
-                  Inicio
-                </a>
-                <a 
-                  href="#servicios" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <span className="text-cyan-400">🔧</span>
-                  Servicios
-                </a>
-                <a 
-                  href="#productos" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <span className="text-cyan-400">📦</span>
-                  Productos
-                </a>
-                <a 
-                  href="#nosotros" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <span className="text-cyan-400">👥</span>
-                  Nosotros
-                </a>
-                <a 
-                  href="#testimonios" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 border-b border-white/10 flex items-center gap-3"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <span className="text-cyan-400">⭐</span>
-                  Testimonios
-                </a>
-                <a 
-                  href="#contacto" 
-                  className="text-white/80 hover:text-cyan-300 transition-colors text-base py-3 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <span className="text-cyan-400">📞</span>
-                  Contacto
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
-      </nav>
-
-      {/* Hero Section - Futurista con letra más grande y uniforme */}
-      <section id="inicio" className="relative flex flex-col items-center justify-center flex-1 min-h-[60vh] py-20 px-6 text-center fade-in opacity-0 translate-y-8 transition-all duration-700">
+      {/* Hero Section - Estilo Catálogo */}
+      <section id="inicio" className="relative flex flex-col items-center justify-center flex-1 min-h-[50vh] py-16 px-6 text-center fade-in opacity-0 translate-y-8 transition-all duration-700">
         <div className="relative z-10 flex flex-col items-center justify-center w-full h-full max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-full border border-white/30 mb-6">
-            <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
-            <span className="text-sm text-white/90 font-medium">Tecnología del Futuro</span>
+          {/* Título simple y elegante */}
+          <div className="text-center mb-16">
+            <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-white mb-4">
+              IT360 Soluciones
+            </h1>
+            <p className="text-xl sm:text-2xl text-white/80 max-w-3xl mx-auto">
+              Soluciones tecnológicas integrales para tu empresa
+            </p>
           </div>
           
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-extrabold mb-8 px-6 leading-tight">
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
-              Bienvenido a IT360 Soluciones
-            </span>
-          </h1>
-          
-          <p className="text-lg sm:text-xl md:text-2xl mb-10 max-w-4xl font-medium px-6 text-white/90 leading-relaxed">
-            Soluciones tecnológicas integrales para tu empresa. 
-            <span className="text-cyan-300 font-semibold"> Innovación, soporte y desarrollo</span> a tu alcance.
-          </p>
+          {/* Tagline mejorado */}
+          <div className="mb-16 max-w-6xl">
+            <p className="text-2xl sm:text-3xl md:text-4xl font-medium px-6 text-white/90 leading-relaxed mb-6">
+              Soluciones tecnológicas integrales para tu empresa.
+            </p>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold px-6 leading-relaxed">
+              <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 bg-clip-text text-transparent">
+                Innovación, soporte y desarrollo
+              </span>
+              <span className="text-white/80"> a tu alcance.</span>
+            </p>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-6">
-            <a href="#contacto" className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 text-lg transform hover:scale-105">
-              Contáctanos
+            <a href="#contacto" className="group px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-bold shadow-2xl hover:shadow-cyan-500/25 hover:from-cyan-600 hover:to-blue-700 transition-all duration-500 text-lg transform hover:scale-110 border border-cyan-400/30">
+              <span className="flex items-center gap-3">
+                <span>💬</span>
+                Contáctanos
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
             </a>
-            <a href="#servicios" className="px-8 py-4 bg-white/15 backdrop-blur-sm text-white rounded-full font-semibold border border-white/30 hover:bg-white/25 transition-all duration-300 text-lg">
-              Ver Servicios
+            <a href="/servicios" className="group px-10 py-5 bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-xl text-white rounded-full font-bold border border-purple-400/50 hover:from-purple-500/30 hover:to-pink-500/30 transition-all duration-500 text-lg transform hover:scale-110 shadow-2xl hover:shadow-purple-500/25">
+              <span className="flex items-center gap-3">
+                <span>⚡</span>
+                Ver Servicios
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
             </a>
           </div>
-          
-
         </div>
       </section>
 
@@ -700,81 +623,37 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Servicios con modal expandible - Completamente uniforme */}
-      <section id="servicios" className="max-w-7xl mx-auto py-20 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 flex items-center justify-center gap-4">
-            <span>Nuestros</span>
-            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Servicios</span>
+      {/* Productos Más Vendidos / Ofertas */}
+      <section className="max-w-7xl mx-auto py-16 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 flex items-center justify-center gap-4">
+            <span>🔥</span>
+            <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Más Vendidos</span>
+            <span>🔥</span>
           </h2>
-          <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed px-6">
-            Soluciones tecnológicas integrales para impulsar tu negocio hacia el futuro digital
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-          {Array.isArray(services) && services.map((serv, i) => (
-            <div key={serv.id || i} className="group relative">
-              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-10 border border-white/20 hover:bg-white/25 hover:border-white/40 transition-all duration-300 transform hover:scale-105 h-full flex flex-col shadow-lg hover:shadow-xl">
-                <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 mx-auto shadow-lg">
-                  <span className="text-3xl text-white">💻</span>
-                </div>
-                
-                <h3 className="text-xl font-bold text-white mb-4 group-hover:text-cyan-300 transition-colors text-center">
-                  {serv.name || 'Servicio'}
-                </h3>
-                
-                <p className="text-white/80 mb-6 leading-relaxed text-base flex-grow text-center">
-                  {serv.description || 'Descripción del servicio'}
-                </p>
-                
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
-                  <span className="text-2xl font-bold text-cyan-300">
-                    ${serv.price || '0'}
-                  </span>
-                  <button 
-                    onClick={() => handleOpenService(i)}
-                    className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-base w-full sm:w-auto shadow-lg"
-                  >
-                    Saber más
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Productos - Completamente uniforme y destacado */}
-      <section id="productos" className="max-w-7xl mx-auto py-20 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 flex items-center justify-center gap-4">
-            <span>Nuestros</span>
-            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Productos</span>
-          </h2>
-          <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed px-6">
-            Tecnología de vanguardia para optimizar tu infraestructura empresarial
+          <p className="text-sm text-white/80 max-w-3xl mx-auto leading-relaxed px-6">
+            Los productos más populares y ofertas especiales que no te puedes perder
           </p>
         </div>
         
         {loadingProducts ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white/15 backdrop-blur-sm rounded-2xl p-10 border border-white/20 animate-pulse h-full shadow-lg">
-                <div className="w-full h-48 bg-white/20 rounded-xl mb-8"></div>
-                <div className="h-10 bg-white/20 rounded mb-6"></div>
-                <div className="h-8 bg-white/20 rounded mb-8"></div>
-                <div className="h-14 bg-white/20 rounded"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20 animate-pulse h-full shadow-lg">
+                <div className="w-full h-32 bg-white/20 rounded-lg mb-4"></div>
+                <div className="h-6 bg-white/20 rounded mb-3"></div>
+                <div className="h-4 bg-white/20 rounded mb-4"></div>
+                <div className="h-8 bg-white/20 rounded"></div>
               </div>
             ))}
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {products.map((product, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {products.slice(0, 5).map((product, i) => (
               <div key={product.id || i} className="group relative">
-                <div className="bg-white/15 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:bg-white/25 hover:border-white/40 transition-all duration-300 transform hover:scale-105 h-full flex flex-col shadow-lg hover:shadow-xl">
-                  {/* Imagen del producto con overlay */}
-                  <div className="relative h-48 bg-gradient-to-br from-cyan-500/30 to-blue-500/30">
+                <div className="bg-white/15 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:bg-white/25 hover:border-white/40 transition-all duration-300 transform hover:scale-105 h-full flex flex-col shadow-lg hover:shadow-xl">
+                  {/* Imagen del producto */}
+                  <div className="relative h-32 bg-gradient-to-br from-orange-500/30 to-red-500/30">
                     <img 
                       src={product.imagen || '/servicio-productos.png'} 
                       alt={product.name || 'Producto'} 
@@ -782,51 +661,43 @@ export default function Home() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                     
-                    {/* Icono del producto en la esquina superior derecha */}
-                    <div className="absolute top-3 right-3 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                      <span className="text-lg">{product.icon}</span>
+                    {/* Badge de oferta */}
+                    <div className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                      🔥 Oferta
                     </div>
                     
-                    {/* Badge de precio en la esquina superior izquierda */}
-                    <div className="absolute top-3 left-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-                      ${product.price || '0'}
+                    {/* Icono del producto */}
+                    <div className="absolute top-2 right-2 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
+                      <span className="text-sm">{product.icon}</span>
                     </div>
                   </div>
                   
-                  <div className="p-6 flex flex-col flex-grow">
-                    {/* Icono grande centrado arriba del título */}
-                    <div className="flex justify-center mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-2xl">{product.icon}</span>
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-cyan-300 transition-colors text-center">
+                  <div className="p-4 flex flex-col flex-grow">
+                    <h3 className="text-sm font-bold text-white mb-2 group-hover:text-orange-300 transition-colors line-clamp-2">
                       {product.name || 'Producto'}
                     </h3>
                     
-                    <p className="text-white/80 mb-6 leading-relaxed text-base flex-grow text-center">
+                    <p className="text-white/70 mb-4 leading-relaxed text-xs flex-grow line-clamp-2">
                       {product.description || 'Descripción del producto'}
                     </p>
                     
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
-                      <span className="text-2xl font-bold text-cyan-300">
+                    <div className="flex flex-col gap-2">
+                      <span className="text-lg font-bold text-orange-300">
                         ${product.price || '0'}
                       </span>
-                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                      
+                      <div className="flex gap-2">
                         <button 
                           onClick={() => handleProductSelect(product)}
-                          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-sm shadow-lg flex items-center justify-center gap-1"
+                          className="flex-1 px-3 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-medium text-xs shadow-lg"
                         >
-                          <span>Ver</span>
-                          <span className="text-xs">→</span>
+                          Ver
                         </button>
                         <button 
-                          onClick={() => handleContactVendor(product)}
-                          className="px-4 py-2 bg-white border border-cyan-500 text-cyan-600 rounded-lg hover:bg-cyan-50 transition-all duration-300 font-medium text-sm shadow-lg flex items-center justify-center gap-1"
+                          onClick={() => addToCart(product)}
+                          className="flex-1 px-3 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-all duration-300 font-medium text-xs border border-white/30"
                         >
-                          <span>Contactar</span>
-                          <span className="text-xs">📞</span>
+                          🛒
                         </button>
                       </div>
                     </div>
@@ -836,160 +707,121 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          // Productos de ejemplo si no hay productos en la API
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {[
-              {
-                id: '1',
-                name: 'Laptop HP Pavilion Gaming',
-                description: 'Laptop de alto rendimiento para trabajo y gaming con gráficos dedicados',
-                descripcionLarga: 'Laptop HP Pavilion Gaming con procesador Intel Core i7 de 11ª generación, 16GB RAM, SSD de 512GB y gráficos NVIDIA GTX 1650. Perfecta para trabajo profesional y gaming casual. Incluye teclado retroiluminado, webcam HD y conectividad WiFi 6.',
-                price: 899,
-                imagen: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop',
-                icon: '💻',
-                imagenes: [
-                  'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop'
-                ]
-              },
-              {
-                id: '2',
-                name: 'Mouse Gaming RGB',
-                description: 'Mouse inalámbrico con iluminación RGB personalizable y 6 botones programables',
-                descripcionLarga: 'Mouse gaming inalámbrico con sensor óptico de alta precisión, 6 botones programables y iluminación RGB personalizable. Batería recargable con hasta 50 horas de uso continuo. Compatible con software de configuración avanzada.',
-                price: 89,
-                imagen: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop',
-                icon: '🖱️',
-                imagenes: [
-                  'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop'
-                ]
-              },
-              {
-                id: '3',
-                name: 'Teclado Mecánico Pro',
-                description: 'Teclado mecánico con switches Cherry MX Blue y retroiluminación RGB',
-                descripcionLarga: 'Teclado mecánico profesional con switches Cherry MX Blue que ofrecen retroalimentación táctil y sonora. Retroiluminación RGB personalizable con 16.8 millones de colores. Construcción en aluminio con teclas PBT resistentes al desgaste.',
-                price: 149,
-                imagen: 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop',
-                icon: '⌨️',
-                imagenes: [
-                  'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop'
-                ]
-              },
-              {
-                id: '4',
-                name: 'Monitor 4K Ultra HD',
-                description: 'Monitor de 27 pulgadas con resolución 4K y tecnología HDR',
-                descripcionLarga: 'Monitor de 27 pulgadas con resolución 4K Ultra HD (3840x2160) y tecnología HDR para colores más vibrantes y realistas. Tiempo de respuesta de 1ms y frecuencia de actualización de 144Hz. Perfecto para gaming y edición de video profesional.',
-                price: 399,
-                imagen: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop',
-                icon: '🖥️',
-                imagenes: [
-                  'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop'
-                ]
-              },
-              {
-                id: '5',
-                name: 'Auricular Gaming Pro',
-                description: 'Auricular con cancelación de ruido y micrófono integrado para gaming',
-                descripcionLarga: 'Auricular gaming con cancelación de ruido activa y micrófono desmontable con cancelación de eco. Sonido envolvente 7.1 virtual para una experiencia inmersiva. Almohadillas de memoria viscoelástica para máximo confort durante largas sesiones.',
-                price: 129,
-                imagen: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop',
-                icon: '🎧',
-                imagenes: [
-                  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop'
-                ]
-              },
-              {
-                id: '6',
-                name: 'Webcam HD Streaming',
-                description: 'Cámara web de alta definición con micrófono integrado para streaming',
-                descripcionLarga: 'Cámara web de 1080p con micrófono integrado y cancelación de ruido. Autofocus automático y corrección de luz automática. Compatible con todas las plataformas de streaming. Incluye soporte ajustable y tapa de privacidad.',
-                price: 79,
-                imagen: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-                icon: '📹',
-                imagenes: [
-                  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-                  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'
-                ]
-              }
-            ].map((product) => (
-              <div key={product.id} className="group relative">
-                <div className="bg-white/15 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:bg-white/25 hover:border-white/40 transition-all duration-300 transform hover:scale-105 h-full flex flex-col shadow-lg hover:shadow-xl">
-                  {/* Imagen del producto con overlay */}
-                  <div className="relative h-48 bg-gradient-to-br from-cyan-500/30 to-blue-500/30">
-                    <img 
-                      src={product.imagen} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                    
-                    {/* Icono del producto en la esquina superior derecha */}
-                    <div className="absolute top-3 right-3 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                      <span className="text-lg">{product.icon}</span>
-                    </div>
-                    
-                    {/* Badge de precio en la esquina superior izquierda */}
-                    <div className="absolute top-3 left-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-                      ${product.price}
-                    </div>
-                  </div>
-                  
-                  <div className="p-6 flex flex-col flex-grow">
-                    {/* Icono grande centrado arriba del título */}
-                    <div className="flex justify-center mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-2xl">{product.icon}</span>
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-cyan-300 transition-colors text-center">
-                      {product.name}
-                    </h3>
-                    
-                    <p className="text-white/80 mb-6 leading-relaxed text-base flex-grow text-center">
-                      {product.description}
-                    </p>
-                    
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
-                      <span className="text-2xl font-bold text-cyan-300">
-                        ${product.price}
-                      </span>
-                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                        <button 
-                          onClick={() => handleProductSelect(product)}
-                          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-sm shadow-lg flex items-center justify-center gap-1"
-                        >
-                          <span>Ver</span>
-                          <span className="text-xs">→</span>
-                        </button>
-                        <button 
-                          onClick={() => handleContactVendor(product)}
-                          className="px-4 py-2 bg-white border border-cyan-500 text-cyan-600 rounded-lg hover:bg-cyan-50 transition-all duration-300 font-medium text-sm shadow-lg flex items-center justify-center gap-1"
-                        >
-                          <span>Contactar</span>
-                          <span className="text-xs">📞</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="text-center py-12">
+            <p className="text-white/60 text-lg">No hay productos disponibles</p>
           </div>
         )}
+        
+        {/* Botón para ir al catálogo completo */}
+        <div className="text-center mt-8">
+          <a 
+            href="/catalogo" 
+            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold border border-orange-400/30 hover:from-orange-600 hover:to-red-600 transition-all duration-300 text-base shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            <span>Ver Catálogo Completo</span>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
       </section>
+
+      {/* Servicios Mejorados - Compactos y Atractivos */}
+      <section id="servicios" className="max-w-7xl mx-auto py-12 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 flex items-center justify-center gap-4">
+            <span>🚀</span>
+            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Servicios IT</span>
+            <span>💡</span>
+          </h2>
+          <p className="text-sm text-white/80 max-w-3xl mx-auto leading-relaxed px-6">
+            Transformamos tu negocio con tecnología de vanguardia. Invierte en el futuro digital.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.isArray(services) && services.map((serv, i) => (
+            <div key={serv.id || i} className="group relative">
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/25 hover:border-white/40 transition-all duration-300 transform hover:scale-105 h-full flex flex-col shadow-lg hover:shadow-xl">
+                {/* Icono del servicio */}
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <span className="text-xl text-white">
+                    {serv.name?.includes('Desarrollo') ? '💻' : 
+                     serv.name?.includes('Redes') ? '🌐' : 
+                     serv.name?.includes('Software') ? '🔧' : 
+                     serv.name?.includes('Apps') ? '📱' : 
+                     serv.name?.includes('PC') ? '🖥️' : '⚡'}
+                  </span>
+                </div>
+                
+                {/* Título del servicio */}
+                <h3 className="text-base font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
+                  {serv.name || 'Servicio'}
+                </h3>
+                
+                {/* Descripción compacta */}
+                <p className="text-white/70 mb-4 leading-relaxed text-xs flex-grow line-clamp-3">
+                  {serv.description || 'Descripción del servicio'}
+                </p>
+                
+                {/* Beneficios de inversión */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 text-xs text-cyan-300 mb-1">
+                    <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
+                    <span>ROI Incrementado</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-cyan-300 mb-1">
+                    <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
+                    <span>Eficiencia Operativa</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-cyan-300">
+                    <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
+                    <span>Ventaja Competitiva</span>
+                  </div>
+                </div>
+                
+                {/* Precio y acción */}
+                <div className="flex flex-col gap-3 mt-auto">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold text-cyan-300">
+                      Presupuesto
+                    </span>
+                    <span className="text-xs text-white/60">Personalizado</span>
+                  </div>
+                  
+                  <button 
+                    onClick={() => handleOpenService(i)}
+                    className="w-full px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-sm shadow-lg group-hover:shadow-xl"
+                  >
+                    Ver Detalles
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {/* Call to Action para servicios */}
+        <div className="text-center mt-8">
+          <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 backdrop-blur-sm rounded-2xl p-6 border border-cyan-500/30">
+            <h3 className="text-lg font-bold text-white mb-2">¿Por qué invertir en nuestros servicios?</h3>
+            <p className="text-sm text-white/80 mb-4">
+              Obtén un retorno de inversión del 300% en el primer año. Tecnología probada y soporte 24/7.
+            </p>
+            <a 
+              href="/servicios" 
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full font-semibold border border-cyan-400/30 hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 text-sm shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <span>Ver Todos los Servicios</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+
 
       {/* Nosotros - Responsive con letra más grande */}
       <section id="nosotros" className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
@@ -1010,37 +842,37 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonios - Responsive con letra más grande */}
-      <section id="testimonios" className="bg-gradient-to-br from-pink-100 via-blue-50 to-purple-100 py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
+      {/* Testimonios - Homogéneo con el resto de la aplicación */}
+      <section id="testimonios" className="bg-gradient-to-br from-pink-100 via-blue-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-center text-blue-800 mb-12 flex items-center justify-center gap-3">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8 flex items-center justify-center gap-3">
             <span>Testimonios</span>
-            <span className="text-2xl sm:text-3xl">⭐</span>
+            <span className="text-lg sm:text-xl">⭐</span>
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-            <div className="relative bg-white rounded-2xl shadow-xl p-8 sm:p-10 text-center flex flex-col items-center overflow-hidden h-full">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="relative bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center flex flex-col items-center overflow-hidden h-full">
               <span className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-40 animate-pulse"></span>
-              <div className="relative mb-6">
-                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María G." className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
+              <div className="relative mb-4">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María G." className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
               </div>
-              <p className="italic mb-6 text-gray-700 relative z-10 text-lg sm:text-xl leading-relaxed flex-grow">&ldquo;El equipo de IT360 transformó nuestra infraestructura digital. ¡100% recomendados!&rdquo;</p>
-              <div className="font-semibold text-blue-700 relative z-10 text-lg sm:text-xl">María G., CEO de EmpresaX</div>
+              <p className="italic mb-4 text-gray-700 relative z-10 text-sm sm:text-base leading-relaxed flex-grow">&ldquo;El equipo de IT360 transformó nuestra infraestructura digital. ¡100% recomendados!&rdquo;</p>
+              <div className="font-semibold text-blue-700 relative z-10 text-sm sm:text-base">María G., CEO de EmpresaX</div>
             </div>
-            <div className="relative bg-white rounded-2xl shadow-xl p-8 sm:p-10 text-center flex flex-col items-center overflow-hidden h-full">
+            <div className="relative bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center flex flex-col items-center overflow-hidden h-full">
               <span className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-40 animate-pulse"></span>
-              <div className="relative mb-6">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Juan P." className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
+              <div className="relative mb-4">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Juan P." className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
               </div>
-              <p className="italic mb-6 text-gray-700 relative z-10 text-lg sm:text-xl leading-relaxed flex-grow">&ldquo;Soporte técnico rápido y eficiente. Nos sentimos seguros con su ciberseguridad.&rdquo;</p>
-              <div className="font-semibold text-blue-700 relative z-10 text-lg sm:text-xl">Juan P., CTO de TechCorp</div>
+              <p className="italic mb-4 text-gray-700 relative z-10 text-sm sm:text-base leading-relaxed flex-grow">&ldquo;Soporte técnico rápido y eficiente. Nos sentimos seguros con su ciberseguridad.&rdquo;</p>
+              <div className="font-semibold text-blue-700 relative z-10 text-sm sm:text-base">Juan P., CTO de TechCorp</div>
             </div>
-            <div className="relative bg-white rounded-2xl shadow-xl p-8 sm:p-10 text-center flex flex-col items-center overflow-hidden h-full">
+            <div className="relative bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center flex flex-col items-center overflow-hidden h-full">
               <span className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-40 animate-pulse"></span>
-              <div className="relative mb-6">
-                <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Laura S." className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
+              <div className="relative mb-4">
+                <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Laura S." className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
               </div>
-              <p className="italic mb-6 text-gray-700 relative z-10 text-lg sm:text-xl leading-relaxed flex-grow">&ldquo;Desarrollaron una app a medida que superó nuestras expectativas.&rdquo;</p>
-              <div className="font-semibold text-blue-700 relative z-10 text-lg sm:text-xl">Laura S., Gerente de Proyectos</div>
+              <p className="italic mb-4 text-gray-700 relative z-10 text-sm sm:text-base leading-relaxed flex-grow">&ldquo;Desarrollaron una app a medida que superó nuestras expectativas.&rdquo;</p>
+              <div className="font-semibold text-blue-700 relative z-10 text-sm sm:text-base">Laura S., Gerente de Proyectos</div>
             </div>
           </div>
         </div>
@@ -1053,8 +885,8 @@ export default function Home() {
           <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">y Presupuesto</span>
         </h2>
         <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-12 border border-blue-100">
-          <h3 className="text-xl sm:text-2xl font-bold mb-8 text-blue-700 text-center">Sistema de Tickets Unificado</h3>
-          <p className="text-center text-gray-600 mb-8">Todos los tipos de peticiones se procesan a través de nuestro sistema de tickets de soporte</p>
+          <h3 className="text-xl sm:text-2xl font-bold mb-8 text-blue-700 text-center">Consulta</h3>
+          <p className="text-center text-gray-600 mb-8">Envía tu consulta y te responderemos a la brevedad</p>
           
           <form ref={formRef} onSubmit={handlePresupuesto} className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {/* Información personal */}
@@ -1367,7 +1199,7 @@ export default function Home() {
                 <div className="bg-gradient-to-br from-cyan-50 to-blue-50 p-3 rounded-md">
                   <div className="text-center">
                     <div className="text-lg font-bold text-cyan-600 mb-2">
-                      ${services[openService]?.price || '0'}
+                      Presupuesto
                     </div>
                     <div className="space-y-2 mb-3">
                       <button 

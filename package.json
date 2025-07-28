@@ -28,7 +28,10 @@
     "migrate-neon": "node scripts/migrate-neon-presupuestos.js",
     "migrate-neon-direct": "node scripts/migrate-neon-direct.js",
     "backup-neon": "node scripts/backup-neon.js",
-    "backup-list": "node scripts/backup-neon.js --list"
+    "backup-list": "node scripts/backup-neon.js --list",
+            "create-services": "node scripts/create-services.js",
+        "create-featured-products": "node scripts/create-featured-products.js",
+        "update-services-investment": "node scripts/update-services-investment.js"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",

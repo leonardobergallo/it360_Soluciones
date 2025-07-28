@@ -433,16 +433,30 @@ export default function CarritoPage() {
       </div>
 
       <div className="relative z-10 container mx-auto py-16 px-4 min-h-screen pb-24">
-        {/* Header futurista */}
+        {/* Header futurista mejorado */}
         <div className="text-center mb-12">
-          <div className="inline-block mb-6 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-lg opacity-50"></div>
-            <h1 className="relative text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-4">
-              Carrito de Compras
-            </h1>
+          <div className="inline-block mb-8 relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-2xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
+            <div className="relative flex items-center gap-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/30 to-blue-600/30 backdrop-blur-xl rounded-2xl border border-cyan-400/50 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-all duration-500">
+                <svg className="w-8 h-8 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h2l.4 2M7 6h14l-1.68 8.39a2 2 0 01-2 1.61H7.42a2 2 0 01-2-1.61L3 4H21" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-5xl sm:text-6xl font-black bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-2 group-hover:from-cyan-300 group-hover:via-blue-400 group-hover:to-purple-500 transition-all duration-500">
+                  Carrito de Compras
+                </h1>
+                <p className="text-white/80 text-lg font-medium">
+                  {cartItems.length > 0 ? `${cartItems.length} item${cartItems.length > 1 ? 's' : ''} seleccionado${cartItems.length > 1 ? 's' : ''}` : 'Tu carrito está vacío'}
+                </p>
+              </div>
+            </div>
           </div>
-          <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
-            Revisa tus productos y servicios seleccionados
+          <p className="text-white/70 max-w-3xl mx-auto text-xl leading-relaxed">
+            Revisa tus productos y servicios seleccionados. Completa tu compra de forma segura.
           </p>
         </div>
 
@@ -481,14 +495,15 @@ export default function CarritoPage() {
           </div>
         ) : (
           <>
-          {/* Sección de productos */}
+          {/* Sección de productos mejorada */}
           {productos.length > 0 && (
-            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  Productos en tu carrito
+            <div className="backdrop-blur-md bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-3xl shadow-2xl p-8 mb-8 group">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-3 h-3 bg-cyan-400 rounded-full animate-pulse"></div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent group-hover:from-cyan-300 group-hover:to-blue-400 transition-all duration-500">
+                  🛍️ Productos en tu carrito
                 </h2>
+                <div className="flex-1 h-px bg-gradient-to-r from-cyan-400/50 to-transparent"></div>
               </div>
               <ul className="divide-y divide-white/20">
                 {productos.map((item: any, idx: number) => (
@@ -599,17 +614,21 @@ export default function CarritoPage() {
                   </li>
                 ))}
               </ul>
-              <div className="text-right font-bold text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-6">
+              <div className="text-right font-bold text-3xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-8">
                 Total: ${totalProductos.toLocaleString()}
               </div>
               <button
-                className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 text-lg flex items-center justify-center gap-3 group"
+                className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-5 px-8 rounded-2xl font-bold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-500 transform hover:scale-105 text-xl flex items-center justify-center gap-4 group border border-cyan-400/30 hover:border-cyan-300/50"
                 onClick={() => router.push('/checkout')}
               >
-                <div className="w-2 h-2 bg-white rounded-full group-hover:animate-pulse"></div>
-                Finalizar compra
+                <div className="w-3 h-3 bg-white rounded-full group-hover:animate-pulse"></div>
+                <span>🚀 Finalizar compra</span>
+                <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </button>
-              <div className="text-center text-sm text-white/60 mt-4">
+              <div className="text-center text-base text-white/70 mt-6 flex items-center justify-center gap-2">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                 Podrás elegir MercadoPago o Transferencia bancaria en el siguiente paso.
               </div>
             </div>
