@@ -32,6 +32,27 @@ export default function CatalogoPage() {
   const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // Estado para la galería de imágenes
   const [contactModalOpen, setContactModalOpen] = useState(false); // Estado para el modal de contacto
+  
+  // Estados para filtros y búsqueda
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("todas");
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
+  const [sortBy, setSortBy] = useState("nombre"); // nombre, precio, popularidad
+  
+  // Categorías disponibles (actualizadas según la base de datos)
+  const categories = [
+    { id: "todas", name: "Todas las categorías", icon: "🏷️" },
+    { id: "Celulares", name: "Celulares", icon: "📱" },
+    { id: "Notebook", name: "Notebook", icon: "💻" },
+    { id: "Monitores", name: "Monitores", icon: "🖥️" },
+    { id: "Impresora", name: "Impresoras", icon: "🖨️" },
+    { id: "Almacena", name: "Almacenamiento", icon: "💾" },
+    { id: "Tablets", name: "Tablets", icon: "📱" },
+    { id: "Accesorio", name: "Accesorios", icon: "🎧" },
+    { id: "Periferico", name: "Periféricos", icon: "🖱️" },
+    { id: "Parlantes", name: "Parlantes", icon: "🔊" },
+    { id: "Redes", name: "Redes", icon: "📡" }
+  ];
 
   // Función para generar múltiples imágenes para un producto
   const generateProductImages = (productName: string, mainImage: string) => {
@@ -108,8 +129,9 @@ export default function CatalogoPage() {
       })
       .then(data => {
         if (Array.isArray(data)) {
-          setProducts(data.map((p: { id: string; name: string; description: string; price: number }, i: number) => {
-            const mainImage = productImages[i % productImages.length];
+          setProducts(data.map((p: { id: string; name: string; description: string; price: number; image?: string; category?: string }, i: number) => {
+            // Usar la imagen del producto si existe, sino usar imagen automática
+            const mainImage = p.image || productImages[i % productImages.length];
             return { 
               ...p, 
               type: "product", 
@@ -118,6 +140,7 @@ export default function CatalogoPage() {
               icon: getProductIcon(p.name)
             };
           }));
+          console.log(`✅ Cargados ${data.length} productos del catálogo`);
         } else {
           console.error('La API no devolvió un array:', data);
           setProducts([]);
@@ -150,6 +173,41 @@ export default function CatalogoPage() {
   const handleProductSelect = (product: Item) => {
     setSelectedProduct(product);
     setCurrentImageIndex(0);
+  };
+
+  // Función para filtrar y ordenar productos
+  const getFilteredProducts = () => {
+    const filtered = products.filter(product => {
+      // Filtro por búsqueda
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.description.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Filtro por categoría
+      const matchesCategory = selectedCategory === "todas" || 
+                             (product as { category?: string }).category === selectedCategory;
+      
+      // Filtro por precio
+      const matchesPrice = product.price >= priceRange.min && product.price <= priceRange.max;
+      
+      return matchesSearch && matchesCategory && matchesPrice;
+    });
+    
+    // Ordenamiento
+    switch (sortBy) {
+      case "precio":
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case "precio-desc":
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case "nombre":
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      default:
+        break;
+    }
+    
+    return filtered;
   };
 
   const addToCart = async (item: Item) => {
@@ -276,60 +334,183 @@ export default function CatalogoPage() {
         {/* Sección Productos */}
         <div className="mb-20">
           <div className="text-center mb-12">
-            <div className="inline-block mb-6 relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-lg opacity-50"></div>
-              <h2 className="relative text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-4">
-                Nuestros Productos
+            <div className="inline-block mb-8 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full blur-xl opacity-60 animate-pulse"></div>
+              <h2 className="relative text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
+                🛍️ Catálogo Digital
               </h2>
             </div>
-            <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed mb-8">
-              Descubre nuestra línea de productos tecnológicos de alta calidad diseñados para impulsar tu negocio hacia el futuro
+            <p className="text-white/80 max-w-3xl mx-auto text-xl leading-relaxed mb-8">
+              Explora nuestra <span className="text-cyan-400 font-semibold">colección premium</span> de productos tecnológicos
             </p>
             
+            {/* Estadísticas del catálogo */}
+            <div className="flex justify-center items-center gap-8 mb-8">
+              <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30 rounded-full px-6 py-3 backdrop-blur-md">
+                <span className="text-cyan-300 font-bold text-lg">{products.length}</span>
+                <span className="text-white/70 ml-2">Productos</span>
+              </div>
+              <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 rounded-full px-6 py-3 backdrop-blur-md">
+                <span className="text-purple-300 font-bold text-lg">{categories.length - 1}</span>
+                <span className="text-white/70 ml-2">Categorías</span>
+              </div>
+              <div className="bg-gradient-to-r from-green-500/20 to-teal-500/20 border border-green-400/30 rounded-full px-6 py-3 backdrop-blur-md">
+                <span className="text-green-300 font-bold text-lg">100%</span>
+                <span className="text-white/70 ml-2">Garantía</span>
+              </div>
+            </div>
+          </div>
 
+          {/* Filtros y Búsqueda */}
+          <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Buscador */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Buscar en el catálogo..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full backdrop-blur-md bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                />
+                <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+
+              {/* Filtro por categoría */}
+              <div>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full backdrop-blur-md bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                >
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id} className="bg-gray-800 text-white">
+                      {category.icon} {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Filtro por precio */}
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  placeholder="Min $"
+                  value={priceRange.min}
+                  onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
+                  className="w-1/2 backdrop-blur-md bg-white/20 border border-white/30 rounded-lg px-3 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                />
+                <input
+                  type="number"
+                  placeholder="Max $"
+                  value={priceRange.max}
+                  onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
+                  className="w-1/2 backdrop-blur-md bg-white/20 border border-white/30 rounded-lg px-3 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                />
+              </div>
+
+              {/* Ordenamiento */}
+              <div>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full backdrop-blur-md bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                >
+                  <option value="nombre" className="bg-gray-800 text-white">Ordenar por nombre</option>
+                  <option value="precio" className="bg-gray-800 text-white">Precio: menor a mayor</option>
+                  <option value="precio-desc" className="bg-gray-800 text-white">Precio: mayor a menor</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Resultados de búsqueda mejorados */}
+            <div className="mt-6 text-center">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30 rounded-full px-6 py-3 backdrop-blur-md">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                <p className="text-cyan-300 font-medium">
+                  Mostrando <span className="text-white font-bold">{getFilteredProducts().length}</span> de <span className="text-white font-bold">{products.length}</span> productos
+                </p>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              </div>
+            </div>
           </div>
           
-          <div className="grid md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {products.map((p, index) => (
+          <div className="grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {getFilteredProducts().map((p, index) => (
               <div 
                 key={p.id} 
-                className="group backdrop-blur-md bg-white/10 border border-white/20 rounded-xl shadow-lg hover:shadow-cyan-500/25 transition-all duration-500 transform hover:-translate-y-1 overflow-hidden cursor-pointer relative"
+                className="group bg-gradient-to-br from-white/5 to-white/10 border border-white/20 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-500 transform hover:-translate-y-2 overflow-hidden cursor-pointer relative backdrop-blur-md"
                 onClick={() => handleProductSelect(p)}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Efecto de brillo en hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/20 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/15 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div className="relative h-28 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center p-4 backdrop-blur-sm">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-blue-500/10 rounded-t-xl"></div>
-                  <img src={p.image} alt={p.name} className="relative w-12 h-12 object-contain group-hover:scale-110 transition-transform duration-500" />
+                {/* Imagen del producto */}
+                <div className="relative h-40 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 flex items-center justify-center p-6 backdrop-blur-sm overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 to-blue-500/5"></div>
+                  <img 
+                    src={p.image} 
+                    alt={p.name} 
+                    className="relative w-20 h-20 object-contain group-hover:scale-125 transition-transform duration-700 z-10" 
+                  />
+                  {/* Efecto de partículas */}
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-cyan-400/60 rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-2 left-2 w-1.5 h-1.5 bg-blue-400/60 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
                 </div>
-                <div className="relative p-4">
-                  <h3 className="font-bold text-sm mb-1 text-white group-hover:text-cyan-400 transition-colors duration-300 truncate">
-                    {p.name}
-                  </h3>
-                  <p className="text-white/70 mb-3 text-xs leading-relaxed line-clamp-2">
-                    {p.description}
-                  </p>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-bold text-lg bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                      ${p.price.toLocaleString()}
-                    </span>
-                    <span className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 text-xs px-1.5 py-0.5 rounded-full font-medium">
-                      Stock
+                
+                {/* Contenido del producto */}
+                <div className="relative p-6">
+                  {/* Categoría */}
+                  <div className="mb-3">
+                    <span className="inline-block bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 text-purple-300 text-xs px-2 py-1 rounded-full font-medium">
+                      {(p as any).category || 'Producto'}
                     </span>
                   </div>
+                  
+                  {/* Nombre del producto */}
+                  <h3 className="font-bold text-base mb-2 text-white group-hover:text-cyan-400 transition-colors duration-300 line-clamp-2 leading-tight">
+                    {p.name}
+                  </h3>
+                  
+                  {/* Descripción */}
+                  <p className="text-white/60 mb-4 text-sm leading-relaxed line-clamp-2">
+                    {p.description}
+                  </p>
+                  
+                  {/* Precio y stock */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-col">
+                      <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                        ${p.price.toLocaleString()}
+                      </span>
+                      <span className="text-white/50 text-xs">Precio final</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 text-xs px-2 py-1 rounded-full font-medium">
+                        En Stock
+                      </span>
+                      <span className="text-white/50 text-xs mt-1">Disponible</span>
+                    </div>
+                  </div>
+                  
+                  {/* Botón de agregar */}
                   <button 
                     onClick={e => { e.stopPropagation(); addToCart(p); }} 
-                    className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-2 px-3 rounded-lg font-semibold shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-1.5 group/btn text-xs"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 group/btn"
                   >
-                    <div className="w-1 h-1 bg-white rounded-full group-hover/btn:animate-pulse"></div>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-1.5 h-1.5 bg-white rounded-full group-hover/btn:animate-pulse"></div>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                     </svg>
-                    Agregar
+                    Agregar al Carrito
                   </button>
                 </div>
+                
+                {/* Efecto de borde brillante */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/0 via-cyan-400/20 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               </div>
             ))}
           </div>
@@ -371,7 +552,7 @@ export default function CatalogoPage() {
                   </p>
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-bold text-lg bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                      ${s.price.toLocaleString()}
+                      Presupuesto
                     </span>
                     <span className="backdrop-blur-md bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs px-1.5 py-0.5 rounded-full font-medium">
                       Servicio

@@ -1,34 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// PUT - Actualizar un servicio
+// PUT - Actualizar un servicio específico
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const body = await request.json();
-    const { name, description, price } = body;
+    const { name, description, price, active } = body;
 
-    if (!name || !description || price === undefined) {
+    // Validar que el servicio existe
+    const existingService = await prisma.service.findUnique({
+      where: { id: params.id }
+    });
+
+    if (!existingService) {
       return NextResponse.json(
-        { error: 'Name, description y price son requeridos' },
-        { status: 400 }
+        { error: 'Servicio no encontrado' },
+        { status: 404 }
       );
     }
 
-    const service = await prisma.service.update({
+    // Actualizar el servicio
+    const updatedService = await prisma.service.update({
       where: { id: params.id },
       data: {
-        name,
-        description,
-        price: parseFloat(price),
+        ...(name && { name }),
+        ...(description && { description }),
+        ...(price !== undefined && { price: parseFloat(price) }),
+        ...(active !== undefined && { active }),
       },
     });
 
-    return NextResponse.json(service);
+    return NextResponse.json(updatedService);
   } catch (error) {
-    console.error('Error updating service:', error);
+    console.error('Error actualizando servicio:', error);
     return NextResponse.json(
       { error: 'Error al actualizar servicio' },
       { status: 500 }
@@ -36,19 +43,32 @@ export async function PUT(
   }
 }
 
-// DELETE - Eliminar un servicio
+// DELETE - Eliminar un servicio específico
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validar que el servicio existe
+    const existingService = await prisma.service.findUnique({
+      where: { id: params.id }
+    });
+
+    if (!existingService) {
+      return NextResponse.json(
+        { error: 'Servicio no encontrado' },
+        { status: 404 }
+      );
+    }
+
+    // Eliminar el servicio
     await prisma.service.delete({
-      where: { id: params.id },
+      where: { id: params.id }
     });
 
     return NextResponse.json({ message: 'Servicio eliminado exitosamente' });
   } catch (error) {
-    console.error('Error deleting service:', error);
+    console.error('Error eliminando servicio:', error);
     return NextResponse.json(
       { error: 'Error al eliminar servicio' },
       { status: 500 }

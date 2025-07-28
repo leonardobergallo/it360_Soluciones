@@ -31,6 +31,8 @@ model Service {
   name        String   @unique
   description String
   price       Float
+  active      Boolean  @default(true)
+  order       Int      @default(0)
   sales       Sale[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -41,6 +43,8 @@ model Product {
   name        String   @unique
   description String
   price       Float
+  basePrice   Float?   // Precio base sin markup
+  markup      Float?   // Porcentaje de markup aplicado
   stock       Int
   category    String
   image       String?

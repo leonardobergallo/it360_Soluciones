@@ -8,6 +8,7 @@ export default function GlobalHeader() {
   // Estado para almacenar información del usuario
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Efecto para cargar información del usuario al montar el componente
   useEffect(() => {
@@ -24,24 +25,72 @@ export default function GlobalHeader() {
   }, []);
 
   return (
-    <header className="bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg sticky top-0 z-50 min-h-[1rem] flex items-center justify-between px-4 py-3">
+    <header className="bg-gradient-to-r from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-2xl border-b border-white/30 shadow-2xl sticky top-0 z-50 min-h-[1rem] flex items-center justify-between px-4 py-3">
       {/* Logo o nombre del sitio */}
       <div className="flex items-center gap-4 sm:gap-8">
         <Link href="/" className="flex items-center gap-3 group">
           <ModernLogo size="md" className="group-hover:scale-110 transition-transform duration-300" />
         </Link>
-        <Link 
-          href="/hogar-inteligente" 
-          className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-purple-600/80 to-pink-600/80 backdrop-blur-xl border border-white/30 px-4 py-2 rounded-xl hover:from-purple-500/90 hover:to-pink-500/90 hover:border-white/50 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl group"
-        >
-          <span className="text-lg">🏠</span>
-          <span className="text-white font-bold text-sm group-hover:text-white transition-colors">
-            Hogar Inteligente
-          </span>
-          <span className="text-xs text-white/80 group-hover:text-white/90 transition-colors">
-            🤖
-          </span>
-        </Link>
+        
+        {/* Menú de navegación interactivo */}
+        <nav className="hidden md:flex items-center gap-3">
+          <Link 
+            href="/servicios" 
+            className="group relative text-white/90 hover:text-cyan-300 transition-all duration-300 font-semibold text-sm px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-blue-500/20 backdrop-blur-sm border border-transparent hover:border-cyan-400/30 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25"
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-cyan-400 group-hover:scale-110 transition-transform">⚡</span>
+              Servicios
+            </span>
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-400 group-hover:w-full transition-all duration-300"></div>
+          </Link>
+          
+          <Link 
+            href="/catalogo" 
+            className="group relative text-white/90 hover:text-blue-300 transition-all duration-300 font-semibold text-sm px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 backdrop-blur-sm border border-transparent hover:border-blue-400/30 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-blue-400 group-hover:scale-110 transition-transform">🛍️</span>
+              Catálogo
+            </span>
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+          </Link>
+          
+          <Link 
+            href="/#testimonios" 
+            className="group relative text-white/90 hover:text-yellow-300 transition-all duration-300 font-semibold text-sm px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-yellow-500/20 hover:to-orange-500/20 backdrop-blur-sm border border-transparent hover:border-yellow-400/30 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-yellow-400 group-hover:scale-110 transition-transform">⭐</span>
+              Testimonios
+            </span>
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 group-hover:w-full transition-all duration-300"></div>
+          </Link>
+          
+          <Link 
+            href="/#contacto" 
+            className="group relative text-white/90 hover:text-green-300 transition-all duration-300 font-semibold text-sm px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/20 hover:to-teal-500/20 backdrop-blur-sm border border-transparent hover:border-green-400/30 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25"
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-green-400 group-hover:scale-110 transition-transform">💬</span>
+              Contacto
+            </span>
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-400 to-teal-400 group-hover:w-full transition-all duration-300"></div>
+          </Link>
+          
+          <Link 
+            href="/hogar-inteligente" 
+            className="group flex items-center gap-3 bg-gradient-to-r from-purple-600/90 to-pink-600/90 backdrop-blur-xl border border-purple-400/50 px-5 py-3 rounded-xl hover:from-purple-500 hover:to-pink-500 hover:border-purple-300/70 transition-all duration-300 hover:scale-110 shadow-xl hover:shadow-2xl hover:shadow-purple-500/30 transform hover:-rotate-1"
+          >
+            <span className="text-xl group-hover:scale-110 transition-transform">🏠</span>
+            <span className="text-white font-bold text-sm group-hover:text-white transition-colors">
+              Hogar Inteligente
+            </span>
+            <span className="text-sm text-white/90 group-hover:text-white transition-colors group-hover:animate-bounce">
+              🤖
+            </span>
+          </Link>
+        </nav>
       </div>
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Botón de Dashboard para Administradores */}
@@ -110,7 +159,67 @@ export default function GlobalHeader() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
         </button>
+        
+        {/* Botón de menú móvil */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden w-8 h-8 bg-gradient-to-r from-gray-800/80 to-gray-700/80 backdrop-blur-xl rounded-xl border border-white/30 flex items-center justify-center hover:from-gray-700/90 hover:to-gray-600/90 hover:border-white/50 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl"
+          title="Menú"
+        >
+          <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
+      
+      {/* Menú móvil desplegable interactivo */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-gradient-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-2xl border-b border-white/30 shadow-2xl">
+          <nav className="flex flex-col p-6 space-y-3">
+            <Link 
+              href="/servicios" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="group flex items-center gap-3 text-white/90 hover:text-cyan-300 transition-all duration-300 font-semibold text-base px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-blue-500/20 backdrop-blur-sm border border-transparent hover:border-cyan-400/30 hover:scale-105 hover:shadow-lg"
+            >
+              <span className="text-cyan-400 group-hover:scale-110 transition-transform text-lg">⚡</span>
+              Servicios
+            </Link>
+            <Link 
+              href="/catalogo" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="group flex items-center gap-3 text-white/90 hover:text-blue-300 transition-all duration-300 font-semibold text-base px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 backdrop-blur-sm border border-transparent hover:border-blue-400/30 hover:scale-105 hover:shadow-lg"
+            >
+              <span className="text-blue-400 group-hover:scale-110 transition-transform text-lg">🛍️</span>
+              Catálogo
+            </Link>
+            <Link 
+              href="/#testimonios" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="group flex items-center gap-3 text-white/90 hover:text-yellow-300 transition-all duration-300 font-semibold text-base px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-yellow-500/20 hover:to-orange-500/20 backdrop-blur-sm border border-transparent hover:border-yellow-400/30 hover:scale-105 hover:shadow-lg"
+            >
+              <span className="text-yellow-400 group-hover:scale-110 transition-transform text-lg">⭐</span>
+              Testimonios
+            </Link>
+            <Link 
+              href="/#contacto" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="group flex items-center gap-3 text-white/90 hover:text-green-300 transition-all duration-300 font-semibold text-base px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/20 hover:to-teal-500/20 backdrop-blur-sm border border-transparent hover:border-green-400/30 hover:scale-105 hover:shadow-lg"
+            >
+              <span className="text-green-400 group-hover:scale-110 transition-transform text-lg">💬</span>
+              Contacto
+            </Link>
+            <Link 
+              href="/hogar-inteligente" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="group flex items-center gap-3 bg-gradient-to-r from-purple-600/90 to-pink-600/90 backdrop-blur-xl border border-purple-400/50 px-4 py-3 rounded-xl hover:from-purple-500 hover:to-pink-500 hover:border-purple-300/70 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl"
+            >
+              <span className="text-white group-hover:scale-110 transition-transform text-lg">🏠</span>
+              <span className="text-white font-bold text-base">Hogar Inteligente</span>
+              <span className="text-white/90 group-hover:animate-bounce text-lg">🤖</span>
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   );
 } 

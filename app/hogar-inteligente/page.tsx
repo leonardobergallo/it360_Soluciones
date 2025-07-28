@@ -20,6 +20,7 @@ export default function HogarInteligentePage() {
   const [productosDomotica, setProductosDomotica] = useState<Product[]>([]);
   const [toast, setToast] = useState("");
 
+
   useEffect(() => {
     fetch("/api/products")
       .then(r => r.json())
@@ -103,7 +104,7 @@ export default function HogarInteligentePage() {
       </div>
 
       {/* Header futurista con glassmorphism */}
-      <div className="relative z-10 backdrop-blur-md bg-white/10 border-b border-white/20 shadow-2xl">
+      <div className="relative z-10 backdrop-blur-md bg-transparent border-b border-white/20 shadow-2xl">
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -131,6 +132,8 @@ export default function HogarInteligentePage() {
         </div>
       </div>
 
+
+
       <div className="relative z-10 max-w-6xl mx-auto py-16 px-4">
         {/* Toast futurista */}
         {toast && (
@@ -157,7 +160,7 @@ export default function HogarInteligentePage() {
         </div>
 
         {/* Sección educativa sobre domótica con glassmorphism */}
-        <section className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-16 relative group">
+        <section id="servicios" className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-16 relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/10 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="relative">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-6 text-center">
@@ -196,7 +199,7 @@ export default function HogarInteligentePage() {
         </section>
 
         {/* Catálogo de productos destacados con diseño futurista */}
-        <section className="mb-16">
+        <section id="productos" className="mb-16">
           <div className="text-center mb-12">
             <div className="inline-block mb-6 relative">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full blur-lg opacity-50"></div>
@@ -283,7 +286,7 @@ export default function HogarInteligentePage() {
         </section>
 
         {/* Beneficios y compatibilidad de apps con glassmorphism */}
-        <section className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-16 relative group">
+        <section id="nosotros" className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-16 relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-purple-400/10 to-purple-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="relative">
             <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-6 text-center">
@@ -309,8 +312,64 @@ export default function HogarInteligentePage() {
           </div>
         </section>
 
+        {/* Sección de Testimonios */}
+        <section id="testimonios" className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-16 relative group">
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-400/0 via-pink-400/10 to-pink-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent mb-8 text-center">
+              ⭐ Testimonios de Nuestros Clientes
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold">M</span>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">María González</h4>
+                    <p className="text-white/60 text-sm">Cliente Residencial</p>
+                  </div>
+                </div>
+                <p className="text-white/80 text-sm leading-relaxed">
+                  "Transformé mi casa completamente con la domótica de IT360. Ahora controlo todo desde mi celular. ¡Es increíble!"
+                </p>
+              </div>
+              
+              <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold">C</span>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">Carlos Rodríguez</h4>
+                    <p className="text-white/60 text-sm">Cliente Empresarial</p>
+                  </div>
+                </div>
+                <p className="text-white/80 text-sm leading-relaxed">
+                  "La automatización de nuestra oficina con IT360 nos ahorra tiempo y energía. Excelente servicio técnico."
+                </p>
+              </div>
+              
+              <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold">A</span>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">Ana Martínez</h4>
+                    <p className="text-white/60 text-sm">Cliente Residencial</p>
+                  </div>
+                </div>
+                <p className="text-white/80 text-sm leading-relaxed">
+                  "Los enchufes inteligentes cambiaron mi vida. Programo todo y ahorro mucha energía. ¡Muy recomendable!"
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Formulario CTA para Hogar Inteligente con diseño futurista */}
-        <section className="backdrop-blur-md bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-white/20 rounded-3xl shadow-2xl p-8 max-w-2xl mx-auto relative group">
+        <section id="contacto" className="backdrop-blur-md bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-white/20 rounded-3xl shadow-2xl p-8 max-w-2xl mx-auto relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/10 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="relative">
             <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-6 text-center flex items-center justify-center gap-3">
