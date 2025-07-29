@@ -369,12 +369,12 @@ export default function HogarInteligentePage() {
         </section>
 
         {/* Formulario CTA para Hogar Inteligente con diseño futurista */}
-        <section id="contacto" className="backdrop-blur-md bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-white/20 rounded-3xl shadow-2xl p-8 max-w-2xl mx-auto relative group">
+        <section id="contacto" className="backdrop-blur-md bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-white/20 rounded-3xl shadow-2xl p-6 sm:p-8 max-w-2xl mx-auto relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/10 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="relative">
-            <h3 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-6 text-center flex items-center justify-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-lg">🤖</span>
+            <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-4 sm:mb-6 text-center flex items-center justify-center gap-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-base sm:text-lg">🤖</span>
               </div>
               ¿Querés asesoramiento en Hogar Inteligente?
             </h3>
@@ -394,6 +394,25 @@ function FormularioHogarInteligente() {
   const [enviado, setEnviado] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState("");
+
+  // Función para manejar la tecla Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && enviado) {
+        setEnviado(false);
+      }
+    };
+
+    // Agregar event listener cuando el formulario está enviado
+    if (enviado) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    // Cleanup: remover event listener
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [enviado]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -436,30 +455,32 @@ function FormularioHogarInteligente() {
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <input 
-        type="text" 
-        name="nombre" 
-        placeholder="Nombre completo" 
-        className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition-all duration-300" 
-        required 
-      />
-      <input 
-        type="email" 
-        name="email" 
-        placeholder="Email" 
-        className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition-all duration-300" 
-        required 
-      />
+    <form className="flex flex-col gap-3 sm:gap-4 lg:gap-6" onSubmit={handleSubmit}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <input 
+          type="text" 
+          name="nombre" 
+          placeholder="Nombre completo" 
+          className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg sm:rounded-xl lg:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition-all duration-300 text-sm sm:text-base" 
+          required 
+        />
+        <input 
+          type="email" 
+          name="email" 
+          placeholder="Email" 
+          className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg sm:rounded-xl lg:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition-all duration-300 text-sm sm:text-base" 
+          required 
+        />
+      </div>
       <input 
         type="tel" 
         name="telefono" 
         placeholder="Teléfono (opcional)" 
-        className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition-all duration-300" 
+        className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg sm:rounded-xl lg:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition-all duration-300 text-sm sm:text-base" 
       />
       <select 
         name="tipoConsulta" 
-        className="backdrop-blur-md bg-white/10 border border-white/20 text-white rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition-all duration-300"
+        className="backdrop-blur-md bg-white/10 border border-white/20 text-white rounded-lg sm:rounded-xl lg:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition-all duration-300 text-sm sm:text-base"
         required
       >
         <option value="" className="bg-slate-800">Selecciona el tipo de consulta</option>
@@ -472,8 +493,8 @@ function FormularioHogarInteligente() {
       <textarea 
         name="mensaje" 
         placeholder="Cuéntanos qué necesitas para tu hogar inteligente..." 
-        rows={4} 
-        className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none resize-none transition-all duration-300" 
+        rows={3}
+        className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg sm:rounded-xl lg:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none resize-none transition-all duration-300 text-sm sm:text-base" 
         required 
       />
       
@@ -502,7 +523,7 @@ function FormularioHogarInteligente() {
       </button>
       
       {enviado && (
-        <div className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 rounded-2xl px-4 py-3 text-center font-semibold animate-bounce flex items-center justify-center gap-3">
+        <div className="backdrop-blur-md bg-green-500/20 border border-green-400/30 text-green-300 rounded-2xl px-4 py-3 text-center font-semibold animate-bounce flex items-center justify-center gap-3" title="Presiona Esc para volver">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

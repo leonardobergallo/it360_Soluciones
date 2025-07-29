@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // Función para generar número de ticket único
 function generateTicketNumber(): string {
@@ -27,44 +25,33 @@ export async function POST(request: NextRequest) {
     // Generar número de ticket único
     const ticketNumber = generateTicketNumber();
 
-    // Crear ticket en lugar de presupuesto
-    const ticket = await prisma.ticket.create({
+    // Crear contacto en lugar de ticket
+    const contacto = await prisma.contact.create({
       data: {
-        ticketNumber,
-        nombre,
+        name: nombre,
         email,
-        telefono: telefono || null,
-        empresa: tipoConsulta || 'Hogar Inteligente',
-        servicio: 'Hogar Inteligente',
-        mensaje,
-        tipo: 'presupuesto',
-        categoria: 'hogar-inteligente',
-        asunto: `Consulta de Hogar Inteligente - ${tipoConsulta || 'General'}`,
-        descripcion: mensaje,
-        urgencia: 'normal',
-        prioridad: 'media',
-        estado: 'abierto'
+        message: `Consulta de Hogar Inteligente
+Tipo de consulta: ${tipoConsulta || 'General'}
+Teléfono: ${telefono || 'No proporcionado'}
+Mensaje: ${mensaje}`
       },
     });
 
     // Log de la notificación
-    console.log('🎫 NUEVO TICKET DE HOGAR INTELIGENTE CREADO:');
+    console.log('📧 NUEVA CONSULTA DE HOGAR INTELIGENTE:');
     console.log('='.repeat(60));
-    console.log(`🔢 Número: ${ticket.ticketNumber}`);
-    console.log(`👤 Nombre: ${ticket.nombre}`);
-    console.log(`📧 Email: ${ticket.email}`);
-    console.log(`📞 Teléfono: ${ticket.telefono || 'No proporcionado'}`);
-    console.log(`🏷️ Tipo: ${ticket.tipo}`);
-    console.log(`📂 Categoría: ${ticket.categoria}`);
-    console.log(`📝 Asunto: ${ticket.asunto}`);
-    console.log(`📋 Descripción: ${ticket.descripcion}`);
+    console.log(`👤 Nombre: ${contacto.name}`);
+    console.log(`📧 Email: ${contacto.email}`);
+    console.log(`📞 Teléfono: ${telefono || 'No proporcionado'}`);
+    console.log(`🏷️ Tipo: ${tipoConsulta || 'General'}`);
+    console.log(`📋 Mensaje: ${mensaje}`);
     console.log('='.repeat(60));
 
     return NextResponse.json(
       { 
         success: true, 
         message: 'Consulta enviada con éxito',
-        ticket 
+        contacto 
       }, 
       { status: 201 }
     );
@@ -82,10 +69,11 @@ export async function POST(request: NextRequest) {
 // GET - Obtener todas las consultas de Hogar Inteligente (solo para admin)
 export async function GET() {
   try {
-    const consultas = await prisma.ticket.findMany({
+    const consultas = await prisma.contact.findMany({
       where: {
-        tipo: 'presupuesto',
-        categoria: 'hogar-inteligente',
+        message: {
+          contains: 'Consulta de Hogar Inteligente'
+        }
       },
       orderBy: {
         createdAt: 'desc',

@@ -356,10 +356,6 @@ export default function ServiciosPage() {
                   <div className="mb-4">
                     <div className="flex items-center gap-2 text-xs text-cyan-300 mb-1">
                       <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
-                      <span>ROI Incrementado</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-cyan-300 mb-1">
-                      <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
                       <span>Eficiencia Operativa</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-cyan-300">

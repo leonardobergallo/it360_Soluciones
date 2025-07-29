@@ -36,7 +36,7 @@ export default function CatalogoPage() {
   // Estados para filtros y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("todas");
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 200000 });
   const [sortBy, setSortBy] = useState("nombre"); // nombre, precio, popularidad
   
   // Categorías disponibles (actualizadas según la base de datos)

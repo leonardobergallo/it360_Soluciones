@@ -1,53 +1,58 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 
-const prisma = new PrismaClient();
+console.log('👤 Creando usuario de prueba...\n');
 
 async function createTestUser() {
+  const prisma = new PrismaClient();
+
   try {
-    // Verificar si ya existe un usuario de prueba
+    await prisma.$connect();
+    console.log('✅ Conectado a la base de datos SQLite\n');
+
+    // Verificar si el usuario ya existe
     const existingUser = await prisma.user.findUnique({
-      where: { email: 'test@it360.com' }
+      where: { email: 'admin@it360.com' }
     });
 
     if (existingUser) {
-      console.log('✅ Usuario de prueba ya existe');
-      return existingUser;
+      console.log('⚠️ Usuario admin@it360.com ya existe');
+      console.log('   📧 Email: admin@it360.com');
+      console.log('   🔑 Contraseña: admin123');
+      console.log('   🆔 ID:', existingUser.id);
+      return;
     }
 
+    // Crear hash de la contraseña
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+
     // Crear usuario de prueba
-    const hashedPassword = await bcrypt.hash('123456', 10);
-    
-    const user = await prisma.user.create({
+    const testUser = await prisma.user.create({
       data: {
-        email: 'test@it360.com',
+        email: 'admin@it360.com',
         password: hashedPassword,
-        name: 'Usuario de Prueba',
-        role: 'USER'
+        name: 'Administrador IT360',
+        role: 'ADMIN'
       }
     });
 
-    console.log('✅ Usuario de prueba creado:', user.email);
-    return user;
+    console.log('✅ Usuario de prueba creado exitosamente');
+    console.log('   📧 Email: admin@it360.com');
+    console.log('   🔑 Contraseña: admin123');
+    console.log('   👤 Nombre: Administrador IT360');
+    console.log('   🆔 ID:', testUser.id);
+    console.log('   🎭 Rol: ADMIN');
+
+    console.log('\n💡 Ahora puedes:');
+    console.log('   1. Ir a: http://localhost:3001/login');
+    console.log('   2. Usar las credenciales: admin@it360.com / admin123');
+    console.log('   3. Probar el flujo del carrito logueado');
+
   } catch (error) {
-    console.error('❌ Error creando usuario de prueba:', error);
-    throw error;
+    console.error('❌ Error creando usuario:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// Ejecutar si se llama directamente
-if (require.main === module) {
-  createTestUser()
-    .then(() => {
-      console.log('🎉 Script completado');
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error('💥 Error:', error);
-      process.exit(1);
-    });
-}
-
-module.exports = { createTestUser }; 
+createTestUser(); 

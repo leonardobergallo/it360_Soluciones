@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { sendVentaNotification } from '@/lib/email-service';
 
 const prisma = new PrismaClient();
 
@@ -59,6 +60,23 @@ export async function POST(request: NextRequest) {
       metodoPago,
       requiereAprobacion: metodoPago === 'transferencia'
     });
+
+    // Enviar email de notificación usando Gmail
+    try {
+      await sendVentaNotification({
+        nombre,
+        email,
+        telefono,
+        direccion,
+        metodoPago,
+        amount: total,
+        status: 'pendiente'
+      });
+      console.log('✅ Email de venta enviado correctamente');
+    } catch (emailError) {
+      console.error('❌ Error enviando email de venta:', emailError);
+      // No fallar si el email no se envía
+    }
 
     // Generar URL de WhatsApp para contacto directo
     const whatsappUrl = generarWhatsAppUrl(nombre, items, total, metodoPago);
