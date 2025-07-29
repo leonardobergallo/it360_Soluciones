@@ -619,7 +619,7 @@ export default function CarritoPage() {
               </div>
               <button
                 className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-5 px-8 rounded-2xl font-bold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-500 transform hover:scale-105 text-xl flex items-center justify-center gap-4 group border border-cyan-400/30 hover:border-cyan-300/50"
-                onClick={() => router.push('/checkout')}
+                onClick={handleMainCheckout}
               >
                 <div className="w-3 h-3 bg-white rounded-full group-hover:animate-pulse"></div>
                 <span>🚀 Finalizar compra</span>

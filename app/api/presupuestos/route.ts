@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendPresupuestoNotification } from '@/lib/email-service';
 
 // GET - Obtener todos los presupuestos
 export async function GET() {
   try {
-    const presupuestos = await prisma.presupuesto.findMany({
+    const presupuestos = await prisma.ticket.findMany({
+      where: {
+        tipo: 'presupuesto'
+      },
       orderBy: { createdAt: 'desc' }
     });
     return NextResponse.json(presupuestos);
@@ -31,32 +35,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Crear el presupuesto en la base de datos
-    const nuevoPresupuesto = await prisma.presupuesto.create({
+    // Generar número de ticket único
+    const ticketNumber = `PRES-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Crear el ticket de presupuesto en la base de datos
+    const nuevoPresupuesto = await prisma.ticket.create({
       data: {
+        ticketNumber,
         nombre,
         email,
         telefono: telefono || null,
         empresa: empresa || null,
-        servicio,
+        servicio: servicio || null,
         mensaje: mensaje || null,
-        estado: 'pendiente'
+        tipo: 'presupuesto',
+        categoria: 'solicitud',
+        asunto: `Solicitud de presupuesto - ${servicio}`,
+        descripcion: `Solicitud de presupuesto para el servicio: ${servicio}${mensaje ? `\n\nMensaje: ${mensaje}` : ''}`,
+        urgencia: 'normal',
+        estado: 'abierto',
+        prioridad: 'media'
       }
     });
 
-    // Enviar email de notificación (opcional)
+    // Enviar email de notificación usando Gmail
     try {
-      await enviarEmailNotificacion({
-        nombre,
-        email,
-        telefono,
-        empresa,
-        servicio,
-        presupuesto,
-        mensaje
-      });
+      await sendPresupuestoNotification(nuevoPresupuesto);
+      console.log('✅ Email de presupuesto enviado correctamente');
     } catch (emailError) {
-      console.error('Error enviando email de notificación:', emailError);
+      console.error('❌ Error enviando email de presupuesto:', emailError);
       // No fallar si el email no se envía
     }
 
@@ -119,7 +126,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const presupuestoActualizado = await prisma.presupuesto.update({
+    const presupuestoActualizado = await prisma.ticket.update({
       where: { id },
       data: { estado }
     });
@@ -147,7 +154,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.presupuesto.delete({
+    await prisma.ticket.delete({
       where: { id }
     });
 

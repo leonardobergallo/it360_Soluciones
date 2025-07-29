@@ -1,111 +1,124 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
+import { sendContactNotification } from '@/lib/email-service';
 
-const prisma = new PrismaClient();
-
-// Función para generar número de ticket único
-function generateTicketNumber(): string {
-  const timestamp = Date.now().toString();
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `CONT-${timestamp}-${random}`;
-}
-
-// GET: Listar todos los tickets de contacto
-export async function GET() {
-  const tickets = await prisma.ticket.findMany({ 
-    where: { tipo: 'contacto' },
-    orderBy: { createdAt: 'desc' } 
-  });
-  return NextResponse.json(tickets);
-}
-
-// POST: Crear un nuevo ticket de contacto
-export async function POST(req: NextRequest) {
+// POST - Crear un nuevo contacto
+export async function POST(request: NextRequest) {
   try {
-    const { name, email, message } = await req.json();
-    if (!name || !email || !message) {
-      return NextResponse.json({ error: 'Faltan campos' }, { status: 400 });
+    const body = await request.json();
+    const { nombre, email, telefono, empresa, servicio, mensaje } = body;
+
+    // Validar campos requeridos
+    if (!nombre || !email) {
+      return NextResponse.json(
+        { error: 'Nombre y email son requeridos' },
+        { status: 400 }
+      );
     }
 
-    // Generar número de ticket único
-    const ticketNumber = generateTicketNumber();
-
-    // Crear ticket en lugar de contacto
-    const ticket = await prisma.ticket.create({
-      data: {
-        ticketNumber,
-        nombre: name,
-        email,
-        telefono: null,
-        tipo: 'contacto',
-        categoria: 'general',
-        asunto: `Nuevo mensaje de contacto de ${name}`,
-        descripcion: message,
-        urgencia: 'normal',
-        prioridad: 'media',
-        estado: 'abierto'
-      },
+    // Verificar si el email ya existe
+    const contactoExistente = await prisma.contact.findUnique({
+      where: { email }
     });
 
-    // Enviar notificación
-    await enviarNotificacionTicket(ticket);
+    let nuevoContacto;
+
+    if (contactoExistente) {
+      // Si el email ya existe, actualizar el mensaje
+      nuevoContacto = await prisma.contact.update({
+        where: { email },
+        data: {
+          name: nombre, // Actualizar el nombre también
+          message: `Servicio solicitado: ${servicio || 'No especificado'}
+Empresa: ${empresa || 'No especificada'}
+Teléfono: ${telefono || 'No especificado'}
+Mensaje: ${mensaje || 'Sin mensaje adicional'}
+
+--- Mensaje anterior ---
+${contactoExistente.message}`
+        }
+      });
+    } else {
+      // Si el email no existe, crear nuevo contacto
+      nuevoContacto = await prisma.contact.create({
+        data: {
+          name: nombre,
+          email,
+          message: `Servicio solicitado: ${servicio || 'No especificado'}
+Empresa: ${empresa || 'No especificada'}
+Teléfono: ${telefono || 'No especificado'}
+Mensaje: ${mensaje || 'Sin mensaje adicional'}`
+        }
+      });
+    }
+
+    // Enviar email de notificación (opcional)
+    try {
+      await enviarEmailNotificacion({
+        nombre,
+        email,
+        telefono,
+        empresa,
+        servicio,
+        mensaje
+      });
+    } catch (emailError) {
+      console.error('Error enviando email de notificación:', emailError);
+      // No fallar si el email no se envía
+    }
+
+    // Enviar email de notificación usando Gmail
+    try {
+      await sendContactNotification(nuevoContacto);
+      console.log('✅ Email de contacto enviado correctamente');
+    } catch (emailError) {
+      console.error('❌ Error enviando email de contacto:', emailError);
+      // No fallar si el email no se envía
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Mensaje enviado correctamente',
-      ticket
-    });
+      message: 'Solicitud enviada correctamente',
+      contacto: nuevoContacto
+    }, { status: 201 });
+
   } catch (error) {
-    console.error('Error creating contact ticket:', error);
+    console.error('Error creating contact:', error);
     return NextResponse.json(
-      { error: 'Error al crear ticket de contacto' },
+      { error: 'Error al enviar solicitud' },
       { status: 500 }
     );
   }
 }
 
-// DELETE: Eliminar un ticket por id
-export async function DELETE(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get('id');
-  if (!id) {
-    return NextResponse.json({ error: 'Falta el id' }, { status: 400 });
-  }
-  await prisma.ticket.delete({ where: { id } });
-  return NextResponse.json({ success: true });
-}
-
-// Función para enviar notificación del ticket
-async function enviarNotificacionTicket(ticket: any) {
-  console.log('🎫 NUEVO TICKET DE CONTACTO CREADO:');
-  console.log('='.repeat(60));
-  console.log(`🔢 Número: ${ticket.ticketNumber}`);
-  console.log(`👤 Nombre: ${ticket.nombre}`);
-  console.log(`📧 Email: ${ticket.email}`);
-  console.log(`🏷️ Tipo: ${ticket.tipo}`);
-  console.log(`📂 Categoría: ${ticket.categoria}`);
-  console.log(`📝 Asunto: ${ticket.asunto}`);
-  console.log(`📋 Descripción: ${ticket.descripcion}`);
-  console.log(`⏰ Creado: ${ticket.createdAt}`);
-  console.log('='.repeat(60));
-
-  // Enviar email de notificación
-  try {
-    await enviarEmailTicket(ticket);
-  } catch (emailError) {
-    console.error('Error al enviar email del ticket:', emailError);
-  }
-}
-
-// Función para enviar email del ticket (solo log, sin Resend)
-async function enviarEmailTicket(ticket: any) {
-  console.log('📧 TICKET CREADO - Email que se enviaría:');
-  console.log('='.repeat(60));
-  console.log(`🔢 Número: ${ticket.ticketNumber}`);
-  console.log(`👤 Nombre: ${ticket.nombre}`);
-  console.log(`📧 Email: ${ticket.email}`);
-  console.log(`📝 Asunto: ${ticket.asunto}`);
-  console.log(`📋 Descripción: ${ticket.descripcion}`);
-  console.log('='.repeat(60));
-  console.log('💡 Los tickets se almacenan en la base de datos y se pueden ver en el panel de administración');
+// Función para enviar email de notificación
+async function enviarEmailNotificacion({
+  nombre,
+  email,
+  telefono,
+  empresa,
+  servicio,
+  mensaje
+}: {
+  nombre: string;
+  email: string;
+  telefono?: string;
+  empresa?: string;
+  servicio?: string;
+  mensaje?: string;
+}) {
+  // Aquí puedes integrar con tu servicio de email preferido
+  // Por ahora solo logueamos la información
+  console.log('📧 NUEVA SOLICITUD RECIBIDA:');
+  console.log('='.repeat(50));
+  console.log(`👤 Nombre: ${nombre}`);
+  console.log(`📧 Email: ${email}`);
+  console.log(`📞 Teléfono: ${telefono || 'No proporcionado'}`);
+  console.log(`🏢 Empresa: ${empresa || 'No proporcionada'}`);
+  console.log(`🔧 Servicio: ${servicio || 'No especificado'}`);
+  console.log(`💬 Mensaje: ${mensaje || 'Sin mensaje'}`);
+  console.log('='.repeat(50));
+  console.log('📱 WhatsApp: +54 9 342 508-9906');
+  console.log('📞 Teléfono: 3425089906');
+  console.log('🌐 Web: www.it360.com.ar');
 } 

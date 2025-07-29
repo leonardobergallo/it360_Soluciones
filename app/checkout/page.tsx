@@ -63,15 +63,53 @@ export default function CheckoutPage() {
           if (stored) {
             try {
               const cart = JSON.parse(stored);
-              const productos = (cart as ProductItem[]).filter((item: ProductItem) => (item as ProductItem).product);
+              console.log('🛒 Carrito desde localStorage:', cart);
+              
+              // Manejar diferentes estructuras del carrito
+              let productos = [];
+              if (Array.isArray(cart)) {
+                productos = cart.filter((item: any) => {
+                  // Si tiene .product, usar esa estructura
+                  if (item.product) {
+                    return true;
+                  }
+                  // Si tiene .productId, .name, .price, convertir a estructura esperada
+                  if (item.productId && item.name && item.price) {
+                    return true;
+                  }
+                  return false;
+                }).map((item: any) => {
+                  // Si ya tiene la estructura correcta, usarla
+                  if (item.product) {
+                    return item;
+                  }
+                  // Si no, convertir a la estructura esperada
+                  return {
+                    product: {
+                      name: item.name,
+                      price: item.price,
+                      id: item.productId
+                    },
+                    quantity: item.quantity || 1
+                  };
+                });
+              }
+              
+              console.log('📦 Productos procesados:', productos);
               setCartItems(productos);
               setTotal(productos.reduce((acc: number, item: ProductItem) => acc + item.product.price * item.quantity, 0));
-              if (productos.length === 0) router.push("/carrito");
-            } catch {
+              
+              if (productos.length === 0) {
+                console.log('❌ No hay productos, redirigiendo al carrito');
+                router.push("/carrito");
+              }
+            } catch (error) {
+              console.error('❌ Error procesando carrito:', error);
               setCartItems([]);
               router.push("/carrito");
             }
           } else {
+            console.log('❌ No hay carrito en localStorage');
             setCartItems([]);
             router.push("/carrito");
           }
