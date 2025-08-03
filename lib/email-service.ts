@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 // Configuración del transportador de Gmail
 const createTransporter = () => {
@@ -11,8 +11,38 @@ const createTransporter = () => {
   });
 };
 
+// Interfaces para tipado
+interface Presupuesto {
+  nombre: string;
+  email: string;
+  telefono?: string;
+  empresa?: string;
+  servicio: string;
+  mensaje?: string;
+  ticketNumber?: string;
+  estado?: string;
+  createdAt: Date;
+}
+
+interface Contact {
+  name: string;
+  email: string;
+  message: string;
+  createdAt: Date;
+}
+
+interface Venta {
+  nombre: string;
+  email: string;
+  telefono?: string;
+  direccion?: string;
+  metodoPago: string;
+  amount: number;
+  status: string;
+}
+
 // Función para enviar notificación de nuevo presupuesto
-const sendPresupuestoNotification = async (presupuesto) => {
+export const sendPresupuestoNotification = async (presupuesto: Presupuesto) => {
   try {
     const transporter = createTransporter();
     
@@ -48,8 +78,8 @@ const sendPresupuestoNotification = async (presupuesto) => {
             
             <h2 style="color: #333;">📅 Información del Ticket</h2>
             <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-              <p><strong>🎫 Número de Ticket:</strong> ${presupuesto.ticketNumber}</p>
-              <p><strong>📊 Estado:</strong> <span style="background: #ffd700; padding: 2px 8px; border-radius: 3px;">${presupuesto.estado}</span></p>
+              <p><strong>🎫 Número de Ticket:</strong> ${presupuesto.ticketNumber || 'N/A'}</p>
+              <p><strong>📊 Estado:</strong> <span style="background: #ffd700; padding: 2px 8px; border-radius: 3px;">${presupuesto.estado || 'Nuevo'}</span></p>
               <p><strong>📅 Fecha:</strong> ${new Date(presupuesto.createdAt).toLocaleString('es-AR')}</p>
             </div>
             
@@ -80,7 +110,7 @@ const sendPresupuestoNotification = async (presupuesto) => {
 };
 
 // Función para enviar notificación de nuevo contacto
-const sendContactNotification = async (contact) => {
+export const sendContactNotification = async (contact: Contact) => {
   try {
     const transporter = createTransporter();
     
@@ -138,7 +168,7 @@ const sendContactNotification = async (contact) => {
 };
 
 // Función para enviar notificación de nueva venta
-const sendVentaNotification = async (venta) => {
+export const sendVentaNotification = async (venta: Venta) => {
   try {
     const transporter = createTransporter();
     
@@ -194,10 +224,4 @@ const sendVentaNotification = async (venta) => {
     console.error('❌ Error enviando email de venta:', error);
     return false;
   }
-};
-
-module.exports = {
-  sendPresupuestoNotification,
-  sendContactNotification,
-  sendVentaNotification
 }; 

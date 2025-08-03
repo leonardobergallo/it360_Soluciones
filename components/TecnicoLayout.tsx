@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ReactNode, useState } from 'react';
-import FooterNav from './FooterNav';
+
 
 interface TecnicoLayoutProps {
   children: ReactNode;
@@ -50,8 +50,7 @@ export default function TecnicoLayout({ children }: TecnicoLayoutProps) {
         <div className="flex-1 p-8">
           {children}
         </div>
-        {/* FooterNav: navegación inferior homogénea */}
-        <FooterNav />
+
       </main>
     </div>
   );

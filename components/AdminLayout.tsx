@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
-import FooterNav from './FooterNav';
+
 import QuickNavBanner from './QuickNavBanner';
 
 interface AdminLayoutProps {
@@ -219,8 +219,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {children}
         </div>
 
-        {/* FooterNav */}
-        <FooterNav />
+
       </main>
     </div>
   );

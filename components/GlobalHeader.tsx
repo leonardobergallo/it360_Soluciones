@@ -29,7 +29,7 @@ export default function GlobalHeader() {
       {/* Logo o nombre del sitio */}
       <div className="flex items-center gap-4 sm:gap-8">
         <Link href="/" className="flex items-center gap-3 group">
-          <ModernLogo size="md" className="group-hover:scale-110 transition-transform duration-300" />
+          <ModernLogo size="lg" className="group-hover:scale-110 transition-transform duration-300" />
         </Link>
         
         {/* Menú de navegación interactivo */}
@@ -68,7 +68,7 @@ export default function GlobalHeader() {
           </Link>
           
           <Link 
-            href="/#contacto" 
+            href="/contacto" 
             className="group relative text-white/90 hover:text-green-300 transition-all duration-300 font-semibold text-sm px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/20 hover:to-teal-500/20 backdrop-blur-sm border border-transparent hover:border-green-400/30 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25"
           >
             <span className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export default function GlobalHeader() {
               Testimonios
             </Link>
             <Link 
-              href="/#contacto" 
+              href="/contacto" 
               onClick={() => setIsMobileMenuOpen(false)}
               className="group flex items-center gap-3 text-white/90 hover:text-green-300 transition-all duration-300 font-semibold text-base px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/20 hover:to-teal-500/20 backdrop-blur-sm border border-transparent hover:border-green-400/30 hover:scale-105 hover:shadow-lg"
             >

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from "next/link";
-import FooterNav from '@/components/FooterNav';
+
 
 interface Product {
   id: string;
@@ -383,8 +383,7 @@ export default function HogarInteligentePage() {
         </section>
       </div>
 
-      {/* FooterNav: navegación inferior para usuarios */}
-      <FooterNav />
+
     </div>
   );
 } 

@@ -99,16 +99,27 @@ export default function ContactVendorModal({ isOpen, onClose, product, selectedP
         precioTotal = product.price;
       }
 
-      // Llamada a la API para procesar el contacto
-      const response = await fetch('/api/contacto-vendedor', {
+      // Crear ticket usando el sistema unificado
+      const ticketData = {
+        nombre: formData.nombre,
+        email: formData.email,
+        telefono: formData.telefono || '',
+        empresa: '',
+        tipo: 'producto',
+        categoria: 'venta',
+        asunto: `Consulta sobre producto${selectedProducts && selectedProducts.length > 1 ? 's' : ''}: ${productosInfo}`,
+        descripcion: `${formData.mensaje}\n\nProductos: ${productosInfo}\nPrecio total: $${precioTotal.toLocaleString()}`,
+        urgencia: 'normal',
+        prioridad: 'media'
+      };
+
+      // Llamada a la API de tickets unificada
+      const response = await fetch('/api/tickets', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          mensaje: `${formData.mensaje}\n\nProductos: ${productosInfo}\nPrecio total: $${precioTotal.toLocaleString()}`
-        }),
+        body: JSON.stringify(ticketData),
       });
 
       const data = await response.json();
@@ -127,6 +138,11 @@ export default function ContactVendorModal({ isOpen, onClose, product, selectedP
         telefono: '',
         mensaje: ''
       });
+
+      // Mostrar número de ticket si está disponible
+      if (data.ticket?.ticketNumber) {
+        alert(`✅ Consulta enviada exitosamente!\n\nNúmero de ticket: ${data.ticket.ticketNumber}\n\nNos pondremos en contacto contigo pronto.`);
+      }
 
       // Cerrar el modal después de 3 segundos
       setTimeout(() => {

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import FooterNav from '@/components/FooterNav';
+
 
 interface CartItem {
   id: string;
@@ -754,8 +754,7 @@ export default function CarritoPage() {
           </div>
         )}
 
-        {/* FooterNav: navegación inferior para usuarios */}
-        <FooterNav />
+        
       </div>
     </div>
   );

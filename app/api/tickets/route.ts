@@ -44,9 +44,20 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validar campos requeridos
+    console.log('Datos recibidos:', { nombre, email, tipo, asunto, descripcion });
+    
     if (!nombre || !email || !tipo || !asunto || !descripcion) {
+      const camposFaltantes = [];
+      if (!nombre) camposFaltantes.push('nombre');
+      if (!email) camposFaltantes.push('email');
+      if (!tipo) camposFaltantes.push('tipo');
+      if (!asunto) camposFaltantes.push('asunto');
+      if (!descripcion) camposFaltantes.push('descripcion');
+      
+      console.log('Campos faltantes:', camposFaltantes);
+      
       return NextResponse.json(
-        { error: 'Nombre, email, tipo, asunto y descripción son requeridos' },
+        { error: `Campos requeridos faltantes: ${camposFaltantes.join(', ')}` },
         { status: 400 }
       );
     }
@@ -188,15 +199,19 @@ async function enviarNotificacionTicket(ticket: any) {
 
 // Función para enviar email del ticket
 async function enviarEmailTicket(ticket: any) {
-  if (!resend) {
-    console.log('RESEND_API_KEY no configurada, solo logueando email del ticket');
-    console.log('Email que se enviaría:', { ticket });
-    return;
-  }
+  try {
+    const { Resend } = await import('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    if (!process.env.RESEND_API_KEY) {
+      console.log('RESEND_API_KEY no configurada, solo logueando email del ticket');
+      console.log('Email que se enviaría:', { ticket });
+      return;
+    }
 
-  const { data, error } = await resend.emails.send({
-    from: 'IT360 Soluciones <it360tecnologia@gmail.com>',
-    to: ['it360tecnologia@gmail.com'], // Email principal de IT360
+    const { data, error } = await resend.emails.send({
+    from: 'IT360 Soluciones <noreply@it360.com>',
+    to: 'it360tecnologia@gmail.com', // Email principal de IT360
     subject: `🎫 Nuevo Ticket ${ticket.ticketNumber} - ${ticket.tipo}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -296,4 +311,7 @@ async function enviarEmailTicket(ticket: any) {
   }
 
   console.log('✅ Email del ticket enviado a it360tecnologia@gmail.com:', data);
-} 
+  } catch (error) {
+    console.error('Error al enviar email del ticket:', error);
+  }
+}

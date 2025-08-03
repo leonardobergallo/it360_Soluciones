@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ModernLogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   className?: string;
 }
 
@@ -10,14 +10,16 @@ export default function ModernLogo({ size = 'md', className = '' }: ModernLogoPr
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
     lg: 'w-16 h-16',
-    xl: 'w-20 h-20'
+    xl: 'w-20 h-20',
+    '2xl': 'w-24 h-24'
   };
 
   const textSizes = {
     sm: 'text-sm',
     md: 'text-base',
     lg: 'text-lg',
-    xl: 'text-xl'
+    xl: 'text-xl',
+    '2xl': 'text-2xl'
   };
 
   // Usar un ID fijo para evitar problemas de hidratación

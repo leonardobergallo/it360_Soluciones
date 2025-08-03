@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import CartIconWithBadge from "@/components/CartIconWithBadge";
-import FooterNav from "@/components/FooterNav";
+
 import ModernLogo from "@/components/ModernLogo";
-import ContactVendorModal from "@/components/ContactVendorModal";
+
 
 export default function Home() {
   // Estado para el menú móvil
@@ -58,12 +58,6 @@ export default function Home() {
   const [openService, setOpenService] = useState<null | number>(null);
   const handleOpenService = (i: number) => setOpenService(i);
 
-  // Estado para modal de detalles de producto
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [contactModalOpen, setContactModalOpen] = useState(false); // Estado para el modal de contacto
-  const [contactProduct, setContactProduct] = useState<Product | null>(null); // Producto para el modal de contacto
-  
   // Estado para autenticación
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -73,14 +67,13 @@ export default function Home() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setOpenService(null);
-        setSelectedProduct(null);
       }
     };
-    if (openService !== null || selectedProduct !== null) {
+    if (openService !== null) {
       window.addEventListener('keydown', handleKeyDown);
     }
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [openService, selectedProduct]);
+  }, [openService]);
 
   interface Service {
     id: string;
@@ -89,17 +82,6 @@ export default function Home() {
     price: number;
     imagen?: string;
     descripcionLarga?: string;
-  }
-
-  interface Product {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    imagen: string;
-    icon: string;
-    descripcionLarga: string;
-    imagenes?: string[]; // Múltiples imágenes para el producto
   }
 
   const [services, setServices] = useState<Service[]>([]);
@@ -155,287 +137,9 @@ export default function Home() {
       });
   }, []);
 
-  // Estado para productos dinámicos
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
 
-  // Cargar productos desde la API
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/products');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('Respuesta no es JSON');
-        }
-        
-          const data = await response.json();
-        
-        // Agregar imágenes específicas para cada producto basadas en su nombre
-        const productsWithImages = data.map((product: Product) => {
-          let imagen = '/servicio-productos.png'; // imagen por defecto
-          let icon = '💻'; // icono por defecto
-          
-          // Asignar imágenes e iconos específicos basados en el nombre del producto
-          const productName = product.name?.toLowerCase() || '';
-          
-          if (productName.includes('laptop') || productName.includes('notebook') || productName.includes('computadora')) {
-            imagen = 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop';
-            icon = '💻';
-          } else if (productName.includes('mouse') || productName.includes('ratón')) {
-            imagen = 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop';
-            icon = '🖱️';
-          } else if (productName.includes('teclado') || productName.includes('keyboard')) {
-            imagen = 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop';
-            icon = '⌨️';
-          } else if (productName.includes('monitor') || productName.includes('pantalla')) {
-            imagen = 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop';
-            icon = '🖥️';
-          } else if (productName.includes('auricular') || productName.includes('headphone') || productName.includes('audífono')) {
-            imagen = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop';
-            icon = '🎧';
-          } else if (productName.includes('webcam') || productName.includes('cámara')) {
-            imagen = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop';
-            icon = '📹';
-          } else if (productName.includes('router') || productName.includes('wifi') || productName.includes('red')) {
-            imagen = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop';
-            icon = '📡';
-          } else if (productName.includes('impresora') || productName.includes('printer')) {
-            imagen = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop';
-            icon = '🖨️';
-          } else if (productName.includes('tablet') || productName.includes('ipad')) {
-            imagen = 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=300&fit=crop';
-            icon = '📱';
-          } else if (productName.includes('servidor') || productName.includes('server')) {
-            imagen = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop';
-            icon = '🖥️';
-          }
-          
-          return {
-            ...product,
-            imagen,
-            icon,
-            descripcionLarga: product.description,
-            imagenes: generateProductImages(product.name, imagen)
-          };
-        });
-          setProducts(productsWithImages);
-      } catch (error) {
-        console.error('Error cargando productos:', error);
-        setProducts([]); // Asegurar que se muestren los productos de ejemplo
-      } finally {
-        setLoadingProducts(false);
-      }
-    };
 
-    fetchProducts();
-  }, []);
 
-  // Función para manejar la selección de productos
-  const handleProductSelect = (product: Product) => {
-    setSelectedProduct(product);
-    setCurrentImageIndex(0);
-  };
-
-  // Función para abrir el modal de contacto con un producto específico
-  const handleContactVendor = (product: Product) => {
-    setContactProduct(product);
-    setContactModalOpen(true);
-  };
-
-  // Función para generar múltiples imágenes para un producto
-  const generateProductImages = (productName: string, mainImage: string) => {
-    const images = [mainImage];
-    
-    // Agregar imágenes adicionales basadas en el tipo de producto
-    const productNameLower = productName.toLowerCase();
-    
-    if (productNameLower.includes('laptop') || productNameLower.includes('notebook') || productName.includes('computadora')) {
-      images.push(
-        'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop'
-      );
-    } else if (productNameLower.includes('mouse') || productNameLower.includes('ratón')) {
-      images.push(
-        'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop'
-      );
-    } else if (productNameLower.includes('teclado') || productNameLower.includes('keyboard')) {
-      images.push(
-        'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop'
-      );
-    } else if (productNameLower.includes('monitor') || productNameLower.includes('pantalla')) {
-      images.push(
-        'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop'
-      );
-    } else if (productNameLower.includes('auricular') || productNameLower.includes('headphone') || productName.includes('audífono')) {
-      images.push(
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop'
-      );
-    } else {
-      // Imágenes genéricas para otros productos
-      images.push(
-        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'
-      );
-    }
-    
-    return images;
-  };
-
-  const formRef = useRef<HTMLFormElement>(null);
-  const [success, setSuccess] = useState(false);
-  
-  // Estados para el carrito y notificaciones
-  const [toast, setToast] = useState<string | null>(null);
-
-  // Función para agregar productos al carrito
-  const addToCart = async (product: Product) => {
-    const token = localStorage.getItem('authToken');
-    
-    if (token) {
-      // Usuario logueado: usar API del backend
-      try {
-        const response = await fetch('/api/cart', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            productId: product.id,
-            quantity: 1,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setToast('✅ Producto agregado al carrito exitosamente');
-          // Recargar la página para actualizar el badge del carrito
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-        } else {
-          if (data.error === 'Token expirado') {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('user');
-            setToast('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-            setTimeout(() => {
-              window.location.href = '/login?message=Sesion expirada. Inicia sesión de nuevo.';
-            }, 1500);
-            return;
-          }
-          setToast(data.error || 'No se pudo agregar al carrito');
-        }
-      } catch (error) {
-        console.error('Error al agregar al carrito:', error);
-        setToast('Error de conexión al agregar al carrito');
-      }
-    } else {
-      // Usuario no logueado: usar localStorage
-      try {
-        const stored = localStorage.getItem('carrito');
-        const cart = stored ? JSON.parse(stored) : [];
-        
-        // Verificar si el producto ya está en el carrito
-        const existingIndex = cart.findIndex((cartItem: { productId: string; type?: string }) => 
-          cartItem.productId === product.id && cartItem.type !== 'cotizacion'
-        );
-        
-        if (existingIndex >= 0) {
-          // Incrementar cantidad
-          cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + 1;
-        } else {
-          // Agregar nuevo producto
-          cart.push({
-            productId: product.id,
-            name: product.name,
-            price: product.price,
-            quantity: 1,
-            type: 'product'
-          });
-        }
-        
-        localStorage.setItem('carrito', JSON.stringify(cart));
-        setToast("✅ Agregado al carrito (modo local)");
-        setTimeout(() => setToast(""), 2000);
-      } catch (error) {
-        console.error('Error al guardar en carrito local:', error);
-        setToast('Error al guardar en carrito local');
-      }
-    }
-  };
-
-  // Enviar presupuesto (ahora como ticket unificado)
-  const handlePresupuesto = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSuccess(false);
-    
-    const form = formRef.current;
-    if (!form) return;
-    
-    const formData = new FormData(form);
-    const ticketData = {
-      nombre: formData.get('nombre') as string,
-      email: formData.get('email') as string,
-      telefono: formData.get('telefono') as string,
-      empresa: formData.get('empresa') as string,
-      tipo: 'presupuesto',
-      categoria: formData.get('servicio') as string,
-      asunto: `Solicitud de presupuesto - ${formData.get('servicio')}`,
-      descripcion: formData.get('mensaje') as string,
-      urgencia: formData.get('urgencia') as string || 'normal',
-      presupuesto: formData.get('presupuesto') ? Number(formData.get('presupuesto')) : undefined,
-    };
-
-    try {
-      const response = await fetch('/api/tickets', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(ticketData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess(true);
-        form.reset();
-        
-        // Mostrar mensaje de éxito con número de ticket
-        const ticketNumber = data.ticket?.ticketNumber;
-        if (ticketNumber) {
-          alert(`✅ Ticket creado exitosamente!\n\nNúmero de ticket: ${ticketNumber}\n\nNos pondremos en contacto contigo pronto.`);
-        }
-        
-        // Mostrar mensaje de éxito por 5 segundos
-        setTimeout(() => {
-          setSuccess(false);
-        }, 5000);
-      } else {
-        console.error('Error al enviar ticket:', data.error);
-        alert('Error al enviar el ticket. Por favor, intenta nuevamente.');
-      }
-    } catch (error) {
-      console.error('Error de conexión:', error);
-      alert('Error de conexión. Por favor, verifica tu conexión e intenta nuevamente.');
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-800 via-purple-800 to-slate-700 font-sans pb-16 relative overflow-x-hidden">
@@ -444,6 +148,40 @@ export default function Home() {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes spin-slow {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .animation-delay-500 {
+          animation-delay: 0.5s;
+        }
+        
+        .animation-delay-1000 {
+          animation-delay: 1s;
+        }
+        
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        
+        .animation-delay-4000 {
+          animation-delay: 4s;
         }
       `}</style>
       {/* Animated background elements */}
@@ -515,47 +253,41 @@ export default function Home() {
 
 
 
-      {/* Hero Section - Estilo Catálogo */}
-      <section id="inicio" className="relative flex flex-col items-center justify-center flex-1 min-h-[50vh] py-16 px-6 text-center fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full max-w-5xl mx-auto">
-          {/* Título simple y elegante */}
-          <div className="text-center mb-16">
-            <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-white mb-4">
-              IT360 Soluciones
+      {/* Hero Section - Completamente Rediseñado y Moderno */}
+      <section id="inicio" className="relative flex flex-col items-center justify-center min-h-screen py-20 px-6 text-center fade-in opacity-0 translate-y-8 transition-all duration-1000">
+        {/* Fondo animado mejorado */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Gradiente animado de fondo */}
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-800 animate-pulse"></div>
+          
+          {/* Círculos flotantes animados */}
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 rounded-full blur-3xl animate-bounce"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-blue-400/15 to-cyan-500/15 rounded-full blur-3xl animate-spin-slow"></div>
+          
+          {/* Líneas de conexión animadas */}
+          <div className="absolute top-1/3 left-1/3 w-1 h-20 bg-gradient-to-b from-cyan-400/50 to-transparent animate-pulse"></div>
+          <div className="absolute bottom-1/3 right-1/3 w-1 h-20 bg-gradient-to-t from-purple-400/50 to-transparent animate-pulse animation-delay-1000"></div>
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-6xl mx-auto">
+          {/* Logo animado */}
+          <div className="mb-8 transform hover:scale-110 transition-transform duration-500">
+            <ModernLogo size="2xl" className="drop-shadow-2xl scale-125" />
+          </div>
+
+          {/* Título principal con efectos */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent animate-pulse">
+                IT360
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                Soluciones
+              </span>
             </h1>
-            <p className="text-xl sm:text-2xl text-white/80 max-w-3xl mx-auto">
-              Soluciones tecnológicas integrales para tu empresa
-            </p>
-          </div>
-          
-          {/* Tagline mejorado */}
-          <div className="mb-16 max-w-6xl">
-            <p className="text-2xl sm:text-3xl md:text-4xl font-medium px-6 text-white/90 leading-relaxed mb-6">
-              Soluciones tecnológicas integrales para tu empresa.
-            </p>
-            <p className="text-xl sm:text-2xl md:text-3xl font-bold px-6 leading-relaxed">
-              <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 bg-clip-text text-transparent">
-                Innovación, soporte y desarrollo
-              </span>
-              <span className="text-white/80"> a tu alcance.</span>
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-6">
-            <a href="#contacto" className="group px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-bold shadow-2xl hover:shadow-cyan-500/25 hover:from-cyan-600 hover:to-blue-700 transition-all duration-500 text-lg transform hover:scale-110 border border-cyan-400/30">
-              <span className="flex items-center gap-3">
-                <span>💬</span>
-                Contáctanos
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
-              </span>
-            </a>
-            <a href="/servicios" className="group px-10 py-5 bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-xl text-white rounded-full font-bold border border-purple-400/50 hover:from-purple-500/30 hover:to-pink-500/30 transition-all duration-500 text-lg transform hover:scale-110 shadow-2xl hover:shadow-purple-500/25">
-              <span className="flex items-center gap-3">
-                <span>⚡</span>
-                Ver Servicios
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
-              </span>
-            </a>
+            
           </div>
         </div>
       </section>
@@ -623,108 +355,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Productos Más Vendidos / Ofertas */}
-      <section className="max-w-7xl mx-auto py-16 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 flex items-center justify-center gap-4">
-            <span>🔥</span>
-            <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Más Vendidos</span>
-            <span>🔥</span>
-          </h2>
-          <p className="text-sm text-white/80 max-w-3xl mx-auto leading-relaxed px-6">
-            Los productos más populares y ofertas especiales que no te puedes perder
-          </p>
-        </div>
-        
-        {loadingProducts ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20 animate-pulse h-full shadow-lg">
-                <div className="w-full h-32 bg-white/20 rounded-lg mb-4"></div>
-                <div className="h-6 bg-white/20 rounded mb-3"></div>
-                <div className="h-4 bg-white/20 rounded mb-4"></div>
-                <div className="h-8 bg-white/20 rounded"></div>
-              </div>
-            ))}
-          </div>
-        ) : products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {products.slice(0, 5).map((product, i) => (
-              <div key={product.id || i} className="group relative">
-                <div className="bg-white/15 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:bg-white/25 hover:border-white/40 transition-all duration-300 transform hover:scale-105 h-full flex flex-col shadow-lg hover:shadow-xl">
-                  {/* Imagen del producto */}
-                  <div className="relative h-32 bg-gradient-to-br from-orange-500/30 to-red-500/30">
-                    <img 
-                      src={product.imagen || '/servicio-productos.png'} 
-                      alt={product.name || 'Producto'} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                    
-                    {/* Badge de oferta */}
-                    <div className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-                      🔥 Oferta
-                    </div>
-                    
-                    {/* Icono del producto */}
-                    <div className="absolute top-2 right-2 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                      <span className="text-sm">{product.icon}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 flex flex-col flex-grow">
-                    <h3 className="text-sm font-bold text-white mb-2 group-hover:text-orange-300 transition-colors line-clamp-2">
-                      {product.name || 'Producto'}
-                    </h3>
-                    
-                    <p className="text-white/70 mb-4 leading-relaxed text-xs flex-grow line-clamp-2">
-                      {product.description || 'Descripción del producto'}
-                    </p>
-                    
-                    <div className="flex flex-col gap-2">
-                      <span className="text-lg font-bold text-orange-300">
-                        ${product.price || '0'}
-                      </span>
-                      
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => handleProductSelect(product)}
-                          className="flex-1 px-3 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-medium text-xs shadow-lg"
-                        >
-                          Ver
-                        </button>
-                        <button 
-                          onClick={() => addToCart(product)}
-                          className="flex-1 px-3 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-all duration-300 font-medium text-xs border border-white/30"
-                        >
-                          🛒
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-white/60 text-lg">No hay productos disponibles</p>
-          </div>
-        )}
-        
-        {/* Botón para ir al catálogo completo */}
-        <div className="text-center mt-8">
-          <a 
-            href="/catalogo" 
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold border border-orange-400/30 hover:from-orange-600 hover:to-red-600 transition-all duration-300 text-base shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            <span>Ver Catálogo Completo</span>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
-        </div>
-      </section>
+
 
       {/* Servicios Mejorados - Compactos y Atractivos */}
       <section id="servicios" className="max-w-7xl mx-auto py-12 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
@@ -764,27 +395,10 @@ export default function Home() {
                   {serv.description || 'Descripción del servicio'}
                 </p>
                 
-                {/* Beneficios de inversión */}
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 text-xs text-cyan-300 mb-1">
-                    <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
-                    <span>Eficiencia Operativa</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-cyan-300">
-                    <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
-                    <span>Ventaja Competitiva</span>
-                  </div>
-                </div>
+
                 
-                {/* Precio y acción */}
+                {/* Botón de acción */}
                 <div className="flex flex-col gap-3 mt-auto">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-cyan-300">
-                      Presupuesto
-                    </span>
-                    <span className="text-xs text-white/60">Personalizado</span>
-                  </div>
-                  
                   <button 
                     onClick={() => handleOpenService(i)}
                     className="w-full px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-sm shadow-lg group-hover:shadow-xl"
@@ -817,326 +431,381 @@ export default function Home() {
         </div>
       </section>
 
-
-
-      {/* Nosotros - Responsive con letra más grande */}
-      <section id="nosotros" className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="max-w-7xl mx-auto flex flex-col items-center justify-center">
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-center text-blue-800 mb-10 flex items-center justify-center gap-3">
-            <span>Sobre</span>
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Nosotros</span>
-            <span className="text-2xl sm:text-3xl">🚀</span>
-          </h2>
-          <div className="relative mb-10">
-            <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-60 animate-pulse"></span>
-            <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=256&h=256&facepad=2" alt="Equipo IT360" className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-white shadow-xl" />
-          </div>
-          <div className="max-w-4xl mx-auto text-center text-lg sm:text-xl text-gray-700 bg-white bg-opacity-80 rounded-xl p-8 sm:p-10 shadow-lg">
-            <p className="mb-6 font-semibold text-blue-700 text-2xl flex items-center justify-center gap-3"><span>💡</span> Innovación, experiencia y compromiso</p>
-            <p className="leading-relaxed text-lg">En IT360 Soluciones somos un equipo apasionado por la tecnología y la innovación. Nos dedicamos a brindar soluciones integrales que impulsan el crecimiento de nuestros clientes, combinando experiencia, creatividad y compromiso.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonios - Homogéneo con el resto de la aplicación */}
-      <section id="testimonios" className="bg-gradient-to-br from-pink-100 via-blue-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
+      {/* Sobre Nosotros - Completamente Rediseñado */}
+      <section id="nosotros" className="py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8 flex items-center justify-center gap-3">
-            <span>Testimonios</span>
-            <span className="text-lg sm:text-xl">⭐</span>
-          </h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            <div className="relative bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center flex flex-col items-center overflow-hidden h-full">
-              <span className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-40 animate-pulse"></span>
-              <div className="relative mb-4">
-                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María G." className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
+          {/* Header de la sección */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6">
+              <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+                Sobre
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                Nosotros
+              </span>
+            </h2>
+            <p className="text-xl sm:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
+              Transformamos ideas en soluciones tecnológicas que impulsan el crecimiento de tu negocio
+            </p>
+          </div>
+
+          {/* Contenido principal */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Imagen y estadísticas */}
+            <div className="relative">
+              {/* Imagen principal */}
+              <div className="relative mb-8">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-3xl blur-2xl"></div>
+                <img 
+                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop" 
+                  alt="Equipo IT360" 
+                  className="relative w-full h-80 object-cover rounded-3xl shadow-2xl border border-white/20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-3xl"></div>
               </div>
-              <p className="italic mb-4 text-gray-700 relative z-10 text-sm sm:text-base leading-relaxed flex-grow">&ldquo;El equipo de IT360 transformó nuestra infraestructura digital. ¡100% recomendados!&rdquo;</p>
-              <div className="font-semibold text-blue-700 relative z-10 text-sm sm:text-base">María G., CEO de EmpresaX</div>
+
+              {/* Estadísticas destacadas */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center">
+                  <div className="text-2xl font-bold text-cyan-400 mb-1">500+</div>
+                  <div className="text-white/80 text-sm">Proyectos</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center">
+                  <div className="text-2xl font-bold text-purple-400 mb-1">50+</div>
+                  <div className="text-white/80 text-sm">Clientes</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center">
+                  <div className="text-2xl font-bold text-green-400 mb-1">5+</div>
+                  <div className="text-white/80 text-sm">Años</div>
+                </div>
+              </div>
             </div>
-            <div className="relative bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center flex flex-col items-center overflow-hidden h-full">
-              <span className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-40 animate-pulse"></span>
-              <div className="relative mb-4">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Juan P." className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
+
+            {/* Texto y características */}
+            <div className="space-y-8">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8">
+                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                  <span className="text-3xl">💡</span>
+                  Nuestra Misión
+                </h3>
+                <p className="text-white/90 leading-relaxed text-lg mb-6">
+                  En IT360 Soluciones somos un equipo apasionado por la tecnología y la innovación. 
+                  Nos dedicamos a brindar soluciones integrales que impulsan el crecimiento de nuestros clientes, 
+                  combinando experiencia, creatividad y compromiso con la excelencia.
+                </p>
+                <p className="text-white/80 leading-relaxed">
+                  Transformamos desafíos tecnológicos en oportunidades de crecimiento, 
+                  utilizando las últimas tecnologías y metodologías para garantizar resultados excepcionales.
+                </p>
               </div>
-              <p className="italic mb-4 text-gray-700 relative z-10 text-sm sm:text-base leading-relaxed flex-grow">&ldquo;Soporte técnico rápido y eficiente. Nos sentimos seguros con su ciberseguridad.&rdquo;</p>
-              <div className="font-semibold text-blue-700 relative z-10 text-sm sm:text-base">Juan P., CTO de TechCorp</div>
-            </div>
-            <div className="relative bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center flex flex-col items-center overflow-hidden h-full">
-              <span className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-400 via-pink-400 to-purple-400 blur opacity-40 animate-pulse"></span>
-              <div className="relative mb-4">
-                <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Laura S." className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-white shadow-lg bg-gradient-to-tr from-blue-200 via-pink-200 to-purple-200" />
+
+              {/* Características del equipo */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">🚀</span>
+                    <h4 className="font-bold text-white">Innovación</h4>
+                  </div>
+                  <p className="text-white/80 text-sm">Tecnologías de vanguardia y soluciones creativas</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">⚡</span>
+                    <h4 className="font-bold text-white">Velocidad</h4>
+                  </div>
+                  <p className="text-white/80 text-sm">Respuesta rápida y entrega eficiente</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">🛡️</span>
+                    <h4 className="font-bold text-white">Confiabilidad</h4>
+                  </div>
+                  <p className="text-white/80 text-sm">Soluciones robustas y soporte 24/7</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">🎯</span>
+                    <h4 className="font-bold text-white">Resultados</h4>
+                  </div>
+                  <p className="text-white/80 text-sm">Enfoque en ROI y satisfacción del cliente</p>
+                </div>
               </div>
-              <p className="italic mb-4 text-gray-700 relative z-10 text-sm sm:text-base leading-relaxed flex-grow">&ldquo;Desarrollaron una app a medida que superó nuestras expectativas.&rdquo;</p>
-              <div className="font-semibold text-blue-700 relative z-10 text-sm sm:text-base">Laura S., Gerente de Proyectos</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Contacto - Responsive con letra más grande */}
-      <section id="contacto" className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-blue-200 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-10 text-blue-800 text-center drop-shadow flex items-center justify-center gap-3">
-          <span>Contacto</span>
-          <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">y Presupuesto</span>
-        </h2>
-        <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-12 border border-blue-100">
-          <h3 className="text-xl sm:text-2xl font-bold mb-8 text-blue-700 text-center">Consulta</h3>
-          <p className="text-center text-gray-600 mb-8">Envía tu consulta y te responderemos a la brevedad</p>
-          
-          <form ref={formRef} onSubmit={handlePresupuesto} className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {/* Información personal */}
-            <div className="md:col-span-2">
-              <h4 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                <span>👤</span>
-                Información Personal
-              </h4>
-            </div>
-            
-            <input 
-              name="nombre" 
-              type="text" 
-              placeholder="Nombre completo *" 
-              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
-              required 
-            />
-            
-            <input 
-              name="email" 
-              type="email" 
-              placeholder="Email *" 
-              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
-              required 
-            />
-            
-            <input 
-              name="telefono" 
-              type="tel" 
-              placeholder="Teléfono *" 
-              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
-              required 
-            />
-            
-            <input 
-              name="empresa" 
-              type="text" 
-              placeholder="Empresa (opcional)" 
-              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
-            />
-            
-            {/* Tipo de servicio */}
-            <div className="md:col-span-2">
-              <h4 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                <span>🔧</span>
-                Tipo de Servicio
-              </h4>
-            </div>
-            
-            <select 
-              name="servicio" 
-              className="col-span-2 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
-              required
-            >
-              <option value="">Selecciona el tipo de servicio *</option>
-              <option value="Desarrollo Web">🌐 Desarrollo Web</option>
-              <option value="Desarrollo de Software">💻 Desarrollo de Software</option>
-              <option value="Aplicaciones Móviles">📱 Aplicaciones Móviles</option>
-              <option value="Ciberseguridad">🔒 Ciberseguridad</option>
-              <option value="Soporte Técnico">🛠️ Soporte Técnico</option>
-              <option value="Infraestructura y Redes">🌐 Infraestructura y Redes</option>
-              <option value="Consultoría IT">📊 Consultoría IT</option>
-              <option value="Mantenimiento de Sistemas">⚙️ Mantenimiento de Sistemas</option>
-              <option value="Migración de Datos">📦 Migración de Datos</option>
-              <option value="Capacitación">🎓 Capacitación</option>
-              <option value="Otro">❓ Otro</option>
-            </select>
-            
-            {/* Presupuesto estimado */}
-            <div className="md:col-span-2">
-              <h4 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                <span>💰</span>
-                Presupuesto y Detalles
-              </h4>
-            </div>
-            
-            <input 
-              name="presupuesto" 
-              type="number" 
-              min="0" 
-              step="1000" 
-              placeholder="Presupuesto estimado (opcional)" 
-              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
-            />
-            
-            <select 
-              name="urgencia" 
-              className="col-span-1 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl"
-            >
-              <option value="">Nivel de urgencia</option>
-              <option value="Baja">🟢 Baja (1-2 meses)</option>
-              <option value="Media">🟡 Media (2-4 semanas)</option>
-              <option value="Alta">🔴 Alta (1-2 semanas)</option>
-              <option value="Crítica">⚫ Crítica (inmediata)</option>
-            </select>
-            
-            {/* Mensaje detallado */}
-            <textarea 
-              name="mensaje" 
-              className="col-span-2 border-2 border-blue-100 rounded-xl px-4 sm:px-5 py-3 sm:py-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none text-lg sm:text-xl" 
-              rows={6} 
-              required 
-              placeholder="Describe detalladamente tu proyecto, necesidades específicas, requisitos técnicos, plazos, y cualquier información adicional que consideres importante... *"
-            />
-            
-            {/* Botón de envío */}
-            <button 
-              type="submit" 
-              className="col-span-2 bg-gradient-to-r from-blue-700 to-blue-500 text-white py-4 sm:py-5 rounded-xl font-bold text-lg sm:text-xl shadow-lg hover:from-blue-800 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
-            >
-              <span>🎫</span>
-              Crear Ticket de Soporte
-            </button>
-            
-            {success && (
-              <div className="col-span-2 text-green-600 bg-green-50 border border-green-200 rounded-xl px-6 py-4 font-semibold text-center mt-4 text-lg flex items-center justify-center gap-2">
-                <span>✅</span>
-                ¡Ticket creado correctamente! Nos pondremos en contacto contigo pronto.
-              </div>
-            )}
-          </form>
-          
-          <div className="text-center text-base text-gray-500 mt-8">
-            <p>📧 O escríbenos directamente a <a href="mailto:it360tecnologia@gmail.com" className="underline text-blue-600 hover:text-blue-800">it360tecnologia@gmail.com</a></p>
-            <p className="mt-2">📱 WhatsApp: <a href="https://wa.me/5493425089906" className="underline text-green-600 hover:text-green-800">+54 9 342 508-9906</a></p>
+      {/* Testimonios - Completamente Rediseñado */}
+      <section id="testimonios" className="py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="max-w-7xl mx-auto">
+          {/* Header de la sección */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6">
+              <span className="bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent">
+                Lo que dicen
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                nuestros clientes
+              </span>
+            </h2>
+            <p className="text-xl sm:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
+              Testimonios reales de clientes satisfechos que confían en nuestras soluciones
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* Modal de Detalles de Producto - Compacto */}
-      {selectedProduct && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto shadow-2xl">
-            <div className="p-3">
-              {/* Header del modal */}
-              <div className="flex justify-between items-center mb-3">
-                <h2 className="text-sm font-bold text-gray-800 flex items-center gap-2">
-                  <span className="text-base">{selectedProduct.icon}</span>
-                  {selectedProduct.name}
-                </h2>
-                <button 
-                  onClick={() => setSelectedProduct(null)}
-                  className="text-gray-500 hover:text-gray-700 text-lg p-1 rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  ×
-                </button>
-              </div>
-
-              {/* Galería de imágenes */}
-              <div className="mb-3">
-                <div className="relative h-32 bg-gray-100 rounded-md overflow-hidden mb-2">
+          {/* Grid de testimonios */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Testimonio 1 */}
+            <div className="group relative">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 h-full hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                <div className="flex items-center gap-4 mb-6">
                   <img 
-                    src={selectedProduct.imagenes?.[currentImageIndex] || selectedProduct.imagen} 
-                    alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
+                    src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&h=120&fit=crop&crop=face&auto=format" 
+                    alt="María González" 
+                    className="w-16 h-16 rounded-full object-cover border-2 border-cyan-400 shadow-lg"
                   />
-                  {/* Navegación de imágenes */}
-                  {selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
-                    <>
-                      <button 
-                        onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : selectedProduct.imagenes!.length - 1)}
-                        className="absolute left-1 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-full shadow transition-colors text-xs"
-                      >
-                        ←
-                      </button>
-                      <button 
-                        onClick={() => setCurrentImageIndex(prev => prev < selectedProduct.imagenes!.length - 1 ? prev + 1 : 0)}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-full shadow transition-colors text-xs"
-                      >
-                        →
-                      </button>
-                    </>
-                  )}
-                </div>
-                {/* Miniaturas */}
-                {selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
-                  <div className="flex gap-1 justify-center">
-                    {selectedProduct.imagenes.map((img, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`w-6 h-6 rounded-sm overflow-hidden border transition-all ${
-                          index === currentImageIndex 
-                            ? 'border-cyan-500 scale-110' 
-                            : 'border-gray-300 hover:border-gray-400'
-                        }`}
-                      >
-                        <img 
-                          src={img} 
-                          alt={`${selectedProduct.name} ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
-                    ))}
+                  <div>
+                    <h4 className="font-bold text-white text-lg">María González</h4>
+                    <p className="text-cyan-400 text-sm">CEO, TechStart</p>
                   </div>
-                )}
+                </div>
+                <p className="text-white/90 leading-relaxed mb-4 italic">
+                  "IT360 transformó completamente nuestra infraestructura digital. 
+                  Su equipo profesional y dedicado nos ayudó a modernizar nuestros sistemas 
+                  y mejorar la eficiencia operativa en un 300%. ¡100% recomendados!"
+                </p>
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-lg">⭐</span>
+                  ))}
+                </div>
               </div>
+            </div>
 
-              {/* Información del producto */}
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-xs font-semibold text-gray-800 mb-1">Descripción</h3>
-                  <p className="text-gray-600 leading-relaxed text-xs">
-                    {selectedProduct.descripcionLarga || selectedProduct.description}
-                  </p>
-                  <div className="space-y-1 mt-2">
-                    <div className="flex items-center gap-1 text-xs">
-                      <span className="text-gray-500">Categoría:</span>
-                      <span className="text-gray-800 font-medium">Tecnología</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs">
-                      <span className="text-gray-500">Disponibilidad:</span>
-                      <span className="text-green-600 font-medium">En Stock</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs">
-                      <span className="text-gray-500">Garantía:</span>
-                      <span className="text-gray-800 font-medium">1 año</span>
-                    </div>
+            {/* Testimonio 2 */}
+            <div className="group relative">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 h-full hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                <div className="flex items-center gap-4 mb-6">
+                  <img 
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face&auto=format" 
+                    alt="Carlos Rodríguez" 
+                    className="w-16 h-16 rounded-full object-cover border-2 border-purple-400 shadow-lg"
+                  />
+                  <div>
+                    <h4 className="font-bold text-white text-lg">Carlos Rodríguez</h4>
+                    <p className="text-purple-400 text-sm">CTO, InnovateCorp</p>
                   </div>
                 </div>
+                <p className="text-white/90 leading-relaxed mb-4 italic">
+                  "El soporte técnico de IT360 es excepcional. Respuesta rápida 24/7 
+                  y soluciones efectivas para cualquier problema. Su expertise en 
+                  ciberseguridad nos da total tranquilidad."
+                </p>
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-lg">⭐</span>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 p-3 rounded-md">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-cyan-600 mb-2">
-                      ${selectedProduct.price}
-                    </div>
-                    <div className="space-y-2 mb-3">
-                      <button 
-                        onClick={() => addToCart(selectedProduct)}
-                        className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-1.5 px-3 rounded-md font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 text-xs flex items-center justify-center gap-2"
-                      >
-                        <span>🛒</span>
-                        Agregar al Carrito
-                        {!isLoggedIn && <span className="text-xs opacity-75">(Local)</span>}
-                      </button>
-                      <button 
-                        onClick={() => handleContactVendor(selectedProduct)}
-                        className="w-full bg-white border border-cyan-500 text-cyan-600 py-1.5 px-3 rounded-md font-semibold hover:bg-cyan-50 transition-all duration-300 text-xs"
-                      >
-                        Contactar Vendedor
-                      </button>
-                    </div>
-                    <div className="text-xs text-gray-600 space-y-0.5">
-                      <p>• Envío gratis en compras superiores a $500</p>
-                      <p>• Devolución gratuita en 30 días</p>
-                      <p>• Soporte técnico incluido</p>
-                    </div>
+            {/* Testimonio 3 */}
+            <div className="group relative">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 h-full hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                <div className="flex items-center gap-4 mb-6">
+                  <img 
+                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&crop=face&auto=format" 
+                    alt="Ana Martínez" 
+                    className="w-16 h-16 rounded-full object-cover border-2 border-green-400 shadow-lg"
+                  />
+                  <div>
+                    <h4 className="font-bold text-white text-lg">Ana Martínez</h4>
+                    <p className="text-green-400 text-sm">Gerente de Proyectos</p>
                   </div>
+                </div>
+                <p className="text-white/90 leading-relaxed mb-4 italic">
+                  "Desarrollaron una aplicación móvil personalizada que superó todas 
+                  nuestras expectativas. El proceso fue transparente, la comunicación 
+                  excelente y el resultado final, perfecto."
+                </p>
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-lg">⭐</span>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
+
+          {/* CTA para más testimonios */}
+          <div className="text-center mt-12">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 max-w-2xl mx-auto">
+              <h3 className="text-2xl font-bold text-white mb-4">¿Quieres ser el próximo cliente satisfecho?</h3>
+              <p className="text-white/80 mb-6">
+                Únete a nuestra lista de clientes exitosos y transforma tu negocio con tecnología de vanguardia
+              </p>
+              <a 
+                href="/contacto" 
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-bold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105"
+              >
+                <span>💬</span>
+                Contáctanos Ahora
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+            </div>
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* Contacto Unificado - Redirige al sistema de tickets */}
+      <section id="contacto" className="py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="max-w-7xl mx-auto">
+          {/* Header de la sección */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6">
+              <span className="bg-gradient-to-r from-white via-green-100 to-white bg-clip-text text-transparent">
+                ¿Listo para
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 bg-clip-text text-transparent">
+                transformar tu negocio?
+              </span>
+            </h2>
+            <p className="text-xl sm:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
+              Nuestro sistema unificado de contacto te conecta directamente con nuestro equipo de expertos
+            </p>
+          </div>
+
+          {/* Contenido principal */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Información de contacto */}
+            <div className="space-y-8">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8">
+                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                  <span className="text-3xl">💬</span>
+                  Contacto Directo
+                </h3>
+                
+                <div className="space-y-6">
+                  {/* WhatsApp */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-green-500/20 border border-green-400/30 rounded-xl flex items-center justify-center">
+                      <span className="text-2xl">📱</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white">WhatsApp</h4>
+                      <a 
+                        href="https://wa.me/5493425089906" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-green-400 hover:text-green-300 transition-colors"
+                      >
+                        +54 9 342 508-9906
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-500/20 border border-blue-400/30 rounded-xl flex items-center justify-center">
+                      <span className="text-2xl">📧</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white">Email</h4>
+                      <a 
+                        href="mailto:it360tecnologia@gmail.com" 
+                        className="text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        it360tecnologia@gmail.com
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Ubicación */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-xl flex items-center justify-center">
+                      <span className="text-2xl">📍</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white">Ubicación</h4>
+                      <p className="text-white/80">Santa Fe, Argentina</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Beneficios del sistema */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8">
+                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                  <span className="text-3xl">⚡</span>
+                  ¿Por qué nuestro sistema?
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-green-400 text-xl">✅</span>
+                    <span className="text-white/90">Respuesta en menos de 24 horas</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-green-400 text-xl">✅</span>
+                    <span className="text-white/90">Seguimiento completo de tu consulta</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-green-400 text-xl">✅</span>
+                    <span className="text-white/90">Atención personalizada</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-green-400 text-xl">✅</span>
+                    <span className="text-white/90">Presupuestos detallados</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA principal */}
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 backdrop-blur-md border border-cyan-400/30 rounded-3xl p-12">
+                <div className="mb-8">
+                  <span className="text-6xl mb-4 block">🎫</span>
+                  <h3 className="text-3xl font-bold text-white mb-4">Sistema de Tickets</h3>
+                  <p className="text-white/80 text-lg leading-relaxed">
+                    Nuestro sistema unificado te permite crear tickets de consulta 
+                    que son atendidos por nuestro equipo de expertos con prioridad.
+                  </p>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3 text-white/90">
+                    <span className="text-cyan-400">🔢</span>
+                    <span>Número de ticket único</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-white/90">
+                    <span className="text-purple-400">📊</span>
+                    <span>Seguimiento en tiempo real</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-white/90">
+                    <span className="text-green-400">⚡</span>
+                    <span>Respuesta garantizada</span>
+                  </div>
+                </div>
+
+                <a 
+                  href="/contacto" 
+                  className="group inline-flex items-center gap-3 px-12 py-6 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-2xl font-bold text-xl shadow-2xl hover:shadow-cyan-500/50 transition-all duration-500 transform hover:scale-110 border border-cyan-400/30"
+                >
+                  <span className="text-2xl">💬</span>
+                  Crear Consulta Ahora
+                  <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
 
       {/* Modal de Detalles de Servicio - Compacto */}
       {openService !== null && (
@@ -1230,52 +899,8 @@ export default function Home() {
         </div>
       )}
 
-      {/* Modal de contacto con vendedor */}
-      <ContactVendorModal
-        isOpen={contactModalOpen}
-        onClose={() => {
-          setContactModalOpen(false);
-          setContactProduct(null);
-        }}
-        product={contactProduct ? {
-          name: contactProduct.name,
-          price: contactProduct.price,
-          description: contactProduct.description
-        } : undefined}
-      />
 
-      {/* Toast de notificación */}
-      {toast && (
-        <div className="fixed top-20 right-4 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex-shrink-0">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                toast.includes('✅') || toast.includes('exitosamente') 
-                  ? 'bg-green-500' 
-                  : toast.includes('Error') || toast.includes('expirado')
-                  ? 'bg-red-500'
-                  : 'bg-blue-500'
-              }`}>
-                <span className="text-white text-xs">
-                  {toast.includes('✅') || toast.includes('exitosamente') ? '✓' : 
-                   toast.includes('Error') || toast.includes('expirado') ? '✕' : 'ℹ'}
-                </span>
-              </div>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-gray-800">{toast}</p>
-            </div>
-            <button
-              onClick={() => setToast(null)}
-              className="flex-shrink-0 text-gray-400 hover:text-gray-600"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
 
-      <FooterNav />
     </div>
   );
 }
