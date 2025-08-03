@@ -147,164 +147,91 @@ export default function CheckoutPage() {
   // Finalizar compra
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
+    setProcessing(true);
     setError("");
     setSuccess("");
-    setProcessing(true);
-    
-    const token = localStorage.getItem('authToken');
-    const userStr = localStorage.getItem('user');
-    let userId = null;
-    if (token && userStr) {
-      try {
-        userId = JSON.parse(userStr).id;
-      } catch {
-        setError("No se pudo obtener el usuario. Vuelve a iniciar sesión.");
-        setProcessing(false);
-        return;
-      }
-    }
 
     try {
-      // Enviar solicitud de checkout a la nueva API
-      const res = await fetch('/api/checkout', {
+      const token = localStorage.getItem('authToken');
+      const userId = token ? JSON.parse(atob(token.split('.')[1])).userId : null;
+
+      // Crear ticket de solicitud de compra
+      const ticketData = {
+        nombre: form.nombre,
+        email: form.email,
+        telefono: form.telefono,
+        empresa: '',
+        tipo: 'compra',
+        categoria: 'venta',
+        asunto: `Solicitud de compra - ${cartItems.length} producto${cartItems.length > 1 ? 's' : ''}`,
+        descripcion: `
+Solicitud de compra desde el carrito:
+
+Productos solicitados:
+${cartItems.map(item => `• ${item.product.name} x${item.quantity} - $${(item.product.price * item.quantity).toLocaleString()}`).join('\n')}
+
+Total: $${total.toLocaleString()}
+
+Datos del cliente:
+• Nombre: ${form.nombre}
+• Email: ${form.email}
+• Teléfono: ${form.telefono}
+• Dirección: ${form.direccion}
+• Método de pago: ${form.metodoPago}
+
+Estado: Pendiente de verificación de stock y habilitación de pago
+        `,
+        urgencia: 'normal',
+        prioridad: 'alta'
+      };
+
+      // Enviar solicitud como ticket
+      const response = await fetch('/api/tickets', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: form.nombre,
-          email: form.email,
-          telefono: form.telefono,
-          direccion: form.direccion,
-          metodoPago: form.metodoPago,
-          items: cartItems,
-          total: total,
-          userId: userId
-        })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticketData),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
-        setError(data.error || 'Error al procesar la solicitud');
-        setProcessing(false);
-        return;
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al enviar la solicitud');
       }
 
-      // Si es MercadoPago, mostrar mensaje de solicitud enviada y luego redirigir
-      if (form.metodoPago === 'mercadopago') {
-        setSuccess(`
-          ✅ ¡Solicitud enviada con éxito!
-          
-          💳 PROCESANDO PAGO CON MERCADOPAGO:
-          
-          Tu solicitud ha sido registrada y ahora serás redirigido a MercadoPago.
-          
-          📋 Proceso que seguiremos:
-          • Verificaremos stock disponible de los productos
-          • Si hay disponibilidad, procesaremos tu pago
-          • Si no hay stock, te contactaremos para alternativas
-          • Nuestro equipo gestionará tu pedido después del pago
-          • Te contactaremos para coordinar la entrega
-          
-          💬 Contacta con nosotros:
-          • WhatsApp: +54 9 342 508-9906
-          • Email: leonardobergallo@gmail.com
-          
-          ⏰ Redirigiendo a MercadoPago en 3 segundos...
-        `);
-        
-        // Limpiar carrito después de enviar la solicitud
-        if (token) {
-          try {
-            await fetch('/api/cart', {
-              method: 'DELETE',
-              headers: { Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ clearAll: true })
-            });
-          } catch (error) {
-            console.error('Error al limpiar carrito:', error);
-          }
-        } else {
-          localStorage.removeItem('carrito');
-        }
-        
-        // Redirigir a MercadoPago después de 3 segundos
-        setTimeout(async () => {
-          const mercadopagoRes = await fetch('/api/mercadopago', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              items: cartItems,
-              nombre: form.nombre,
-              email: form.email,
-              telefono: form.telefono,
-              direccion: form.direccion,
-              userId: userId
-            })
+      // Mostrar mensaje de éxito simplificado
+      setSuccess(`
+✅ ¡Solicitud enviada con éxito!
+
+📋 Tu solicitud está siendo procesada.
+
+📞 Nos comunicaremos contigo para:
+• Verificar stock disponible
+• Confirmar precio final
+• Habilitar el pago
+
+⏰ Tiempo estimado: 2-4 horas hábiles
+      `);
+
+      // Limpiar carrito después de enviar la solicitud
+      if (token) {
+        try {
+          await fetch('/api/cart', {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ clearAll: true })
           });
-          const mercadopagoData = await mercadopagoRes.json();
-          if (!mercadopagoRes.ok || !mercadopagoData.url) {
-            setError(mercadopagoData.error || 'Error al iniciar pago con Mercado Pago');
-            setProcessing(false);
-            return;
-          }
-          window.location.href = mercadopagoData.url;
-        }, 3000);
-        
-        setProcessing(false);
-        return;
+        } catch (error) {
+          console.error('Error al limpiar carrito:', error);
+        }
+      } else {
+        localStorage.removeItem('carrito');
       }
 
-      // Si es transferencia, mostrar mensaje de aprobación pendiente
-      if (form.metodoPago === 'transferencia') {
-        setSuccess(`
-          ✅ ¡Solicitud enviada con éxito!
-          
-          📋 Tu solicitud está siendo procesada por nuestro equipo.
-          
-          ⚠️ IMPORTANTE - PROCESO DE VERIFICACIÓN:
-          
-          🔍 PASO 1: Verificación de stock
-          • Revisaremos la disponibilidad de cada producto
-          • Confirmaremos precios actualizados
-          • Verificaremos tiempos de entrega
-          
-          📞 PASO 2: Contacto contigo
-          • Te llamaremos o enviaremos WhatsApp
-          • Confirmaremos disponibilidad y precio final
-          • Te daremos opciones de pago disponibles
-          
-          💳 PASO 3: Proceso de pago
-          • Solo después de tu confirmación
-          • Te enviaremos los datos bancarios
-          • Procesaremos tu transferencia
-          
-          💬 Contacta con nosotros:
-          • WhatsApp: +54 9 342 508-9906
-          • Email: leonardobergallo@gmail.com
-          
-          ⏰ Tiempo estimado de respuesta: 2-4 horas hábiles
-        `);
-        
-        // Limpiar carrito después de enviar la solicitud
-        if (token) {
-          // Si está logueado, limpiar carrito del backend
-          try {
-            await fetch('/api/cart', {
-              method: 'DELETE',
-              headers: { Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ clearAll: true })
-            });
-          } catch (error) {
-            console.error('Error al limpiar carrito:', error);
-          }
-        } else {
-          // Si no está logueado, limpiar localStorage
-          localStorage.removeItem('carrito');
-        }
-        
-        setProcessing(false);
-        return;
-      }
+      setProcessing(false);
+      return;
+
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error al realizar la compra");
     } finally {
@@ -344,19 +271,10 @@ export default function CheckoutPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-yellow-300 mb-2">⚠️ Proceso de verificación de stock</h3>
-                <p className="text-white/90 text-sm leading-relaxed mb-3">
-                  <strong>Importante:</strong> Tu compra no se procesará inmediatamente. Nuestro equipo verificará la disponibilidad de stock antes de proceder con el pago.
+                <h3 className="text-lg font-bold text-yellow-300 mb-2">⚠️ Verificación de stock</h3>
+                <p className="text-white/90 text-sm leading-relaxed">
+                  <strong>Importante:</strong> Verificaremos el stock disponible y nos comunicaremos contigo antes de proceder con el pago.
                 </p>
-                <div className="bg-white/5 rounded-xl p-4">
-                  <h4 className="text-yellow-300 font-semibold mb-2">📋 Proceso que seguiremos:</h4>
-                  <ol className="text-white/80 text-sm space-y-1">
-                    <li>1. Recibimos tu solicitud de compra</li>
-                    <li>2. Verificamos el stock disponible de cada producto</li>
-                    <li>3. Te contactamos para confirmar disponibilidad y precio final</li>
-                    <li>4. Solo después de tu confirmación procedemos con el pago</li>
-                  </ol>
-                </div>
               </div>
             </div>
           </div>
@@ -511,62 +429,15 @@ export default function CheckoutPage() {
                   <label className="block text-sm font-semibold text-cyan-300 mb-3">
                     Método de pago *
                   </label>
-                  <select 
-                    name="metodoPago" 
-                    className="w-full backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all duration-300 text-white" 
-                    value={form.metodoPago} 
-                    onChange={handleChange}
-                  >
-                    {paymentConfig?.mercadopago?.habilitado && (
-                      <option value="mercadopago" className="bg-slate-800">
-                        💳 {paymentConfig.mercadopago.nombre} - {paymentConfig.mercadopago.descripcion}
-                      </option>
-                    )}
-                    {paymentConfig?.transferencia?.habilitado && (
-                      <option value="transferencia" className="bg-slate-800">
-                        🏦 {paymentConfig.transferencia.nombre} - Requiere aprobación previa
-                      </option>
-                    )}
-                    {(!paymentConfig?.mercadopago?.habilitado && !paymentConfig?.transferencia?.habilitado) && (
-                      <option value="" className="bg-slate-800" disabled>
-                        No hay métodos de pago disponibles
-                      </option>
-                    )}
-                  </select>
-                  
-                  {/* Información específica del método de pago */}
-                  {paymentConfig && (
-                    <div className="mt-3 p-4 rounded-xl border border-white/10">
-                      {form.metodoPago === 'mercadopago' && (
-                        <div className="flex items-start gap-3">
-                          <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="text-green-300 font-semibold text-sm mb-1">💳 Pago inmediato disponible</p>
-                            <p className="text-white/70 text-xs">{paymentConfig.mercadopago?.descripcion}</p>
-                            <p className="text-white/60 text-xs mt-1">⚠️ Nota: Aún así verificaremos stock antes de procesar</p>
-                          </div>
-                        </div>
-                      )}
-                      {form.metodoPago === 'transferencia' && (
-                        <div className="flex items-start gap-3">
-                          <div className="w-6 h-6 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="text-yellow-300 font-semibold text-sm mb-1">🏦 Transferencia bancaria</p>
-                            <p className="text-white/70 text-xs">Primero verificaremos stock y te contactaremos para confirmar disponibilidad antes de proceder con el pago.</p>
-                            <p className="text-white/60 text-xs mt-1">📞 Te enviaremos los datos bancarios después de la verificación</p>
-                          </div>
-                        </div>
-                      )}
+                  <div className="w-full backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl px-4 py-4 text-white">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">🏦</span>
+                      <div>
+                        <p className="font-semibold">Transferencia bancaria</p>
+                        <p className="text-white/70 text-sm">Te enviaremos los datos bancarios después de verificar stock</p>
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <button 

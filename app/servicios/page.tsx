@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import CartIconWithBadge from "@/components/CartIconWithBadge";
-import FooterNav from "@/components/FooterNav";
+
 import ModernLogo from "@/components/ModernLogo";
 
 export default function ServiciosPage() {
@@ -40,6 +40,8 @@ export default function ServiciosPage() {
   // Estado para servicios dinámicos
   const [servicios, setServicios] = useState<any[]>([]);
   const [loadingServices, setLoadingServices] = useState(true);
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const [showModal, setShowModal] = useState(false);
 
   // Cargar servicios desde la API
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function ServiciosPage() {
           
           if (serviceName.includes('soporte') || serviceName.includes('técnico') || serviceName.includes('reparación') || serviceName.includes('pc')) {
             icon = '🖥️';
-            image = '/servicio-pc.png';
+            image = 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop';
             duration = '1-3 días';
             features = [
               "Reparación y mantenimiento de computadoras y notebooks",
@@ -82,7 +84,7 @@ export default function ServiciosPage() {
             ];
           } else if (serviceName.includes('redes') || serviceName.includes('internet') || serviceName.includes('wifi')) {
             icon = '🌐';
-            image = '/servicio-redes.png';
+            image = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop';
             duration = '1-2 días';
             features = [
               "Configuración de redes WiFi y cableadas",
@@ -94,7 +96,7 @@ export default function ServiciosPage() {
             ];
           } else if (serviceName.includes('desarrollo') || serviceName.includes('software') || serviceName.includes('web')) {
             icon = '💻';
-            image = '/servicio-apps.png';
+            image = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop';
             duration = '2-8 semanas';
             features = [
               "Sistemas web personalizados para empresas, comercios o profesionales",
@@ -105,8 +107,8 @@ export default function ServiciosPage() {
               "Aplicaciones web responsivas y escalables"
             ];
           } else if (serviceName.includes('móvil') || serviceName.includes('app') || serviceName.includes('android') || serviceName.includes('ios')) {
-            icon = '⚡';
-            image = '/servicio-apps.png';
+            icon = '📱';
+            image = 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop';
             duration = '4-12 semanas';
             features = [
               "Desarrollo de apps para Android e iOS",
@@ -118,7 +120,7 @@ export default function ServiciosPage() {
             ];
           } else if (serviceName.includes('venta') || serviceName.includes('producto') || serviceName.includes('accesorio')) {
             icon = '🛍️';
-            image = '/servicio-productos.png';
+            image = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop';
             duration = 'Inmediato';
             features = [
               "Accesorios, periféricos, routers, memorias, discos externos",
@@ -130,7 +132,7 @@ export default function ServiciosPage() {
             ];
           } else if (serviceName.includes('ciberseguridad') || serviceName.includes('seguridad')) {
             icon = '🔒';
-            image = '/servicio-software.png';
+            image = 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop';
             duration = '1-2 semanas';
             features = [
               "Auditorías de seguridad informática",
@@ -142,7 +144,7 @@ export default function ServiciosPage() {
             ];
           } else if (serviceName.includes('consultoría') || serviceName.includes('consultoria')) {
             icon = '📊';
-            image = '/servicio-software.png';
+            image = 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=300&fit=crop';
             duration = '1-4 semanas';
             features = [
               "Análisis de necesidades tecnológicas",
@@ -152,8 +154,33 @@ export default function ServiciosPage() {
               "Roadmap de implementación",
               "Seguimiento y optimización continua"
             ];
+          } else if (serviceName.includes('hogar') || serviceName.includes('inteligente') || serviceName.includes('domótica')) {
+            icon = '🏠';
+            image = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop';
+            duration = '2-6 semanas';
+            features = [
+              "Automatización de iluminación y climatización",
+              "Sistemas de seguridad inteligentes",
+              "Control de electrodomésticos",
+              "Integración con asistentes de voz",
+              "Monitoreo remoto del hogar",
+              "Ahorro energético y comodidad"
+            ];
+          } else if (serviceName.includes('mantenimiento') || serviceName.includes('sistemas')) {
+            icon = '🔧';
+            image = 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop';
+            duration = '1-3 días';
+            features = [
+              "Mantenimiento preventivo de sistemas",
+              "Actualizaciones de software",
+              "Optimización de rendimiento",
+              "Backup y recuperación de datos",
+              "Monitoreo de sistemas",
+              "Soporte técnico continuo"
+            ];
           } else {
             // Características genéricas para otros servicios
+            image = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop';
             features = [
               "Análisis personalizado de necesidades",
               "Implementación profesional",
@@ -187,10 +214,21 @@ export default function ServiciosPage() {
   }, []);
 
   // Función para manejar el contacto
-  const handleContact = (serviceName: string) => {
-    // Redirigir al formulario de contacto con el servicio pre-seleccionado
-    window.location.href = `/#contacto?servicio=${encodeURIComponent(serviceName)}`;
-  }; // Animación simple de fade-in al cargar
+  const handleContact = (servicio: any) => {
+    setSelectedService(servicio);
+    setShowModal(true);
+  };
+
+  // Función para cerrar el modal
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedService(null);
+  };
+
+  // Función para ir al formulario de contacto
+  const goToContact = (serviceName: string) => {
+    window.location.href = `/contacto?servicio=${encodeURIComponent(serviceName)}`;
+  };   // Animación simple de fade-in al cargar
   useEffect(() => {
     const animateElements = () => {
       const fadeElements = document.querySelectorAll('.fade-in');
@@ -209,6 +247,23 @@ export default function ServiciosPage() {
       setTimeout(animateElements, 100);
     }
   }, []);
+
+  // Event listener para cerrar modal con Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showModal) {
+        closeModal();
+      }
+    };
+
+    if (showModal) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [showModal]);
 
 
 
@@ -352,29 +407,10 @@ export default function ServiciosPage() {
                     {servicio.description}
                   </p>
                   
-                  {/* Beneficios de inversión */}
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 text-xs text-cyan-300 mb-1">
-                      <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
-                      <span>Eficiencia Operativa</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-cyan-300">
-                      <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full"></span>
-                      <span>Ventaja Competitiva</span>
-                    </div>
-                  </div>
-                  
-                  {/* Precio y acción */}
+                  {/* Botón de acción */}
                   <div className="flex flex-col gap-3 mt-auto">
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-cyan-300">
-                        Presupuesto
-                      </span>
-                      <span className="text-xs text-white/60">Personalizado</span>
-                    </div>
-                    
                     <button 
-                      onClick={() => handleContact(servicio.name)}
+                      onClick={() => handleContact(servicio)}
                       className="w-full px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium text-sm shadow-lg group-hover:shadow-xl"
                     >
                       Ver Detalles
@@ -390,7 +426,7 @@ export default function ServiciosPage() {
             <h3 className="text-2xl font-bold text-white mb-4">No hay servicios disponibles</h3>
             <p className="text-white/80 mb-8">Por favor, contacta con nosotros para más información sobre nuestros servicios.</p>
             <a 
-              href="/#contacto"
+              href="/contacto"
               className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 text-lg transform hover:scale-105"
             >
               Contactar
@@ -463,7 +499,7 @@ export default function ServiciosPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
-                href="/#contacto"
+                href="/contacto"
                 className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 text-lg transform hover:scale-105"
               >
                 Solicitar Presupuesto
@@ -482,7 +518,94 @@ export default function ServiciosPage() {
         </div>
       </section>
 
-      <FooterNav />
+      {/* Modal de detalles del servicio */}
+      {showModal && selectedService && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+            {/* Header del modal */}
+            <div className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-4 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <span className="text-xl">{selectedService.icon}</span>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold">{selectedService.name}</h2>
+                    <p className="text-white/80 text-sm">Servicio Profesional</p>
+                  </div>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                >
+                  <span className="text-white text-lg">×</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Contenido del modal */}
+            <div className="p-4">
+              {/* Descripción */}
+              <div className="mb-4">
+                <h3 className="text-base font-semibold text-gray-800 mb-2">Descripción</h3>
+                <p className="text-gray-600 leading-relaxed text-sm">{selectedService.description}</p>
+              </div>
+
+              {/* Características */}
+              <div className="mb-4">
+                <h3 className="text-base font-semibold text-gray-800 mb-2">Características</h3>
+                <ul className="space-y-1">
+                  {selectedService.features?.map((feature: string, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                      <span className="text-gray-600 text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+
+
+              {/* Beneficios */}
+              <div className="mb-4">
+                <h3 className="text-base font-semibold text-gray-800 mb-2">Beneficios</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2 text-cyan-600">
+                    <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+                    <span className="text-xs">Soporte Técnico</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-cyan-600">
+                    <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+                    <span className="text-xs">Garantía de Calidad</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-cyan-600">
+                    <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+                    <span className="text-xs">Implementación Profesional</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botones de acción */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  onClick={() => goToContact(selectedService.name)}
+                  className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 text-sm"
+                >
+                  Solicitar Presupuesto
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg font-semibold hover:bg-gray-300 transition-all duration-300 text-sm"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 } 

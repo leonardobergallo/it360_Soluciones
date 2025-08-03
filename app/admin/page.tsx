@@ -121,9 +121,9 @@ export default function AdminDashboard() {
     { label: "Subir Excel", count: "Productos", href: "/admin/upload-products", color: "bg-blue-50 text-blue-800", icon: "📊" },
     { label: "Servicios", count: counts.services, href: "/admin/services", color: "bg-yellow-50 text-yellow-800", icon: "🔧" },
     { label: "Tickets", count: counts.tickets, href: "/admin/tickets", color: "bg-indigo-50 text-indigo-800", icon: "🎫" },
+    { label: "Solicitudes de Compra", count: "Gestionar", href: "/admin/solicitudes-compra", color: "bg-cyan-50 text-cyan-800", icon: "🛒" },
     { label: "Ventas", count: counts.sales, href: "/admin/sales", color: "bg-purple-50 text-purple-800", icon: "💰" },
     { label: "Contactos", count: counts.contacts, href: "/admin/contacts", color: "bg-pink-50 text-pink-800", icon: "📞" },
-    { label: "Transferencias", count: "Gestionar", href: "/admin/transferencias", color: "bg-orange-50 text-orange-800", icon: "💳" },
   ];
 
   return (

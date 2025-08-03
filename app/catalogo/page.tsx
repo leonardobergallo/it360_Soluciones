@@ -361,6 +361,34 @@ export default function CatalogoPage() {
             </div>
           </div>
 
+          {/* Consulta rápida */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 backdrop-blur-md border border-cyan-400/30 rounded-2xl p-6 mb-6">
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-white mb-2">¿No encuentras lo que buscas?</h3>
+                <p className="text-white/80 mb-4">Nuestro equipo está listo para ayudarte a encontrar la solución perfecta</p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button 
+                    onClick={() => setContactModalOpen(true)}
+                    className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    <span className="text-lg">💬</span>
+                    Consulta Personalizada
+                  </button>
+                  <a 
+                    href="https://wa.me/5493425089906"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-green-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    <span className="text-lg">📱</span>
+                    WhatsApp Directo
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Filtros y Búsqueda */}
           <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -496,17 +524,34 @@ export default function CatalogoPage() {
                     </div>
                   </div>
                   
-                  {/* Botón de agregar */}
-                  <button 
-                    onClick={e => { e.stopPropagation(); addToCart(p); }} 
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 group/btn"
-                  >
-                    <div className="w-1.5 h-1.5 bg-white rounded-full group-hover/btn:animate-pulse"></div>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-                    </svg>
-                    Agregar al Carrito
-                  </button>
+                  {/* Botones de acción */}
+                  <div className="space-y-2">
+                    <button 
+                      onClick={e => { e.stopPropagation(); addToCart(p); }} 
+                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-2 px-4 rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 group/btn"
+                    >
+                      <div className="w-1.5 h-1.5 bg-white rounded-full group-hover/btn:animate-pulse"></div>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                      </svg>
+                      Agregar al Carrito
+                    </button>
+                    
+                    <button 
+                      onClick={e => { 
+                        e.stopPropagation(); 
+                        setSelectedProduct(p);
+                        setContactModalOpen(true);
+                      }} 
+                      className="w-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-xl text-white py-2 px-4 rounded-xl font-semibold border border-purple-400/50 hover:from-purple-500/30 hover:to-pink-500/30 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 group/btn"
+                    >
+                      <div className="w-1.5 h-1.5 bg-purple-400 rounded-full group-hover/btn:animate-pulse"></div>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      Consultar
+                    </button>
+                  </div>
                 </div>
                 
                 {/* Efecto de borde brillante */}
@@ -558,16 +603,35 @@ export default function CatalogoPage() {
                       Servicio
                     </span>
                   </div>
-                  <button 
-                    onClick={() => window.location.href = '/contacto'} 
-                    className="w-full backdrop-blur-md bg-gradient-to-r from-purple-500 to-pink-600 text-white py-2 px-3 rounded-lg font-semibold shadow-lg hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-1.5 group/btn text-xs"
-                  >
-                    <div className="w-1 h-1 bg-white rounded-full group-hover/btn:animate-pulse"></div>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12H8m0 0l4-4m-4 4l4 4" />
-                    </svg>
-                    Cotizar
-                  </button>
+                  <div className="space-y-1.5">
+                    <button 
+                      onClick={() => window.location.href = '/contacto'} 
+                      className="w-full backdrop-blur-md bg-gradient-to-r from-purple-500 to-pink-600 text-white py-1.5 px-3 rounded-lg font-semibold shadow-lg hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-1.5 group/btn text-xs"
+                    >
+                      <div className="w-1 h-1 bg-white rounded-full group-hover/btn:animate-pulse"></div>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12H8m0 0l4-4m-4 4l4 4" />
+                      </svg>
+                      Cotizar
+                    </button>
+                    
+                    <button 
+                      onClick={() => {
+                        setSelectedProduct({
+                          ...s,
+                          type: 'service' as const
+                        });
+                        setContactModalOpen(true);
+                      }} 
+                      className="w-full backdrop-blur-md bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/50 text-cyan-300 py-1.5 px-3 rounded-lg font-semibold hover:from-cyan-500/30 hover:to-blue-500/30 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-1.5 group/btn text-xs"
+                    >
+                      <div className="w-1 h-1 bg-cyan-400 rounded-full group-hover/btn:animate-pulse"></div>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      Consultar
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -684,6 +748,15 @@ export default function CatalogoPage() {
                         className="w-full bg-white border-2 border-cyan-500 text-cyan-600 py-2 px-3 rounded-lg font-semibold hover:bg-cyan-50 transition-all duration-300 text-xs sm:text-sm"
                       >
                         Contactar Vendedor
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setContactModalOpen(true);
+                          setSelectedProduct(null);
+                        }}
+                        className="w-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-xl text-purple-600 py-2 px-3 rounded-lg font-semibold border border-purple-400/50 hover:from-purple-500/30 hover:to-pink-500/30 transition-all duration-300 text-xs sm:text-sm"
+                      >
+                        Consulta Rápida
                       </button>
                     </div>
                     <div className="text-xs text-gray-600 space-y-1">

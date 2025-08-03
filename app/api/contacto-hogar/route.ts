@@ -3,9 +3,9 @@ import { prisma } from '@/lib/prisma';
 
 // Función para generar número de ticket único
 function generateTicketNumber(): string {
-  const timestamp = Date.now().toString();
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `HOGAR-${timestamp}-${random}`;
+  const timestamp = Date.now().toString().slice(-6);
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  return `TKT-${timestamp}-${random}`;
 }
 
 // POST - Crear una nueva consulta de Hogar Inteligente
@@ -37,6 +37,28 @@ Mensaje: ${mensaje}`
       },
     });
 
+    // Crear ticket también para el sistema unificado
+    const nuevoTicket = await prisma.ticket.create({
+      data: {
+        ticketNumber,
+        nombre,
+        email,
+        telefono: telefono || null,
+        empresa: null,
+        tipo: 'hogar-inteligente',
+        categoria: 'hogar-inteligente',
+        asunto: `Consulta de Hogar Inteligente - ${tipoConsulta || 'General'}`,
+        descripcion: `Tipo de consulta: ${tipoConsulta || 'General'}
+Teléfono: ${telefono || 'No proporcionado'}
+Mensaje: ${mensaje}
+
+--- Creado desde formulario de Hogar Inteligente ---`,
+        urgencia: 'normal',
+        prioridad: 'media',
+        estado: 'abierto'
+      }
+    });
+
     // Log de la notificación
     console.log('📧 NUEVA CONSULTA DE HOGAR INTELIGENTE:');
     console.log('='.repeat(60));
@@ -47,11 +69,15 @@ Mensaje: ${mensaje}`
     console.log(`📋 Mensaje: ${mensaje}`);
     console.log('='.repeat(60));
 
+    // Enviar notificación del ticket
+    await enviarNotificacionTicket(nuevoTicket);
+
     return NextResponse.json(
       { 
         success: true, 
         message: 'Consulta enviada con éxito',
-        contacto 
+        contacto,
+        ticket: nuevoTicket
       }, 
       { status: 201 }
     );
@@ -63,8 +89,6 @@ Mensaje: ${mensaje}`
     );
   }
 }
-
-
 
 // GET - Obtener todas las consultas de Hogar Inteligente (solo para admin)
 export async function GET() {
@@ -88,4 +112,36 @@ export async function GET() {
       { status: 500 }
     );
   }
+}
+
+// Función para enviar notificación del ticket
+async function enviarNotificacionTicket(ticket: {
+  ticketNumber: string;
+  nombre: string;
+  email: string;
+  telefono?: string | null;
+  empresa?: string | null;
+  tipo: string;
+  categoria: string;
+  asunto: string;
+  urgencia: string;
+  prioridad: string;
+  descripcion: string;
+  createdAt: Date;
+}) {
+  console.log('🎫 NUEVO TICKET DE HOGAR INTELIGENTE CREADO:');
+  console.log('='.repeat(60));
+  console.log(`🔢 Número: ${ticket.ticketNumber}`);
+  console.log(`👤 Nombre: ${ticket.nombre}`);
+  console.log(`📧 Email: ${ticket.email}`);
+  console.log(`📞 Teléfono: ${ticket.telefono || 'No especificado'}`);
+  console.log(`🏢 Empresa: ${ticket.empresa || 'No especificada'}`);
+  console.log(`🏷️ Tipo: ${ticket.tipo}`);
+  console.log(`📂 Categoría: ${ticket.categoria}`);
+  console.log(`📝 Asunto: ${ticket.asunto}`);
+  console.log(`🚨 Urgencia: ${ticket.urgencia}`);
+  console.log(`⭐ Prioridad: ${ticket.prioridad}`);
+  console.log(`📋 Descripción: ${ticket.descripcion}`);
+  console.log(`⏰ Creado: ${ticket.createdAt}`);
+  console.log('='.repeat(60));
 } 

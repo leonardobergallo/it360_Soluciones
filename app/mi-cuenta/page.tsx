@@ -150,6 +150,23 @@ export default function MiCuentaPage() {
             </div>
           )}
 
+          {/* Mis Solicitudes de Compra - Para todos los usuarios */}
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col items-start">
+            <div className="mb-4 text-green-400">
+              <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold mb-2 text-white">Mis Solicitudes de Compra</h2>
+            <p className="text-white/70 mb-4">Gestioná y pagá tus solicitudes de compra pendientes.</p>
+            <Link 
+              href="/mi-cuenta/solicitudes-compra" 
+              className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+            >
+              Ver Solicitudes
+            </Link>
+          </div>
+
           {/* Centro de ayuda - Para todos los usuarios */}
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col items-start">
             <div className="mb-4 text-cyan-400">
