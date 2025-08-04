@@ -18,11 +18,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, description, price, stock, category, image } = body;
+    const { name, description, price, basePrice, markup, stock, category, image } = body;
 
-    if (!name || !description || price === undefined || stock === undefined || !category) {
+    if (!name || !description || price === undefined || stock === undefined) {
       return NextResponse.json(
-        { error: 'Name, description, price, stock y category son requeridos' },
+        { error: 'Name, description, price y stock son requeridos' },
         { status: 400 }
       );
     }
@@ -32,14 +32,17 @@ export async function POST(request: NextRequest) {
         name,
         description,
         price: parseFloat(price),
+        basePrice: basePrice ? parseFloat(basePrice) : null,
+        markup: markup ? parseFloat(markup) : null,
         stock: parseInt(stock),
-        category,
+        category: category || 'general',
         image,
       },
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error('Error creating product:', error);
     return NextResponse.json(
       { error: 'Error al crear producto' },
       { status: 500 }
@@ -50,24 +53,29 @@ export async function POST(request: NextRequest) {
 // PUT - Actualizar un producto por id
 export async function PUT(request: NextRequest) {
   try {
-    const { id, name, description, price, stock, category, image, active } = await request.json();
+    const { id, name, description, price, basePrice, markup, stock, category, image, active } = await request.json();
     if (!id) {
       return NextResponse.json({ error: 'ID requerido' }, { status: 400 });
     }
+    
     const data: any = {};
     if (name !== undefined) data.name = name;
     if (description !== undefined) data.description = description;
     if (price !== undefined) data.price = parseFloat(price);
+    if (basePrice !== undefined) data.basePrice = basePrice ? parseFloat(basePrice) : null;
+    if (markup !== undefined) data.markup = markup ? parseFloat(markup) : null;
     if (stock !== undefined) data.stock = parseInt(stock);
     if (category !== undefined) data.category = category;
     if (image !== undefined) data.image = image;
     if (active !== undefined) data.active = active;
+    
     const product = await prisma.product.update({
       where: { id },
       data,
     });
     return NextResponse.json(product);
-  } catch {
+  } catch (error) {
+    console.error('Error updating product:', error);
     return NextResponse.json({ error: 'Error al actualizar producto' }, { status: 500 });
   }
 }
