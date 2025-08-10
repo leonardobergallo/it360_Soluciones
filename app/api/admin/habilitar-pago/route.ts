@@ -3,7 +3,17 @@ import { PrismaClient } from '@prisma/client';
 import { Resend } from 'resend';
 
 const prisma = new PrismaClient();
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Configurar Resend con manejo de errores
+let resend: Resend | null = null;
+try {
+  if (process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  } else {
+    console.warn('⚠️ RESEND_API_KEY no encontrada. Los emails no se enviarán.');
+  }
+} catch (error) {
+  console.error('❌ Error configurando Resend:', error);
+}
 
 // POST - Habilitar pago y enviar email al usuario
 export async function POST(request: NextRequest) {
@@ -252,7 +262,12 @@ async function enviarEmailPagoHabilitado({
       `;
     }
 
-         const { error } = await resend.emails.send({
+    if (!resend) {
+      console.warn('⚠️ Resend no configurado. Email no enviado.');
+      return;
+    }
+
+    const { error } = await resend.emails.send({
       from: 'IT360 Soluciones <onboarding@resend.dev>',
       to: email,
       subject: `✅ Pago Habilitado - Ticket ${ticketNumber} - IT360 Soluciones`,
