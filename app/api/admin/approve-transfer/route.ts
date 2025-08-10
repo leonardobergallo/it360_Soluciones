@@ -17,9 +17,9 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || 'it360-secret-key-2024') as any;
     
-    if (decoded.role !== 'admin') {
+    if (decoded.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Acceso denegado - Solo administradores' },
         { status: 403 }
@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Buscar la solicitud
-    const solicitud = await prisma.presupuesto.findUnique({
+    // Buscar la solicitud en la tabla Ticket
+    const solicitud = await prisma.ticket.findUnique({
       where: { id: solicitudId }
     });
 
@@ -49,16 +49,32 @@ export async function POST(request: NextRequest) {
     }
 
     if (accion === 'aprobar') {
-      const esTransferencia = solicitud.servicio.includes('TRANSFERENCIA');
+      // Verificar stock antes de aprobar
+      const stockDisponible = await verificarStock(solicitud.descripcion);
+      
+      if (!stockDisponible.disponible) {
+        return NextResponse.json(
+          { 
+            error: 'Stock insuficiente', 
+            detalles: stockDisponible.productosSinStock 
+          },
+          { status: 400 }
+        );
+      }
+
+      const esTransferencia = solicitud.descripcion.toLowerCase().includes('transferencia');
       
       // Aprobar solicitud
-      await prisma.presupuesto.update({
+      await prisma.ticket.update({
         where: { id: solicitudId },
         data: { 
-          estado: 'aprobado',
-          mensaje: solicitud.mensaje + `\n\n✅ APROBADO - ${esTransferencia ? 'Pago habilitado. Puedes proceder con la transferencia bancaria.' : 'Solicitud de MercadoPago aprobada. Gestionando pedido.'}`
+          estado: 'en_proceso',
+          notas: solicitud.notas + `\n\n✅ APROBADO - ${esTransferencia ? 'Pago habilitado. Puedes proceder con la transferencia bancaria.' : 'Solicitud de MercadoPago aprobada. Gestionando pedido.'}`
         }
       });
+
+      // Reducir stock de productos
+      await reducirStock(solicitud.descripcion);
 
       if (esTransferencia) {
         // Enviar email de aprobación al cliente con datos bancarios
@@ -67,7 +83,7 @@ export async function POST(request: NextRequest) {
           email: solicitud.email,
           telefono: solicitud.telefono || '',
           direccion: solicitud.empresa || '',
-          mensaje: solicitud.mensaje || ''
+          mensaje: solicitud.descripcion
         });
       } else {
         // Enviar email de aprobación para MercadoPago
@@ -76,7 +92,7 @@ export async function POST(request: NextRequest) {
           email: solicitud.email,
           telefono: solicitud.telefono || '',
           direccion: solicitud.empresa || '',
-          mensaje: solicitud.mensaje || ''
+          mensaje: solicitud.descripcion
         });
       }
 
@@ -87,11 +103,11 @@ export async function POST(request: NextRequest) {
 
     } else if (accion === 'rechazar') {
       // Rechazar solicitud
-      await prisma.presupuesto.update({
+      await prisma.ticket.update({
         where: { id: solicitudId },
         data: { 
-          estado: 'rechazado',
-          mensaje: solicitud.mensaje + `\n\n❌ RECHAZADO${motivo ? ` - Motivo: ${motivo}` : ''}`
+          estado: 'cerrado',
+          notas: solicitud.notas + `\n\n❌ RECHAZADO${motivo ? ` - Motivo: ${motivo}` : ''}`
         }
       });
 
@@ -121,6 +137,82 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Función para verificar stock de productos
+async function verificarStock(descripcion: string): Promise<{ disponible: boolean; productosSinStock: string[] }> {
+  const productosSinStock: string[] = [];
+  
+  // Extraer productos de la descripción
+  const productos = extraerProductos(descripcion);
+  
+  for (const producto of productos) {
+    const productoDB = await prisma.product.findFirst({
+      where: {
+        name: { contains: producto.nombre, mode: 'insensitive' }
+      }
+    });
+    
+    if (!productoDB) {
+      productosSinStock.push(`${producto.nombre} - No encontrado`);
+    } else if (productoDB.stock < producto.cantidad) {
+      productosSinStock.push(`${producto.nombre} - Stock: ${productoDB.stock}, Solicitado: ${producto.cantidad}`);
+    }
+  }
+  
+  return {
+    disponible: productosSinStock.length === 0,
+    productosSinStock
+  };
+}
+
+// Función para reducir stock de productos
+async function reducirStock(descripcion: string) {
+  const productos = extraerProductos(descripcion);
+  
+  for (const producto of productos) {
+    const productoDB = await prisma.product.findFirst({
+      where: {
+        name: { contains: producto.nombre, mode: 'insensitive' }
+      }
+    });
+    
+    if (productoDB) {
+      await prisma.product.update({
+        where: { id: productoDB.id },
+        data: { stock: productoDB.stock - producto.cantidad }
+      });
+    }
+  }
+}
+
+// Función para extraer productos de la descripción
+function extraerProductos(descripcion: string): Array<{ nombre: string; cantidad: number }> {
+  const productos: Array<{ nombre: string; cantidad: number }> = [];
+  
+  // Buscar patrones como "Producto: X - Cantidad: Y" o "X - $Y"
+  const lineas = descripcion.split('\n');
+  lineas.forEach(linea => {
+    // Buscar productos con cantidad
+    const match = linea.match(/([^-]+)-?\s*Cantidad[:\s]*(\d+)/i);
+    if (match) {
+      productos.push({
+        nombre: match[1].trim(),
+        cantidad: parseInt(match[2])
+      });
+    } else {
+      // Buscar productos sin cantidad específica (asumir 1)
+      const match2 = linea.match(/([^-]+)-?\s*\$?(\d+(?:\.\d{2})?)/);
+      if (match2 && !linea.toLowerCase().includes('total')) {
+        productos.push({
+          nombre: match2[1].trim(),
+          cantidad: 1
+        });
+      }
+    }
+  });
+  
+  return productos;
 }
 
 // Función para enviar email de aprobación con datos bancarios

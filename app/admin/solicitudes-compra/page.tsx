@@ -62,7 +62,7 @@ export default function SolicitudesCompraPage() {
       } else {
         setError('Error al cargar las solicitudes de compra');
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setLoading(false);
@@ -70,26 +70,52 @@ export default function SolicitudesCompraPage() {
   };
 
   const handleHabilitarPago = async (ticketId: string) => {
+    // Mostrar modal para seleccionar método de pago
+    const metodoPago = prompt(
+      'Selecciona el método de pago:\n\n1. TRANSFERENCIA_BANCARIA\n2. MERCADOPAGO\n\nEscribe el número (1 o 2):'
+    );
+    
+    if (!metodoPago) return;
+    
+    let metodoSeleccionado = '';
+    if (metodoPago === '1') {
+      metodoSeleccionado = 'TRANSFERENCIA_BANCARIA';
+    } else if (metodoPago === '2') {
+      metodoSeleccionado = 'MERCADOPAGO';
+    } else {
+      alert('❌ Opción no válida');
+      return;
+    }
+
     try {
-      const response = await fetch(`/api/tickets/${ticketId}`, {
-        method: 'PATCH',
+      const response = await fetch('/api/admin/habilitar-pago', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          estado: 'pago_habilitado',
-          notas: 'Pago habilitado por administrador'
+          ticketId: ticketId,
+          metodoPago: metodoSeleccionado
         }),
       });
+
+      const data = await response.json();
 
       if (response.ok) {
         // Actualizar la lista
         fetchSolicitudesCompra();
-        alert('✅ Pago habilitado correctamente');
+        alert(`✅ ${data.message}`);
+        
+        // Disparar evento para actualizar el carrito en el frontend
+        window.dispatchEvent(new CustomEvent('cartCleared'));
       } else {
-        alert('❌ Error al habilitar el pago');
+        if (data.error === 'Stock insuficiente') {
+          alert(`❌ ${data.error}\n\nProductos sin stock:\n${data.detalles.join('\n')}`);
+        } else {
+          alert(`❌ ${data.error || 'Error al habilitar el pago'}`);
+        }
       }
-    } catch (err) {
+    } catch {
       alert('❌ Error de conexión');
     }
   };
@@ -116,7 +142,7 @@ export default function SolicitudesCompraPage() {
       } else {
         alert('❌ Error al rechazar la solicitud');
       }
-    } catch (err) {
+    } catch {
       alert('❌ Error de conexión');
     }
   };
