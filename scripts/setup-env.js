@@ -38,5 +38,5 @@ try {
   console.log('   • Las credenciales no se subirán al repositorio');
   console.log('   • Para producción, configura las variables en tu hosting');
 } catch (error) {
-  console.error('❌ Error creando .env.local:', error);
+  console.error('❌ Error1 creando .env.local:', error);
 } 
