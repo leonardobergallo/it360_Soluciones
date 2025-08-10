@@ -263,12 +263,26 @@ export default function CarritoPage() {
     const token = localStorage.getItem('authToken');
     
     if (token) {
-      // Usuario logueado: vaciar en backend
-      await fetch("/api/cart", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ productId: "all" })
-      });
+      // Usuario logueado: vaciar en backend usando la API correcta
+      try {
+        const response = await fetch("/api/cart/clear", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json", 
+            Authorization: `Bearer ${token}` 
+          }
+        });
+        
+        if (response.ok) {
+          console.log('✅ Carrito vaciado en backend');
+          // Disparar evento para actualizar el ícono del carrito
+          window.dispatchEvent(new CustomEvent('cartCleared'));
+        } else {
+          console.error('❌ Error vaciando carrito en backend');
+        }
+      } catch (error) {
+        console.error('❌ Error de conexión:', error);
+      }
     }
     
     // Limpiar localStorage (mantener solo cotizaciones)
@@ -287,7 +301,11 @@ export default function CarritoPage() {
       }
     }
     
+    // Actualizar estado local
     setCartItems([]);
+    
+    // Disparar evento para actualizar el ícono del carrito
+    window.dispatchEvent(new CustomEvent('cartCleared'));
   };
 
   // Checkout (flujo real de ventas con datos completos y método de pago)

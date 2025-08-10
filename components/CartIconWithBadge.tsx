@@ -68,10 +68,27 @@ export default function CartIconWithBadge() {
         }
       }
     }
+    
+    // Función para manejar eventos de actualización del carrito
+    function handleCartUpdate() {
+      updateCount();
+    }
+
+    // Actualizar inmediatamente al montar
     updateCount();
+    
+    // Escuchar eventos personalizados para actualizar el carrito
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('cartCleared', () => setCount(0));
+    
     // Reducir la frecuencia de actualización para evitar muchos errores 401
     const interval = setInterval(updateCount, 5000); // Cambiar de 1 segundo a 5 segundos
-    return () => clearInterval(interval);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('cartCleared', () => setCount(0));
+    };
   }, []);
 
   return (

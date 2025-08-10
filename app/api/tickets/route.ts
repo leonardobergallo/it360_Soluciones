@@ -210,8 +210,8 @@ async function enviarEmailTicket(ticket: any) {
     }
 
     const { data, error } = await resend.emails.send({
-    from: 'IT360 Soluciones <noreply@it360.com>',
-    to: 'it360tecnologia@gmail.com', // Email principal de IT360
+    from: 'IT360 Soluciones <onboarding@resend.dev>', // Usar dominio por defecto de Resend
+    to: process.env.IT360_EMAIL || 'leonardobergallo@gmail.com', // Email principal de IT360
     subject: `🎫 Nuevo Ticket ${ticket.ticketNumber} - ${ticket.tipo}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
