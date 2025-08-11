@@ -57,7 +57,10 @@
     "test-all-forms": "node scripts/test-all-forms.js",
     "show-contacts": "node scripts/show-contacts.js",
     "switch-to-sqlite": "cp prisma/schema-sqlite.prisma prisma/schema.prisma && npx prisma generate && npx prisma db push",
-    "switch-to-neon": "cp prisma/schema-postgresql.prisma prisma/schema.prisma && npx prisma generate"
+    "switch-to-neon": "cp prisma/schema-postgresql.prisma prisma/schema.prisma && npx prisma generate",
+    "verify-vercel": "node scripts/verify-vercel-deployment.js",
+    "setup-vercel": "node scripts/setup-vercel-env.js",
+    "check-neon": "node scripts/check-neon-products.js"
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",
