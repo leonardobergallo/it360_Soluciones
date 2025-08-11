@@ -60,7 +60,8 @@
     "switch-to-neon": "cp prisma/schema-postgresql.prisma prisma/schema.prisma && npx prisma generate",
     "verify-vercel": "node scripts/verify-vercel-deployment.js",
     "setup-vercel": "node scripts/setup-vercel-env.js",
-    "check-neon": "node scripts/check-neon-products.js"
+    "check-neon": "node scripts/check-neon-products.js",
+    "check-env": "node scripts/check-env-vars.js"
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",
