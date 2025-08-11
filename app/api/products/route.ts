@@ -6,6 +6,29 @@ export async function GET() {
   try {
     console.log('🔍 Obteniendo productos de la base de datos...');
     
+    // Verificar variables de entorno críticas
+    const requiredEnvVars = {
+      DATABASE_URL: process.env.DATABASE_URL,
+      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+      NEXTAUTH_URL: process.env.NEXTAUTH_URL
+    };
+    
+    const missingVars = Object.entries(requiredEnvVars)
+      .filter(([key, value]) => !value)
+      .map(([key]) => key);
+    
+    if (missingVars.length > 0) {
+      console.error('❌ Variables de entorno faltantes:', missingVars);
+      return NextResponse.json(
+        { 
+          error: 'Configuración incompleta',
+          details: `Variables de entorno faltantes: ${missingVars.join(', ')}`,
+          solution: 'Configura las variables de entorno en Vercel Dashboard > Settings > Environment Variables'
+        },
+        { status: 500 }
+      );
+    }
+    
     // Verificar conexión a la base de datos
     await prisma.$connect();
     console.log('✅ Conexión a la base de datos establecida');
@@ -27,12 +50,37 @@ export async function GET() {
     }
     
     return NextResponse.json(products);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error obteniendo productos:', error);
+    
+    // Manejo específico de errores de Prisma
+    if (error.code === 'P6001') {
+      return NextResponse.json(
+        { 
+          error: 'Error de configuración de base de datos',
+          details: 'La URL de la base de datos no está configurada correctamente',
+          solution: 'Verifica que DATABASE_URL esté configurado en Vercel'
+        },
+        { status: 500 }
+      );
+    }
+    
+    if (error.message?.includes('Can\'t reach database server')) {
+      return NextResponse.json(
+        { 
+          error: 'No se puede conectar a la base de datos',
+          details: 'La base de datos Neon no está accesible',
+          solution: 'Verifica que la base de datos esté activa y las credenciales sean correctas'
+        },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
       { 
         error: 'Error al obtener productos',
-        details: process.env.NODE_ENV === 'development' ? error.message : 'Error interno del servidor'
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Error interno del servidor',
+        solution: 'Revisa los logs del servidor para más detalles'
       },
       { status: 500 }
     );
