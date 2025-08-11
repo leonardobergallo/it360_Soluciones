@@ -4,13 +4,40 @@ import { prisma } from '@/lib/prisma';
 // GET - Obtener todos los productos
 export async function GET() {
   try {
-    const products = await prisma.product.findMany();
+    console.log('🔍 Obteniendo productos de la base de datos...');
+    
+    // Verificar conexión a la base de datos
+    await prisma.$connect();
+    console.log('✅ Conexión a la base de datos establecida');
+    
+    const products = await prisma.product.findMany({
+      where: {
+        active: true // Solo productos activos
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    });
+    
+    console.log(`📦 Productos encontrados: ${products.length}`);
+    
+    if (products.length === 0) {
+      console.log('⚠️  No se encontraron productos activos');
+      return NextResponse.json([]);
+    }
+    
     return NextResponse.json(products);
-  } catch {
+  } catch (error) {
+    console.error('❌ Error obteniendo productos:', error);
     return NextResponse.json(
-      { error: 'Error al obtener productos' },
+      { 
+        error: 'Error al obtener productos',
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Error interno del servidor'
+      },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
