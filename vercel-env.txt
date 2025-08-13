@@ -1,8 +1,8 @@
 # Variables de entorno para IT360 Soluciones
 # Configuración completa para desarrollo y producción
 
-# Database - Neon PostgreSQL
-DATABASE_URL=postgresql://leonardobergallo:IT360_Soluciones@ep-cool-forest-a5qj8q8x.us-east-1.aws.neon.tech/it360_soluciones?sslmode=require
+# Database - Neon PostgreSQL (Pool de conexiones para Vercel)
+DATABASE_URL=postgresql://leonardobergallo:IT360_Soluciones@ep-cool-forest-a5qj8q8x-pooler.us-east-1.aws.neon.tech/it360_soluciones?sslmode=require
 
 # NextAuth - Autenticación
 NEXTAUTH_SECRET=it360-secret-key-2024-secure
