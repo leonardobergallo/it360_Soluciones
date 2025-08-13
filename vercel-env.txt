@@ -1,6 +1,3 @@
-# Variables de entorno para Vercel - FORMATO CORRECTO
-# Copia estas variables EXACTAMENTE como están a tu proyecto en Vercel Dashboard > Settings > Environment Variables
-
 DATABASE_URL=postgresql://leonardobergallo:IT360_Soluciones@ep-cool-forest-a5qj8q8x.us-east-1.aws.neon.tech/it360_soluciones?sslmode=require
 NEXTAUTH_SECRET=it360-secret-key-2024-secure
 NEXTAUTH_URL=https://it360-soluciones-6ghdk1llg-leonardobergallos-projects.vercel.app
@@ -13,10 +10,4 @@ MERCADOPAGO_PUBLIC_KEY=APP_USR-4993379468155901-052608-bd04452748d2b4cb04d557cd4
 MERCADOPAGO_CLIENT_ID=4993379468155901
 MERCADOPAGO_CLIENT_SECRET=Z0dygqJTRxRBwOMvYmCprm7C1JqlGOLS
 NODE_ENV=production
-
-# INSTRUCCIONES:
-# 1. Ve a https://vercel.com/dashboard
-# 2. Haz clic en tu proyecto IT360_Soluciones
-# 3. Ve a Settings > Environment Variables
-# 4. Agrega cada variable de arriba (SIN las comillas)
-# 5. Haz redeploy del proyecto
+PRISMA_GENERATE_DATAPROXY=true
