@@ -190,6 +190,150 @@ async function enviarNotificacionTicket(ticket: {
   descripcion: string;
   createdAt: Date;
 }) {
+  // Intentar primero con Resend
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const { Resend } = await import('resend');
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      
+      const { data, error } = await resend.emails.send({
+        from: 'IT360 Soluciones <onboarding@resend.dev>',
+        to: process.env.IT360_EMAIL || 'it360tecnologia@gmail.com',
+        subject: `🎫 Nuevo Ticket ${ticket.ticketNumber} - ${ticket.tipo}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+              <h1 style="margin: 0; font-size: 28px;">🎫 Nuevo Ticket Creado</h1>
+              <p style="margin: 10px 0 0 0; opacity: 0.9;">IT360 Soluciones</p>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
+              <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h2 style="color: #333; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                  🔢 Ticket: ${ticket.ticketNumber}
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                  <div>
+                    <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">👤 Nombre</p>
+                    <p style="margin: 0; color: #333; font-weight: bold;">${ticket.nombre}</p>
+                  </div>
+                  <div>
+                    <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">📧 Email</p>
+                    <p style="margin: 0; color: #333; font-weight: bold;">
+                      <a href="mailto:${ticket.email}" style="color: #007bff; text-decoration: none;">${ticket.email}</a>
+                    </p>
+                  </div>
+                  <div>
+                    <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">📞 Teléfono</p>
+                    <p style="margin: 0; color: #333; font-weight: bold;">${ticket.telefono || 'No especificado'}</p>
+                  </div>
+                  <div>
+                    <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">🏢 Empresa</p>
+                    <p style="margin: 0; color: #333; font-weight: bold;">${ticket.empresa || 'No especificada'}</p>
+                  </div>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                  <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">📝 Asunto</p>
+                  <p style="margin: 0; color: #333; font-weight: bold;">${ticket.asunto}</p>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                  <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">📋 Descripción</p>
+                  <p style="margin: 0; color: #333; white-space: pre-line;">${ticket.descripcion}</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                  <div style="text-align: center; padding: 10px; background: #e3f2fd; border-radius: 6px;">
+                    <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">🏷️ Tipo</p>
+                    <p style="margin: 0; color: #333; font-weight: bold;">${ticket.tipo}</p>
+                  </div>
+                  <div style="text-align: center; padding: 10px; background: #fff3e0; border-radius: 6px;">
+                    <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">🚨 Urgencia</p>
+                    <p style="margin: 0; color: #333; font-weight: bold;">${ticket.urgencia}</p>
+                  </div>
+                  <div style="text-align: center; padding: 10px; background: #e8f5e8; border-radius: 6px;">
+                    <p style="margin: 0 0 5px 0; color: #666; font-size: 12px; text-transform: uppercase;">⭐ Prioridad</p>
+                    <p style="margin: 0; color: #333; font-weight: bold;">${ticket.prioridad}</p>
+                  </div>
+                </div>
+                
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 6px;">
+                  <p style="margin: 0 0 10px 0; color: #666; font-size: 14px;">📅 Creado el ${ticket.createdAt.toLocaleString('es-AR')}</p>
+                  <div style="display: flex; justify-content: center; gap: 15px;">
+                    <a href="https://wa.me/5493425089906" style="background: #25d366; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                      📱 WhatsApp
+                    </a>
+                    <a href="tel:3425089906" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                      📞 Llamar
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      });
+
+      if (error) {
+        console.error('❌ Error con Resend:', error);
+        throw error; // Intentar con Gmail
+      }
+
+      console.log('✅ Email enviado con Resend');
+      return;
+      
+    } catch (resendError) {
+      console.log('⚠️ Resend falló, intentando con Gmail...');
+    }
+  }
+
+  // Fallback a Gmail
+  if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+    try {
+      const nodemailer = await import('nodemailer');
+      const transporter = nodemailer.createTransporter({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS
+        }
+      });
+
+      const mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: process.env.IT360_EMAIL || 'it360tecnologia@gmail.com',
+        subject: `🎫 Nuevo Ticket ${ticket.ticketNumber} - ${ticket.tipo}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">🎫 Nuevo Ticket Creado</h2>
+            <p><strong>Número:</strong> ${ticket.ticketNumber}</p>
+            <p><strong>Nombre:</strong> ${ticket.nombre}</p>
+            <p><strong>Email:</strong> ${ticket.email}</p>
+            <p><strong>Teléfono:</strong> ${ticket.telefono || 'No especificado'}</p>
+            <p><strong>Empresa:</strong> ${ticket.empresa || 'No especificada'}</p>
+            <p><strong>Tipo:</strong> ${ticket.tipo}</p>
+            <p><strong>Asunto:</strong> ${ticket.asunto}</p>
+            <p><strong>Descripción:</strong></p>
+            <p style="white-space: pre-line;">${ticket.descripcion}</p>
+            <hr>
+            <p><strong>Creado:</strong> ${ticket.createdAt.toLocaleString('es-AR')}</p>
+          </div>
+        `
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log('✅ Email enviado con Gmail');
+      return;
+      
+    } catch (gmailError) {
+      console.error('❌ Error con Gmail:', gmailError);
+    }
+  }
+
+  // Si ambos fallan, solo loguear
+  console.log('⚠️ No se pudo enviar email, solo logueando ticket');
   console.log('🎫 NUEVO TICKET CREADO DESDE CONTACTO:');
   console.log('='.repeat(60));
   console.log(`🔢 Número: ${ticket.ticketNumber}`);
