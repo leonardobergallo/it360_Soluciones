@@ -286,6 +286,12 @@ async function enviarEmailTicket(ticket: any) {
                style="background: #25d366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 0 10px;">
               📱 Contactar por WhatsApp
             </a>
+            ${ticket.tipo === 'compra' ? `
+            <a href="${process.env.NODE_ENV === 'production' ? process.env.NEXTAUTH_URL : 'http://localhost:3000'}/pagar/${ticket.ticketNumber}" 
+               style="background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 10px; font-weight: bold;">
+              💳 PAGAR AHORA
+            </a>
+            ` : ''}
           </div>
 
           <div style="text-align: center; margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 8px;">

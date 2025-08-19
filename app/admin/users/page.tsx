@@ -45,9 +45,21 @@ export default function UsersPage() {
 
   useEffect(() => {
     async function fetchUsers() {
-      const res = await fetch('/api/users');
-      const data = await res.json();
-      setUsers(data);
+      try {
+        const res = await fetch('/api/users');
+        const data = await res.json();
+        
+        // Verificar si data es un array, si no, establecer array vacío
+        if (Array.isArray(data)) {
+          setUsers(data);
+        } else {
+          console.error('Error: API devolvió un objeto en lugar de un array:', data);
+          setUsers([]);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setUsers([]);
+      }
     }
     fetchUsers();
   }, []);
@@ -209,7 +221,7 @@ export default function UsersPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-600 text-base font-medium">Administradores</p>
-                <p className="text-3xl font-bold text-slate-800">{users.filter(u => u.role === 'ADMIN').length}</p>
+                <p className="text-3xl font-bold text-slate-800">{Array.isArray(users) ? users.filter(u => u.role === 'ADMIN').length : 0}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,7 +235,7 @@ export default function UsersPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-600 text-base font-medium">Técnicos</p>
-                <p className="text-3xl font-bold text-slate-800">{users.filter(u => u.role === 'TECNICO').length}</p>
+                <p className="text-3xl font-bold text-slate-800">{Array.isArray(users) ? users.filter(u => u.role === 'TECNICO').length : 0}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +250,7 @@ export default function UsersPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-600 text-base font-medium">Clientes</p>
-                <p className="text-3xl font-bold text-slate-800">{users.filter(u => u.role === 'USER').length}</p>
+                <p className="text-3xl font-bold text-slate-800">{Array.isArray(users) ? users.filter(u => u.role === 'USER').length : 0}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -285,7 +297,7 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {users.map((user, index) => (
+              {Array.isArray(users) ? users.map((user, index) => (
                 <tr key={user.id} className={`hover:bg-slate-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
                   <td className="px-6 py-4 text-base text-slate-800 font-medium">{user.email}</td>
                   <td className="px-6 py-4 text-base text-slate-700">{user.name}</td>
@@ -344,7 +356,18 @@ export default function UsersPage() {
           </div>
                   </td>
                 </tr>
-              ))}
+              )) : (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                    <div className="flex flex-col items-center gap-2">
+                      <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <span>Error al cargar usuarios</span>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

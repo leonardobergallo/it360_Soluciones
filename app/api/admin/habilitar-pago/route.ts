@@ -317,6 +317,19 @@ async function enviarEmailPagoHabilitado({
 
     if (error) {
       console.error('Error enviando email:', error);
+      
+      // Intentar con Gmail como fallback
+      try {
+        await enviarEmailGmailFallback({
+          nombre,
+          email,
+          ticketNumber,
+          descripcion,
+          metodoPago
+        });
+      } catch (gmailError) {
+        console.error('Error con Gmail fallback:', gmailError);
+      }
     } else {
       console.log('✅ Email de pago habilitado enviado a:', email);
     }
@@ -370,4 +383,128 @@ function extraerTotal(descripcion: string): number {
   
   const match2 = descripcion.match(/Total[:\s]*\$?(\d+(?:\.\d{2})?)/i);
   return match2 ? parseFloat(match2[1]) : 0;
+}
+
+// Función de fallback con Gmail
+async function enviarEmailGmailFallback({ nombre, email, ticketNumber, descripcion, metodoPago }: {
+  nombre: string;
+  email: string;
+  ticketNumber: string;
+  descripcion: string;
+  metodoPago: string;
+}) {
+  try {
+    const nodemailer = await import('nodemailer');
+    
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+      console.log('⚠️ Gmail no configurado para fallback');
+      return;
+    }
+
+    const transporter = nodemailer.default.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS
+      }
+    });
+
+    // Extraer información del ticket
+    const productos = [];
+    const lines = descripcion.split('\n');
+    
+    for (const line of lines) {
+      const match = line.match(/•\s*(.+?)\s*-\s*x(\d+)\s*-\s*\$([\d,]+\.?\d*)/);
+      if (match) {
+        productos.push({
+          nombre: match[1].trim(),
+          cantidad: parseInt(match[2]),
+          precio: parseFloat(match[3].replace(',', ''))
+        });
+      }
+    }
+    
+    const total = extraerTotal(descripcion);
+
+    // Generar instrucciones de pago
+    let instruccionesPago = '';
+    if (metodoPago === 'TRANSFERENCIA_BANCARIA') {
+      instruccionesPago = `
+        <div style="background-color: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
+          <h3 style="color: #1e40af; margin-top: 0;">🏦 Datos Bancarios</h3>
+          <p><strong>Banco:</strong> Santander</p>
+          <p><strong>Titular:</strong> Aníbal Leonardo Bergallo</p>
+          <p><strong>CBU:</strong> 0720156788000001781072</p>
+          <p><strong>Alias:</strong> IT360.SOLUCIONES</p>
+          <p><strong>Monto a transferir:</strong> $${total.toFixed(2)}</p>
+        </div>
+      `;
+    } else {
+      instruccionesPago = `
+        <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #22c55e;">
+          <h3 style="color: #15803d; margin-top: 0;">💳 Pago con MercadoPago</h3>
+          <p>Haz clic en el enlace de abajo para proceder con el pago:</p>
+          <a href="${process.env.NODE_ENV === 'production' ? process.env.NEXTAUTH_URL : 'http://localhost:3000'}/pagar/${ticketNumber}" 
+             style="background: #22c55e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 10px 0;">
+            💳 PAGAR AHORA
+          </a>
+        </div>
+      `;
+    }
+
+    const mailOptions = {
+      from: process.env.GMAIL_USER,
+      to: email,
+      subject: `✅ ¡Pago Habilitado! - ${ticketNumber}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">✅ Pago Habilitado</h1>
+            <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Tu solicitud de compra ha sido aprobada</p>
+          </div>
+          
+          <div style="padding: 30px; background-color: white;">
+            <h2 style="color: #374151; margin-top: 0;">¡Hola ${nombre}!</h2>
+            
+            <p>Tu solicitud de compra ha sido <strong>aprobada</strong> y el pago está habilitado.</p>
+            
+            <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+              <h3 style="color: #065f46; margin-top: 0;">📋 Detalles de tu pedido</h3>
+              <p><strong>Número de Ticket:</strong> ${ticketNumber}</p>
+              <p><strong>Método de Pago:</strong> ${metodoPago === 'TRANSFERENCIA_BANCARIA' ? 'Transferencia Bancaria' : 'MercadoPago'}</p>
+              <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+            </div>
+            
+            ${instruccionesPago}
+            
+            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <h3 style="color: #374151; margin-top: 0;">📦 Productos solicitados:</h3>
+              <ul style="margin: 10px 0; padding-left: 20px;">
+                ${productos.map(p => `<li>${p.nombre} - Cantidad: ${p.cantidad}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div style="background-color: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0; color: #92400e;">
+                <strong>📞 ¿Necesitas ayuda?</strong> Contactanos:<br>
+                📧 it360tecnologia@gmail.com<br>
+                📱 +54 9 342 508-9906
+              </p>
+            </div>
+            
+            <p style="color: #6b7280; font-size: 14px; margin-top: 30px; text-align: center;">
+              Gracias por elegir IT360 Soluciones
+            </p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email de pago habilitado enviado con Gmail a:', email);
+
+  } catch (error) {
+    console.error('Error enviando email con Gmail:', error);
+    throw error;
+  }
 }

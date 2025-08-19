@@ -20,7 +20,7 @@ interface Ticket {
 
 export default function PagarPage() {
   const params = useParams();
-  const ticketNumber = use(params).ticketNumber as string;
+  const ticketNumber = params.ticketNumber as string;
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
