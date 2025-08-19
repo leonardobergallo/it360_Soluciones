@@ -134,8 +134,3 @@ Thumbs.db
 # Prisma
 prisma/migrations/
 !prisma/migrations/.gitkeep
-
-# Auto-Mail
-balta.json
-credentials.json
-token.json
