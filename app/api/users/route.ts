@@ -1,73 +1,111 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 // GET - Obtener todos los usuarios
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Verificar conexión
-    await prisma.$connect();
-    
     const users = await prisma.user.findMany({
       select: {
         id: true,
-        email: true,
         name: true,
+        email: true,
         role: true,
+        phone: true,
+        company: true,
+        address: true,
+        city: true,
+        province: true,
+        postalCode: true,
         createdAt: true,
-        updatedAt: true,
+        updatedAt: true
       },
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
+
     return NextResponse.json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error obteniendo usuarios:', error);
     return NextResponse.json(
-      { error: 'Error al obtener usuarios', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     );
   }
 }
 
-// POST - Crear un nuevo usuario
+// POST - Crear nuevo usuario
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, name, role } = body;
+    const { name, email, password, role, phone, company, address, city, province, postalCode } = body;
 
-    if (!email || !password || !name) {
+    // Validar datos requeridos
+    if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Email, password y name son requeridos' },
+        { error: 'Nombre, email y contraseña son requeridos' },
         { status: 400 }
       );
     }
 
+    // Verificar que el email no esté en uso
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'El email ya está en uso' },
+        { status: 400 }
+      );
+    }
+
+    // Hashear la contraseña
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Crear usuario
     const user = await prisma.user.create({
       data: {
-        email,
-        password, // En producción, hashear la contraseña
         name,
+        email,
+        password: hashedPassword,
         role: role || 'USER',
+        phone: phone || null,
+        company: company || null,
+        address: address || null,
+        city: city || null,
+        province: province || null,
+        postalCode: postalCode || null
       },
       select: {
         id: true,
-        email: true,
         name: true,
+        email: true,
         role: true,
+        phone: true,
+        company: true,
+        address: true,
+        city: true,
+        province: true,
+        postalCode: true,
         createdAt: true,
-        updatedAt: true,
-      },
+        updatedAt: true
+      }
     });
 
-    return NextResponse.json(user, { status: 201 });
+    return NextResponse.json({
+      success: true,
+      message: 'Usuario creado exitosamente',
+      user
+    });
+
   } catch (error) {
-    console.error('Error creating user:', error);
-    if (error instanceof Error && error.message.includes('Unique constraint')) {
-      return NextResponse.json(
-        { error: 'El email ya existe' },
-        { status: 400 }
-      );
-    }
+    console.error('Error creando usuario:', error);
     return NextResponse.json(
-      { error: 'Error al crear usuario', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     );
   }

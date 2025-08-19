@@ -54,7 +54,8 @@ export default function PagarPage() {
     const lines = descripcion.split('\n');
     
     for (const line of lines) {
-      const match = line.match(/•\s*(.+?)\s*-\s*x(\d+)\s*-\s*\$([\d,]+\.?\d*)/);
+      // Buscar el patrón "• Producto x1 - $XXXXX"
+      const match = line.match(/•\s*(.+?)\s*x(\d+)\s*-\s*\$([\d,]+\.?\d*)/);
       if (match) {
         productos.push({
           nombre: match[1].trim(),
@@ -64,13 +65,26 @@ export default function PagarPage() {
       }
     }
     
+    console.log('Productos extraídos:', productos);
     return productos;
   }
 
   // Función para extraer el total
   function extraerTotal(descripcion: string) {
+    // Buscar el patrón "Total: $XXXXX"
     const match = descripcion.match(/Total:\s*\$([\d,]+\.?\d*)/);
-    return match ? parseFloat(match[1].replace(',', '')) : 0;
+    if (match) {
+      return parseFloat(match[1].replace(',', ''));
+    }
+    
+    // Si no encuentra el patrón, buscar cualquier número después de "Total:"
+    const totalMatch = descripcion.match(/Total:\s*([\d,]+\.?\d*)/);
+    if (totalMatch) {
+      return parseFloat(totalMatch[1].replace(',', ''));
+    }
+    
+    console.log('No se pudo extraer el total de la descripción:', descripcion);
+    return 0;
   }
 
   // Función para copiar al portapapeles
@@ -92,6 +106,14 @@ export default function PagarPage() {
       const total = extraerTotal(ticket.descripcion);
       const productos = extractProductos(ticket.descripcion);
       const descripcionProductos = productos.map(p => `${p.nombre} x${p.cantidad}`).join(', ');
+      
+      console.log('Datos para MercadoPago:', {
+        ticketNumber: ticket.ticketNumber,
+        amount: total,
+        description: descripcionProductos,
+        customerEmail: ticket.email,
+        customerName: ticket.nombre
+      });
       
       const response = await fetch('/api/payment/mercadopago', {
         method: 'POST',

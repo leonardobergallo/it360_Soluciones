@@ -149,7 +149,7 @@ async function verificarStock(descripcion: string): Promise<{ disponible: boolea
   for (const producto of productos) {
     const productoDB = await prisma.product.findFirst({
       where: {
-        name: { contains: producto.nombre, mode: 'insensitive' }
+        name: { contains: producto.nombre }
       }
     });
     
@@ -173,7 +173,7 @@ async function reducirStock(descripcion: string) {
   for (const producto of productos) {
     const productoDB = await prisma.product.findFirst({
       where: {
-        name: { contains: producto.nombre, mode: 'insensitive' }
+        name: { contains: producto.nombre }
       }
     });
     

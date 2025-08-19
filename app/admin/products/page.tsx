@@ -34,7 +34,7 @@ export default function ProductsPage() {
   const [form, setForm] = useState({ 
     name: '', 
     description: '', 
-    price: '', 
+    price: '', // Ya no se usa en el formulario
     basePrice: '', 
     markup: '', 
     stock: '', 
@@ -89,19 +89,23 @@ export default function ProductsPage() {
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.description || !form.price || !form.stock) {
-      setError('Los campos nombre, descripción, precio y stock son obligatorios');
+    if (!form.name || !form.description || !form.basePrice || !form.markup || !form.stock) {
+      setError('Los campos nombre, descripción, precio base, markup y stock son obligatorios');
       return;
     }
     
     setLoading(true);
     try {
+      const basePrice = parseFloat(form.basePrice);
+      const markup = parseFloat(form.markup);
+      const finalPrice = basePrice * (1 + markup / 100);
+      
       const productData = {
         name: form.name,
         description: form.description,
-        price: parseFloat(form.price),
-        basePrice: form.basePrice ? parseFloat(form.basePrice) : undefined,
-        markup: form.markup ? parseFloat(form.markup) : undefined,
+        price: finalPrice,
+        basePrice: basePrice,
+        markup: markup,
         stock: parseInt(form.stock),
         category: form.category || 'general'
       };
@@ -128,20 +132,24 @@ export default function ProductsPage() {
 
   const handleEditProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.description || !form.price || !form.stock || !editProduct) {
+    if (!form.name || !form.description || !form.basePrice || !form.markup || !form.stock || !editProduct) {
       setError('Todos los campos son obligatorios');
       return;
     }
     
     setLoading(true);
     try {
+      const basePrice = parseFloat(form.basePrice);
+      const markup = parseFloat(form.markup);
+      const finalPrice = basePrice * (1 + markup / 100);
+      
       const productData = {
         id: editProduct.id,
         name: form.name,
         description: form.description,
-        price: parseFloat(form.price),
-        basePrice: form.basePrice ? parseFloat(form.basePrice) : undefined,
-        markup: form.markup ? parseFloat(form.markup) : undefined,
+        price: finalPrice,
+        basePrice: basePrice,
+        markup: markup,
         stock: parseInt(form.stock),
         category: form.category || 'general'
       };
@@ -243,7 +251,7 @@ export default function ProductsPage() {
     setForm({ 
       name: product.name, 
       description: product.description, 
-      price: String(product.price), 
+      price: '', // Ya no se usa en el formulario
       basePrice: product.basePrice ? String(product.basePrice) : '',
       markup: product.markup ? String(product.markup) : '',
       stock: String(product.stock),
@@ -485,7 +493,7 @@ export default function ProductsPage() {
                 />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Precio Base</label>
                   <input
@@ -496,6 +504,7 @@ export default function ProductsPage() {
                     onChange={e => setForm({ ...form, basePrice: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                     placeholder="Precio base sin markup"
+                    required
                   />
                 </div>
                 <div>
@@ -508,18 +517,6 @@ export default function ProductsPage() {
                     onChange={e => setForm({ ...form, markup: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                     placeholder="Porcentaje markup"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Precio Final</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="price"
-                    value={form.price}
-                    onChange={e => setForm({ ...form, price: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                    placeholder="Precio final"
                     required
                   />
                 </div>
