@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -19,14 +19,6 @@ model User {
   password  String
   name      String
   role      Role     @default(USER)
-  phone     String?
-  company   String?
-  address   String?
-  city      String?
-  province  String?
-  postalCode String?
-  resetToken String?
-  resetTokenExpiry DateTime?
   sales     Sale[]
   cart      Cart?
   paymentPreferences PaymentPreference[]

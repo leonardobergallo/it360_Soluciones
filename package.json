@@ -61,7 +61,11 @@
     "verify-vercel": "node scripts/verify-vercel-deployment.js",
     "setup-vercel": "node scripts/setup-vercel-env.js",
     "check-neon": "node scripts/check-neon-products.js",
-    "check-env": "node scripts/check-env-vars.js"
+    "check-env": "node scripts/check-env-vars.js",
+    "test-postgresql": "node scripts/test-postgresql-connection.js",
+    "test-all-apis": "node scripts/test-all-apis.js",
+    "test-endpoints": "node scripts/test-api-endpoints.js",
+    "test-resend": "node scripts/test-resend-email.js"
   },
   "dependencies": {
     "@libsql/client": "^0.15.10",
@@ -76,6 +80,7 @@
     "mercadopago": "^2.8.0",
     "multer": "^2.0.2",
     "next": "15.3.4",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.5",
     "prisma": "^6.10.1",
     "react": "^19.0.0",

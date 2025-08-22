@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma, connectPrisma, disconnectPrisma } from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
-
-const prisma = new PrismaClient();
 
 // GET - Obtener perfil del usuario
 export async function GET(request: NextRequest) {
@@ -19,19 +17,16 @@ export async function GET(request: NextRequest) {
     const token = authHeader.substring(7);
     const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || 'it360-secret-key-2024') as any;
     
-    // Buscar usuario
+    // Conectar explícitamente a Prisma
+    await connectPrisma();
+    
+    // Buscar usuario (solo campos que existen en el modelo)
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,
         name: true,
         email: true,
-        phone: true,
-        company: true,
-        address: true,
-        city: true,
-        province: true,
-        postalCode: true,
         role: true,
         createdAt: true,
         updatedAt: true
@@ -50,12 +45,23 @@ export async function GET(request: NextRequest) {
       user
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error obteniendo perfil:', error);
+    
+    // Manejar errores específicos de Prisma
+    if (error.code === 'P1001' || error.message?.includes('Engine is not yet connected')) {
+      return NextResponse.json(
+        { error: 'Error de conexión a la base de datos' },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
     );
+  } finally {
+    await disconnectPrisma();
   }
 }
 
@@ -77,13 +83,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { 
       name, 
-      email,
-      phone, 
-      company, 
-      address, 
-      city, 
-      province, 
-      postalCode 
+      email
     } = body;
 
     // Validar datos requeridos
@@ -93,6 +93,9 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Conectar explícitamente a Prisma
+    await connectPrisma();
 
     // Verificar que el email no esté en uso por otro usuario
     const existingUser = await prisma.user.findFirst({
@@ -109,30 +112,17 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Actualizar usuario
+    // Actualizar usuario (solo campos que existen en el modelo)
     const updatedUser = await prisma.user.update({
       where: { id: decoded.userId },
       data: {
         name,
-        email: email,
-        phone: phone || null,
-        company: company || null,
-        address: address || null,
-        city: city || null,
-        province: province || null,
-        postalCode: postalCode || null,
-        updatedAt: new Date()
+        email: email
       },
       select: {
         id: true,
         name: true,
         email: true,
-        phone: true,
-        company: true,
-        address: true,
-        city: true,
-        province: true,
-        postalCode: true,
         role: true,
         createdAt: true,
         updatedAt: true
@@ -141,15 +131,26 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Perfil actualizado exitosamente',
+      message: 'Perfil actualizado correctamente',
       user: updatedUser
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error actualizando perfil:', error);
+    
+    // Manejar errores específicos de Prisma
+    if (error.code === 'P1001' || error.message?.includes('Engine is not yet connected')) {
+      return NextResponse.json(
+        { error: 'Error de conexión a la base de datos' },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
     );
+  } finally {
+    await disconnectPrisma();
   }
 }
