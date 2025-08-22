@@ -1,13 +1,16 @@
 const fs = require('fs');
-const path = require('path');
 const express = require('express');
+const path = require('path');
 const { google } = require('googleapis');
+require('dotenv').config();
 
 const PORT = 3001;
-const CREDENTIALS_PATH = path.join(__dirname, 'balta.json');
-const TOKEN_PATH = path.join(__dirname, 'token.json');
 
-const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
+// Lee rutas desde variables de entorno
+const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS_PATH;
+const TOKEN_PATH = process.env.GOOGLE_TOKEN_PATH;
+
+const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf8'));
 const { client_secret, client_id, redirect_uris } = credentials.web;
 
 const oAuth2Client = new google.auth.OAuth2(
@@ -32,8 +35,10 @@ const app = express();
 app.get('/auth', (req, res) => {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
-    scope: ['https://www.googleapis.com/auth/gmail.readonly'],
-    prompt: 'select_account'
+    scope: ['https://www.googleapis.com/auth/gmail.readonly',
+      'https://www.googleapis.com/auth/gmail.send'
+    ],
+    prompt: 'consent'
   });
   res.redirect(authUrl);
 });
@@ -54,12 +59,13 @@ app.get('/oauth2callback', async (req, res) => {
 });
 
 // Función para listar correos
+// Función para listar correos
 async function listUnread(auth) {
   const gmail = google.gmail({ version: 'v1', auth });
   const res = await gmail.users.messages.list({
     userId: 'me',
-    q: 'is:unread',
-    maxResults: 10,
+    q: 'category:primary is:unread',
+    maxResults: 5,
   });
 
   const messages = res.data.messages || [];
@@ -86,7 +92,40 @@ async function listUnread(auth) {
       body = Buffer.from(msgData.data.payload.body.data, 'base64').toString('utf8');
     }
 
-    console.log(`\n👤 De: ${from}\n📌 Asunto: ${subject}\n✉️ Contenido:\n${body}`);
+    const ticketMatch = body.match(/Ticket:\s*(TKT-[\d-]+)/);
+    const asuntoMatch = body.match(/📝 Asunto\s*\n(.*)/);
+    const descripcionMatch = body.match(/📋 Descripción\s*\n([\s\S]*?)\nProductos:/);
+
+    const ticket = ticketMatch ? ticketMatch[1].trim() : null;
+    const asunto = asuntoMatch ? asuntoMatch[1].trim() : null;
+    const descripcion = descripcionMatch ? descripcionMatch[1].trim() : null;
+
+    console.log(`\n📬 Nuevo mensaje de ${from}:\n`);
+    console.log("Ticket:", ticket);
+    console.log("Asunto:", asunto);
+    console.log("Descripción:", descripcion);
+
+    // 🚨 Filtrar por remitente
+    if (from.includes("it360tecnologia@gmail.com")) {
+      const data = {
+        Ticket: ticket,
+        Asunto: asunto,
+        Descripción: descripcion,
+        Status: "New",
+      };
+    // Crear carpeta "tickets" si no existe
+    const ticketsDir = path.join(__dirname, "tickets");
+    if (!fs.existsSync(ticketsDir)) {
+      fs.mkdirSync(ticketsDir, { recursive: true });
+    }
+
+    // Nombre dinámico del archivo
+    const filename = path.join(ticketsDir, `ticket_${ticket || "sin_id"}.json`);
+
+    // Guardar archivo
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2), "utf8");
+    console.log(`✅ Ticket guardado en ${filename}`);
+    }
   }
 }
 

@@ -28,19 +28,18 @@ async function getUserIdFromRequest(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const { userId, error } = await getUserIdFromRequest(request);
   if (!userId) {
-    let message = error || 'No autenticado';
+    const message = error || 'No autenticado';
     return NextResponse.json({ error: message }, { status: 401 });
   }
+
   try {
-    // Verificar que el usuario existe
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    });
-    
+    // Verificar que el usuario exista
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
+    // Buscar carrito existente
     let cart = await prisma.cart.findUnique({
       where: { userId },
       include: {
@@ -49,24 +48,27 @@ export async function GET(request: NextRequest) {
         }
       }
     });
-    
+
+    // Si no existe, crear uno vacío
     if (!cart) {
-      // Si no existe, crear uno vacío
       cart = await prisma.cart.create({
         data: { userId },
         include: { items: { include: { product: true } } }
       });
     }
-    
+
+    // Devolver carrito seguro, siempre como objeto
     return NextResponse.json(cart);
-  } catch (error) {
-    console.error('Error en GET /api/cart:', error);
+
+  } catch (err) {
+    console.error('Error en GET /api/cart:', err);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: 'Error interno del servidor. Revisa consola.' },
       { status: 500 }
     );
   }
 }
+
 
 // POST: Agregar o actualizar un producto en el carrito
 export async function POST(request: NextRequest) {
