@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function PaymentSimulationPage() {
+function PaymentSimulationContent() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -198,5 +198,25 @@ export default function PaymentSimulationPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Componente de fallback para Suspense
+function PaymentSimulationFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <p className="text-gray-600">Cargando página de pago...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function PaymentSimulationPage() {
+  return (
+    <Suspense fallback={<PaymentSimulationFallback />}>
+      <PaymentSimulationContent />
+    </Suspense>
   );
 }
