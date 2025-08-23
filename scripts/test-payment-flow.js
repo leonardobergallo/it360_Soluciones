@@ -23,7 +23,7 @@ async function testPaymentFlow() {
         urgencia: 'normal'
       })
     });
-
+    
     if (!ticketResponse.ok) {
       const error = await ticketResponse.json();
       console.log('❌ Error creando ticket:', error);
