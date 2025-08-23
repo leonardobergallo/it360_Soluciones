@@ -235,7 +235,7 @@ async function enviarEmailPagoHabilitado({
          </div>
          
                    <div style="text-align: center; margin: 25px 0;">
-            <a href="http://localhost:3001/pagar/${ticketNumber}" style="background-color: #3b82f6; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+            <a href="https://www.it360.com.ar/pagar/${ticketNumber}" style="background-color: #3b82f6; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
               🏦 Ir a la página de pago
             </a>
           </div>
@@ -255,7 +255,7 @@ async function enviarEmailPagoHabilitado({
         </div>
         
                  <div style="text-align: center; margin: 25px 0;">
-           <a href="http://localhost:3001/pagar/${ticketNumber}" style="background-color: #00d4aa; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+           <a href="https://www.it360.com.ar/pagar/${ticketNumber}" style="background-color: #00d4aa; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
              💳 Pagar con MercadoPago
            </a>
          </div>
