@@ -9,15 +9,18 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [userRole, setUserRole] = useState<string>('ADMIN');
+  const [userData, setUserData] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
-  // Detectar el rol del usuario
+  // Detectar el rol del usuario y obtener datos completos
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (user) {
       try {
-        const userData = JSON.parse(user);
-        setUserRole(userData.role || 'ADMIN');
+        const parsedUserData = JSON.parse(user);
+        setUserRole(parsedUserData.role || 'ADMIN');
+        setUserData(parsedUserData);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
@@ -26,6 +29,24 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // Cerrar sidebar al navegar
   const handleNav = () => setSidebarOpen(false);
+
+  // Cerrar menú de usuario al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.user-menu-container')) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserMenu]);
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -190,6 +211,98 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Información del usuario logueado */}
+            {userData && (
+              <div className="relative user-menu-container">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-4 py-2 border border-blue-200 hover:from-blue-100 hover:to-purple-100 transition-all duration-300 cursor-pointer"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">
+                      {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
+                    </span>
+                  </div>
+                  <div className="hidden sm:block">
+                    <div className="text-sm font-semibold text-gray-900">{userData.name}</div>
+                    <div className="text-xs text-gray-600">{userData.email}</div>
+                  </div>
+                  <div className="text-xs">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      userData.role === 'ADMIN' ? 'bg-red-100 text-red-800' :
+                      userData.role === 'TECNICO' ? 'bg-orange-100 text-orange-800' :
+                      'bg-blue-100 text-blue-800'
+                    }`}>
+                      {userData.role === 'ADMIN' ? 'Admin' :
+                       userData.role === 'TECNICO' ? 'Técnico' : 'Cliente'}
+                    </span>
+                  </div>
+                  <svg className="w-4 h-4 text-gray-600 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Menú desplegable */}
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    <div className="p-4 border-b border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">
+                            {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">{userData.name}</div>
+                          <div className="text-sm text-gray-600">{userData.email}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-2">
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          window.location.href = '/profile';
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Editar Perfil
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          window.location.href = '/reset-password';
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                        </svg>
+                        Cambiar Contraseña
+                      </button>
+                      <hr className="my-2" />
+                      <button
+                        onClick={() => {
+                          localStorage.removeItem('authToken');
+                          localStorage.removeItem('user');
+                          window.location.href = '/login';
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-left text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Cerrar Sesión
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
             <Link 
               href="/" 
               className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"

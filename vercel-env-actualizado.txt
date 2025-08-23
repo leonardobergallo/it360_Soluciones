@@ -1,22 +1,40 @@
-# Variables de entorno para Vercel - FORMATO CORRECTO
+# Variables de entorno para Vercel - CONFIGURACIÓN ACTUALIZADA
 # Copia estas variables EXACTAMENTE como están a tu proyecto en Vercel Dashboard > Settings > Environment Variables
 
-DATABASE_URL=postgresql://leonardobergallo:IT360_Soluciones@ep-cool-forest-a5qj8q8x.us-east-1.aws.neon.tech/it360_soluciones?sslmode=require
+# Base de datos - Neon PostgreSQL (Pool de conexiones para Vercel)
+DATABASE_URL=postgresql://leonardobergallo:IT360_Soluciones@ep-cool-forest-a5qj8x-pooler.us-east-1.aws.neon.tech/it360_soluciones?sslmode=require
+
+# NextAuth - Autenticación
 NEXTAUTH_SECRET=it360-secret-key-2024-secure
-NEXTAUTH_URL=https://it360-soluciones-6ghdk1llg-leonardobergallos-projects.vercel.app
-RESEND_API_KEY=re_Hy6VDcfa_6qXBkDxARQj2xRRKQ82BV97k
+NEXTAUTH_URL=https://it360-soluciones-git-main-leonardobergallos-projects.vercel.app
+
+# Email - Resend (ACTUALIZADO)
+RESEND_API_KEY=re_baToDEGC_BPFAstoq7djBp3XaDkvvKo
 IT360_EMAIL=it360tecnologia@gmail.com
+
+# Email - Gmail (Backup)
 GMAIL_USER=it360tecnologia@gmail.com
 GMAIL_PASS=tu-password-de-gmail
+
+# MercadoPago - Configuración de pagos
 MERCADOPAGO_ACCESS_TOKEN=APP_USR-2de8db16-9d2b-49c4-80c5-f28020ce2244
 MERCADOPAGO_PUBLIC_KEY=APP_USR-4993379468155901-052608-bd04452748d2b4cb04d557cd4203f1f4-125683753
 MERCADOPAGO_CLIENT_ID=4993379468155901
 MERCADOPAGO_CLIENT_SECRET=Z0dygqJTRxRBwOMvYmCprm7C1JqlGOLS
+
+# Entorno
 NODE_ENV=production
 
-# INSTRUCCIONES:
+# INSTRUCCIONES PARA VERCEL:
 # 1. Ve a https://vercel.com/dashboard
 # 2. Haz clic en tu proyecto IT360_Soluciones
 # 3. Ve a Settings > Environment Variables
-# 4. Agrega cada variable de arriba (SIN las comillas)
-# 5. Haz redeploy del proyecto
+# 4. Actualiza RESEND_API_KEY con: re_baToDEGC_BPFAstoq7djBp3XaDkvvKo
+# 5. Actualiza IT360_EMAIL con: it360tecnologia@gmail.com
+# 6. Haz redeploy del proyecto
+# 7. Los tickets ahora llegarán a it360tecnologia@gmail.com
+
+# IMPORTANTE:
+# - La nueva API key de Resend está configurada
+# - Todos los emails (tickets, presupuestos, contactos) llegarán a it360tecnologia@gmail.com
+# - Verifica que el dominio de Vercel en NEXTAUTH_URL sea correcto

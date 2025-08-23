@@ -1,23 +1,35 @@
 import { PrismaClient } from '@prisma/client';
-import { getDatabaseUrl } from './config';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    datasources: {
-      db: {
-        url: getDatabaseUrl(),
-      },
-    },
-    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-    errorFormat: 'pretty',
-  });
+// Inicializar el cliente de Prisma
+export const prisma = globalForPrisma.prisma || new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  errorFormat: 'pretty',
+});
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+// En desarrollo, reutilizar la misma instancia
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
 
-// Manejar desconexión limpia
-process.on('beforeExit', async () => {
-  await prisma.$disconnect();
-}); 
+// Función para conectar explícitamente
+export async function connectPrisma() {
+  try {
+    await prisma.$connect();
+    console.log('✅ Prisma Client conectado exitosamente');
+  } catch (error) {
+    console.error('❌ Error conectando Prisma Client:', error);
+    throw error;
+  }
+}
+
+// Función para desconectar
+export async function disconnectPrisma() {
+  try {
+    await prisma.$disconnect();
+    console.log('✅ Prisma Client desconectado');
+  } catch (error) {
+    console.error('❌ Error desconectando Prisma Client:', error);
+  }
+} 

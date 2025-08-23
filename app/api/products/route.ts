@@ -1,36 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, connectPrisma, disconnectPrisma } from '@/lib/prisma';
 
 // GET - Obtener todos los productos
 export async function GET() {
   try {
     console.log('🔍 Obteniendo productos de la base de datos...');
     
-    // Verificar variables de entorno críticas
-    const requiredEnvVars = {
-      DATABASE_URL: process.env.DATABASE_URL,
-      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-      NEXTAUTH_URL: process.env.NEXTAUTH_URL
-    };
-    
-    const missingVars = Object.entries(requiredEnvVars)
-      .filter(([key, value]) => !value)
-      .map(([key]) => key);
-    
-    if (missingVars.length > 0) {
-      console.error('❌ Variables de entorno faltantes:', missingVars);
-      return NextResponse.json(
-        { 
-          error: 'Configuración incompleta',
-          details: `Variables de entorno faltantes: ${missingVars.join(', ')}`,
-          solution: 'Configura las variables de entorno en Vercel Dashboard > Settings > Environment Variables'
-        },
-        { status: 500 }
-      );
-    }
-    
-    // Verificar conexión a la base de datos
-    await prisma.$connect();
+    // Conectar explícitamente a Prisma
+    await connectPrisma();
     console.log('✅ Conexión a la base de datos establecida');
     
     const products = await prisma.product.findMany({
@@ -54,14 +31,14 @@ export async function GET() {
     console.error('❌ Error obteniendo productos:', error);
     
     // Manejo específico de errores de Prisma
-    if (error.code === 'P6001') {
+    if (error.code === 'P1001' || error.message?.includes('Engine is not yet connected')) {
       return NextResponse.json(
         { 
-          error: 'Error de configuración de base de datos',
-          details: 'La URL de la base de datos no está configurada correctamente',
-          solution: 'Verifica que DATABASE_URL esté configurado en Vercel'
+          error: 'Error de conexión a la base de datos',
+          details: 'No se pudo conectar a la base de datos',
+          solution: 'Verifica que la base de datos esté activa'
         },
-        { status: 500 }
+        { status: 503 }
       );
     }
     
@@ -69,10 +46,10 @@ export async function GET() {
       return NextResponse.json(
         { 
           error: 'No se puede conectar a la base de datos',
-          details: 'La base de datos Neon no está accesible',
+          details: 'La base de datos no está accesible',
           solution: 'Verifica que la base de datos esté activa y las credenciales sean correctas'
         },
-        { status: 500 }
+        { status: 503 }
       );
     }
     
@@ -85,7 +62,7 @@ export async function GET() {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    await disconnectPrisma();
   }
 }
 

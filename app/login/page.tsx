@@ -218,10 +218,17 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <div className="text-center pt-4">
-            <Link href="/register" className="text-cyan-300 hover:text-cyan-200 text-base font-medium transition-all duration-300 hover:scale-105 transform">
-              ¿No tienes cuenta? <span className="underline">Regístrate aquí</span>
-            </Link>
+          <div className="text-center pt-4 space-y-2">
+            <div>
+              <Link href="/register" className="text-cyan-300 hover:text-cyan-200 text-base font-medium transition-all duration-300 hover:scale-105 transform">
+                ¿No tienes cuenta? <span className="underline">Regístrate aquí</span>
+              </Link>
+            </div>
+            <div>
+              <Link href="/reset-password" className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-all duration-300 hover:scale-105 transform">
+                ¿Olvidaste tu contraseña? <span className="underline">Resetear aquí</span>
+              </Link>
+            </div>
           </div>
         </form>
       </div>

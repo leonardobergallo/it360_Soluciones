@@ -22,7 +22,6 @@ export default function AdminDashboard() {
     products: 0,
     services: 0,
     sales: 0,
-    contacts: 0,
     tickets: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -36,11 +35,10 @@ export default function AdminDashboard() {
           fetch("/api/products").then(r => r.ok ? r.json() : []),
           fetch("/api/services").then(r => r.ok ? r.json() : []),
           fetch("/api/sales").then(r => r.ok ? r.json() : []),
-          fetch("/api/contact").then(r => r.ok ? r.json() : []),
           fetch("/api/tickets").then(r => r.ok ? r.json() : []),
         ]);
 
-        const [users, products, services, sales, contacts, tickets] = results.map(result => {
+        const [users, products, services, sales, tickets] = results.map(result => {
           if (result.status === 'fulfilled') {
             return Array.isArray(result.value) ? result.value : [];
           }
@@ -60,7 +58,6 @@ export default function AdminDashboard() {
           products: products.length,
           services: services.length,
           sales: sales.length,
-          contacts: contacts.length,
           tickets: tickets.length,
         });
         setError(null);
@@ -123,7 +120,7 @@ export default function AdminDashboard() {
     { label: "Tickets", count: counts.tickets, href: "/admin/tickets", color: "bg-indigo-50 text-indigo-800", icon: "🎫" },
     { label: "Solicitudes de Compra", count: "Gestionar", href: "/admin/solicitudes-compra", color: "bg-cyan-50 text-cyan-800", icon: "🛒" },
     { label: "Ventas", count: counts.sales, href: "/admin/sales", color: "bg-purple-50 text-purple-800", icon: "💰" },
-    { label: "Contactos", count: counts.contacts, href: "/admin/contacts", color: "bg-pink-50 text-pink-800", icon: "📞" },
+    { label: "Gestionar Usuarios", count: counts.users, href: "/admin/users", color: "bg-orange-50 text-orange-800", icon: "👥" },
   ];
 
   return (

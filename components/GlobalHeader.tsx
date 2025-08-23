@@ -122,7 +122,7 @@ export default function GlobalHeader() {
 
         {/* Botón de Mi Cuenta */}
         <Link 
-          href="/mi-cuenta" 
+          href="/profile" 
           className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-800/80 to-purple-700/80 backdrop-blur-xl rounded-xl border border-white/30 flex items-center justify-center hover:from-purple-700/90 hover:to-purple-600/90 hover:border-white/50 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl"
           title="Mi cuenta"
         >

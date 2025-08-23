@@ -46,12 +46,17 @@ export const config = {
 
 // Función para obtener la URL de la base de datos según el entorno
 export function getDatabaseUrl(): string {
+  // Si DATABASE_URL está configurado en .env, usarlo
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  
   if (config.env === 'production') {
     // En producción, usar pooler de Neon
     return config.database.url.replace('-pooler', '-pooler');
   } else {
-    // En desarrollo, usar conexión directa
-    return config.database.url.replace('-pooler', '');
+    // En desarrollo, usar SQLite
+    return 'file:./dev.db';
   }
 }
 

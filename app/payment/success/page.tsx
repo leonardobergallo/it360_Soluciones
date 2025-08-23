@@ -1,91 +1,121 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 
-function PaymentSuccessContent() {
+export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
-  const ticketNumber = searchParams.get('ticket');
-  const [loading, setLoading] = useState(true);
+  const [ticket, setTicket] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simular carga
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Procesando pago...</p>
-        </div>
-      </div>
-    );
-  }
+    const ticketParam = searchParams.get('ticket');
+    setTicket(ticketParam);
+  }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
-        <div className="mb-6">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">¡Pago Exitoso!</h1>
-          <p className="text-gray-600">Tu pago ha sido procesado correctamente</p>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center py-8 px-4">
+      <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full text-center">
+        {/* Icono de Éxito */}
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
         </div>
 
-        {ticketNumber && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <p className="text-sm text-gray-600 mb-1">Número de Ticket:</p>
-            <p className="font-mono text-lg font-semibold text-gray-800">{ticketNumber}</p>
+        {/* Título */}
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">¡Pago Completado Exitosamente!</h1>
+        <p className="text-lg text-gray-600 mb-8">
+          Tu pago ha sido procesado y confirmado. Gracias por tu compra.
+        </p>
+
+        {/* Información del Ticket */}
+        {ticket && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+            <h2 className="text-xl font-semibold text-green-800 mb-4">📋 Detalles de la Transacción</h2>
+            <div className="space-y-3 text-left">
+              <div className="flex justify-between">
+                <span className="text-green-700 font-medium">Número de Ticket:</span>
+                <span className="text-green-800 font-semibold">{ticket}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-green-700 font-medium">Estado:</span>
+                <span className="text-green-800 font-semibold">✅ Pagado</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-green-700 font-medium">Fecha:</span>
+                <span className="text-green-800 font-semibold">
+                  {new Date().toLocaleString('es-AR')}
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
-        <div className="space-y-4">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h3 className="font-semibold text-green-800 mb-2">¿Qué sigue?</h3>
-            <ul className="text-sm text-green-700 space-y-1">
-              <li>• Recibirás un email de confirmación</li>
-              <li>• Tu pedido será procesado en 24-48 horas</li>
-              <li>• Te contactaremos para coordinar la entrega</li>
-            </ul>
+        {/* Mensaje de Confirmación */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold text-blue-800 mb-3">📧 Confirmación por Email</h3>
+          <p className="text-blue-700 mb-4">
+            Hemos enviado una confirmación de pago a tu email. 
+            También recibirás un comprobante de MercadoPago.
+          </p>
+          <div className="text-sm text-blue-600">
+            <p>• Verifica tu bandeja de entrada</p>
+            <p>• Revisa la carpeta de spam si no encuentras el email</p>
           </div>
+        </div>
 
-          <div className="flex space-x-3">
-            <Link 
-              href="/"
-              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-            >
-              Volver al Inicio
-            </Link>
-            <Link 
-              href="/contacto"
-              className="flex-1 bg-gray-200 text-gray-800 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
-            >
-              Contactar
-            </Link>
+        {/* Próximos Pasos */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">🚀 Próximos Pasos</h3>
+          <div className="space-y-2 text-left">
+            <div className="flex items-start">
+              <span className="text-blue-600 font-bold mr-2">1.</span>
+              <span className="text-gray-700">Nuestro equipo procesará tu pedido</span>
+            </div>
+            <div className="flex items-start">
+              <span className="text-blue-600 font-bold mr-2">2.</span>
+              <span className="text-gray-700">Te contactaremos para coordinar la entrega</span>
+            </div>
+            <div className="flex items-start">
+              <span className="text-blue-600 font-bold mr-2">3.</span>
+              <span className="text-gray-700">Recibirás actualizaciones por email</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Botones de Acción */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="/"
+            className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            🏠 Volver al Inicio
+          </a>
+          <a
+            href="/mi-cuenta"
+            className="bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+          >
+            👤 Mi Cuenta
+          </a>
+          <a
+            href="/contacto"
+            className="bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+          >
+            📞 Contacto
+          </a>
+        </div>
+
+        {/* Información de Contacto */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <p className="text-sm text-gray-600 mb-2">
+            ¿Tienes alguna pregunta sobre tu pedido?
+          </p>
+          <div className="text-sm text-gray-500">
+            <p>📧 it360tecnologia@gmail.com</p>
+            <p>📱 +54 9 342 508-9906</p>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-export default function PaymentSuccessPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
-        </div>
-      </div>
-    }>
-      <PaymentSuccessContent />
-    </Suspense>
   );
 }

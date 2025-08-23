@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, connectPrisma, disconnectPrisma } from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
 
 // Utilidad para obtener el usuario autenticado
@@ -31,7 +31,11 @@ export async function GET(request: NextRequest) {
     let message = error || 'No autenticado';
     return NextResponse.json({ error: message }, { status: 401 });
   }
+  
   try {
+    // Conectar explícitamente a Prisma
+    await connectPrisma();
+    
     // Verificar que el usuario existe
     const user = await prisma.user.findUnique({
       where: { id: userId }
@@ -59,12 +63,24 @@ export async function GET(request: NextRequest) {
     }
     
     return NextResponse.json(cart);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error en GET /api/cart:', error);
+    
+    // Manejar errores específicos de Prisma
+    if (error.code === 'P1001' || error.message?.includes('Engine is not yet connected')) {
+      return NextResponse.json(
+        { error: 'Error de conexión a la base de datos. Inténtalo de nuevo.' },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
     );
+  } finally {
+    // Desconectar Prisma
+    await disconnectPrisma();
   }
 }
 
@@ -75,46 +91,76 @@ export async function POST(request: NextRequest) {
     let message = error || 'No autenticado';
     return NextResponse.json({ error: message }, { status: 401 });
   }
-  const { productId, quantity } = await request.json();
-  if (!productId || !quantity || quantity < 1) {
-    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
-  }
-  // Validar que el producto exista y sea un producto real
-  const product = await prisma.product.findUnique({ where: { id: productId } });
-  if (!product) {
-    return NextResponse.json({ error: 'Solo se pueden agregar productos válidos al carrito' }, { status: 400 });
-  }
-  // Buscar o crear el carrito
-  let cart = await prisma.cart.findUnique({ where: { userId } });
-  if (!cart) {
-    cart = await prisma.cart.create({ data: { userId } });
-  }
-  // Buscar si el producto ya está en el carrito
-  const existingItem = await prisma.cartItem.findFirst({
-    where: { cartId: cart.id, productId }
-  });
-  if (existingItem) {
-    // Actualizar cantidad
-    await prisma.cartItem.update({
-      where: { id: existingItem.id },
-      data: { quantity }
+  
+  try {
+    // Conectar explícitamente a Prisma
+    await connectPrisma();
+    
+    const { productId, quantity } = await request.json();
+    if (!productId || !quantity || quantity < 1) {
+      return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
+    }
+    
+    // Validar que el producto exista y sea un producto real
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!product) {
+      return NextResponse.json({ error: 'Solo se pueden agregar productos válidos al carrito' }, { status: 400 });
+    }
+    
+    // Buscar o crear el carrito
+    let cart = await prisma.cart.findUnique({ where: { userId } });
+    if (!cart) {
+      cart = await prisma.cart.create({ data: { userId } });
+    }
+    
+    // Buscar si el producto ya está en el carrito
+    const existingItem = await prisma.cartItem.findFirst({
+      where: { cartId: cart.id, productId }
     });
-  } else {
-    // Agregar nuevo producto
-    await prisma.cartItem.create({
-      data: {
-        cartId: cart.id,
-        productId,
-        quantity
-      }
+    
+    if (existingItem) {
+      // Actualizar cantidad
+      await prisma.cartItem.update({
+        where: { id: existingItem.id },
+        data: { quantity }
+      });
+    } else {
+      // Agregar nuevo producto
+      await prisma.cartItem.create({
+        data: {
+          cartId: cart.id,
+          productId,
+          quantity
+        }
+      });
+    }
+    
+    // Devolver el carrito actualizado
+    const updatedCart = await prisma.cart.findUnique({
+      where: { userId },
+      include: { items: { include: { product: true } } }
     });
+    
+    return NextResponse.json(updatedCart);
+  } catch (error: any) {
+    console.error('Error en POST /api/cart:', error);
+    
+    // Manejar errores específicos de Prisma
+    if (error.code === 'P1001' || error.message?.includes('Engine is not yet connected')) {
+      return NextResponse.json(
+        { error: 'Error de conexión a la base de datos. Inténtalo de nuevo.' },
+        { status: 503 }
+      );
+    }
+    
+    return NextResponse.json(
+      { error: 'Error interno del servidor' },
+      { status: 500 }
+    );
+  } finally {
+    // Desconectar Prisma
+    await disconnectPrisma();
   }
-  // Devolver el carrito actualizado
-  const updatedCart = await prisma.cart.findUnique({
-    where: { userId },
-    include: { items: { include: { product: true } } }
-  });
-  return NextResponse.json(updatedCart);
 }
 
 // DELETE: Eliminar un producto del carrito
@@ -124,21 +170,49 @@ export async function DELETE(request: NextRequest) {
     let message = error || 'No autenticado';
     return NextResponse.json({ error: message }, { status: 401 });
   }
-  const { productId } = await request.json();
-  if (!productId) {
-    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
+  
+  try {
+    // Conectar explícitamente a Prisma
+    await connectPrisma();
+    
+    const { productId } = await request.json();
+    if (!productId) {
+      return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
+    }
+    
+    // Buscar el carrito
+    const cart = await prisma.cart.findUnique({ where: { userId } });
+    if (!cart) {
+      return NextResponse.json({ error: 'Carrito no encontrado' }, { status: 404 });
+    }
+    
+    // Eliminar el producto
+    await prisma.cartItem.deleteMany({ where: { cartId: cart.id, productId } });
+    
+    // Devolver el carrito actualizado
+    const updatedCart = await prisma.cart.findUnique({
+      where: { userId },
+      include: { items: { include: { product: true } } }
+    });
+    
+    return NextResponse.json(updatedCart);
+  } catch (error: any) {
+    console.error('Error en DELETE /api/cart:', error);
+    
+    // Manejar errores específicos de Prisma
+    if (error.code === 'P1001' || error.message?.includes('Engine is not yet connected')) {
+      return NextResponse.json(
+        { error: 'Error de conexión a la base de datos. Inténtalo de nuevo.' },
+        { status: 503 }
+      );
+    }
+    
+    return NextResponse.json(
+      { error: 'Error interno del servidor' },
+      { status: 500 }
+    );
+  } finally {
+    // Desconectar Prisma
+    await disconnectPrisma();
   }
-  // Buscar el carrito
-  const cart = await prisma.cart.findUnique({ where: { userId } });
-  if (!cart) {
-    return NextResponse.json({ error: 'Carrito no encontrado' }, { status: 404 });
-  }
-  // Eliminar el producto
-  await prisma.cartItem.deleteMany({ where: { cartId: cart.id, productId } });
-  // Devolver el carrito actualizado
-  const updatedCart = await prisma.cart.findUnique({
-    where: { userId },
-    include: { items: { include: { product: true } } }
-  });
-  return NextResponse.json(updatedCart);
 } 
