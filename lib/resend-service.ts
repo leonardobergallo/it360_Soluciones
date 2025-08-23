@@ -29,7 +29,7 @@ interface Contact {
 export const sendTicketNotification = async (ticket: Ticket) => {
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.IT360_EMAIL || 'it360tecnologia@gmail.com',
+      from: 'IT360 Soluciones <onboarding@resend.dev>',
       to: [process.env.IT360_EMAIL || 'it360tecnologia@gmail.com'],
       subject: `🎫 NUEVO TICKET - ${ticket.ticketNumber}`,
       html: `
@@ -104,7 +104,7 @@ export const sendTicketNotification = async (ticket: Ticket) => {
 export const sendContactNotification = async (contact: Contact) => {
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.IT360_EMAIL || 'it360tecnologia@gmail.com',
+      from: 'IT360 Soluciones <onboarding@resend.dev>',
       to: [process.env.IT360_EMAIL || 'it360tecnologia@gmail.com'],
       subject: `📧 NUEVA CONSULTA - ${contact.name}`,
       html: `
@@ -164,7 +164,7 @@ export const sendContactNotification = async (contact: Contact) => {
 export const sendClientConfirmation = async (ticket: Ticket) => {
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.IT360_EMAIL || 'it360tecnologia@gmail.com',
+      from: 'IT360 Soluciones <onboarding@resend.dev>',
       to: [ticket.email],
       subject: `🎫 Ticket Creado - ${ticket.ticketNumber}`,
       html: `

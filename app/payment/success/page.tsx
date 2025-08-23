@@ -2,114 +2,117 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
-  const [paymentData, setPaymentData] = useState<any>(null);
+  const [ticket, setTicket] = useState<string | null>(null);
 
   useEffect(() => {
-    const ticket = searchParams.get('ticket');
-    const prefId = searchParams.get('pref_id');
-    
-    if (ticket && prefId) {
-      setPaymentData({
-        ticket,
-        preferenceId: prefId,
-        status: 'approved',
-        paymentMethod: 'MercadoPago',
-        amount: '53.300'
-      });
-    }
+    const ticketParam = searchParams.get('ticket');
+    setTicket(ticketParam);
   }, [searchParams]);
 
-  if (!paymentData) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center py-8 px-4">
+      <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full text-center">
+        {/* Icono de Éxito */}
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+
+        {/* Título */}
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">¡Pago Completado Exitosamente!</h1>
+        <p className="text-lg text-gray-600 mb-8">
+          Tu pago ha sido procesado y confirmado. Gracias por tu compra.
+        </p>
+
+        {/* Información del Ticket */}
+        {ticket && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+            <h2 className="text-xl font-semibold text-green-800 mb-4">📋 Detalles de la Transacción</h2>
+            <div className="space-y-3 text-left">
+              <div className="flex justify-between">
+                <span className="text-green-700 font-medium">Número de Ticket:</span>
+                <span className="text-green-800 font-semibold">{ticket}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-green-700 font-medium">Estado:</span>
+                <span className="text-green-800 font-semibold">✅ Pagado</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-green-700 font-medium">Fecha:</span>
+                <span className="text-green-800 font-semibold">
+                  {new Date().toLocaleString('es-AR')}
+                </span>
+              </div>
             </div>
-            <h1 className="text-xl font-semibold text-gray-800 mb-2">Procesando pago...</h1>
-            <p className="text-gray-600">Verificando información de pago</p>
+          </div>
+        )}
+
+        {/* Mensaje de Confirmación */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold text-blue-800 mb-3">📧 Confirmación por Email</h3>
+          <p className="text-blue-700 mb-4">
+            Hemos enviado una confirmación de pago a tu email. 
+            También recibirás un comprobante de MercadoPago.
+          </p>
+          <div className="text-sm text-blue-600">
+            <p>• Verifica tu bandeja de entrada</p>
+            <p>• Revisa la carpeta de spam si no encuentras el email</p>
           </div>
         </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-        <div className="text-center">
-          {/* Ícono de éxito */}
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-
-          {/* Título */}
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">¡Pago Exitoso!</h1>
-          <p className="text-gray-600 mb-6">Tu transacción se completó correctamente</p>
-
-          {/* Detalles del pago */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h2 className="font-semibold text-gray-800 mb-3">Detalles de la transacción:</h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Ticket:</span>
-                <span className="font-medium">{paymentData.ticket}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Método de pago:</span>
-                <span className="font-medium">{paymentData.paymentMethod}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Monto:</span>
-                <span className="font-medium">${paymentData.amount}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Estado:</span>
-                <span className="font-medium text-green-600">Aprobado</span>
-              </div>
+        {/* Próximos Pasos */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">🚀 Próximos Pasos</h3>
+          <div className="space-y-2 text-left">
+            <div className="flex items-start">
+              <span className="text-blue-600 font-bold mr-2">1.</span>
+              <span className="text-gray-700">Nuestro equipo procesará tu pedido</span>
+            </div>
+            <div className="flex items-start">
+              <span className="text-blue-600 font-bold mr-2">2.</span>
+              <span className="text-gray-700">Te contactaremos para coordinar la entrega</span>
+            </div>
+            <div className="flex items-start">
+              <span className="text-blue-600 font-bold mr-2">3.</span>
+              <span className="text-gray-700">Recibirás actualizaciones por email</span>
             </div>
           </div>
+        </div>
 
-          {/* Información adicional */}
-          <div className="bg-blue-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-blue-800 mb-2">📧 Confirmación por email</h3>
-            <p className="text-sm text-blue-700">
-              Recibirás una confirmación por email con los detalles de tu compra y las instrucciones de envío.
-            </p>
-          </div>
+        {/* Botones de Acción */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="/"
+            className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            🏠 Volver al Inicio
+          </a>
+          <a
+            href="/mi-cuenta"
+            className="bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+          >
+            👤 Mi Cuenta
+          </a>
+          <a
+            href="/contacto"
+            className="bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+          >
+            📞 Contacto
+          </a>
+        </div>
 
-          {/* Botones de acción */}
-          <div className="space-y-3">
-            <Link 
-              href="/"
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors block text-center"
-            >
-              🏠 Volver al inicio
-            </Link>
-            
-            <Link 
-              href="/catalogo"
-              className="w-full bg-gray-200 text-gray-800 py-3 px-4 rounded-lg font-medium hover:bg-gray-300 transition-colors block text-center"
-            >
-              🛍️ Seguir comprando
-            </Link>
-          </div>
-
-          {/* Nota importante */}
-          <div className="mt-6 p-3 bg-yellow-50 rounded-lg">
-            <p className="text-xs text-yellow-800">
-              <strong>Nota:</strong> Esta es una simulación de pago para pruebas. En producción, 
-              recibirías la confirmación real de MercadoPago.
-            </p>
+        {/* Información de Contacto */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <p className="text-sm text-gray-600 mb-2">
+            ¿Tienes alguna pregunta sobre tu pedido?
+          </p>
+          <div className="text-sm text-gray-500">
+            <p>📧 it360tecnologia@gmail.com</p>
+            <p>📱 +54 9 342 508-9906</p>
           </div>
         </div>
       </div>

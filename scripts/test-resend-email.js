@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Resend } = require('resend');
 
 async function testResendEmail() {
@@ -29,8 +30,8 @@ async function testResendEmail() {
     console.log('📧 Enviando email de prueba...');
 
     const { data, error } = await resend.emails.send({
-      from: fromEmail,
-      to: [fromEmail], // Enviar a sí mismo para prueba
+      from: 'IT360 Soluciones <onboarding@resend.dev>', // Usar dominio por defecto de Resend
+      to: [fromEmail], // Enviar al email configurado
       subject: '🧪 Prueba de Email - IT360 Soluciones',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -46,7 +47,8 @@ async function testResendEmail() {
               <p><strong>🎉 ¡Excelente!</strong> El sistema de emails está funcionando correctamente.</p>
               <p><strong>📧 Email de prueba enviado:</strong> ${new Date().toLocaleString('es-AR')}</p>
               <p><strong>🔧 Servicio:</strong> Resend</p>
-              <p><strong>📧 Remitente:</strong> ${fromEmail}</p>
+              <p><strong>📧 Remitente:</strong> onboarding@resend.dev</p>
+              <p><strong>📧 Destinatario:</strong> ${fromEmail}</p>
             </div>
             
             <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
@@ -77,6 +79,12 @@ async function testResendEmail() {
         console.log('\n💡 Solución: Verifica que la API key de Resend sea válida');
         console.log('   • Ve a https://resend.com/api-keys');
         console.log('   • Crea una nueva API key o verifica la existente');
+      }
+      
+      if (error.statusCode === 403) {
+        console.log('\n💡 Solución: El dominio de email no está verificado');
+        console.log('   • Usando dominio por defecto de Resend: onboarding@resend.dev');
+        console.log('   • Para usar tu propio dominio, verifícalo en https://resend.com/domains');
       }
       
       return;

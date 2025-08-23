@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
     // Para pruebas, usar modo de simulación
     console.log('🧪 Usando modo de simulación para pruebas');
     
-    // Modo de simulación para pruebas
+    // Crear una página de simulación local en lugar de redirigir a MercadoPago
     const mockResponse = {
-      init_point: `http://localhost:3001/payment/success?ticket=${ticketNumber}&pref_id=TEST-${Date.now()}`,
+      init_point: `http://localhost:3000/payment/simulation?ticket=${ticketNumber}&amount=${amount}&pref_id=TEST-${Date.now()}`,
       id: `TEST-${Date.now()}`
     };
 
@@ -36,6 +36,74 @@ export async function POST(request: NextRequest) {
       init_point: mockResponse.init_point,
       preference_id: mockResponse.id,
       mode: 'simulation'
+    });
+
+    console.log('Creando preferencia de MercadoPago:', {
+      ticketNumber,
+      amount,
+      description,
+      customerEmail,
+      customerName
+    });
+
+    // Crear preferencia usando la API REST de MercadoPago
+    const preference = {
+      items: [{
+        title: `Ticket ${ticketNumber} - ${description}`,
+        quantity: 1,
+        unit_price: Number(amount),
+        currency_id: 'ARS',
+      }],
+      payer: {
+        name: customerName,
+        email: customerEmail,
+      },
+      back_urls: {
+        success: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/payment/success?ticket=${ticketNumber}`,
+        failure: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/payment/failure?ticket=${ticketNumber}`,
+        pending: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/payment/pending?ticket=${ticketNumber}`,
+      },
+      auto_return: 'approved',
+      external_reference: ticketNumber,
+      notification_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/mercadopago/webhook`,
+      expires: true,
+      expiration_date_to: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutos
+    };
+
+    console.log('Enviando preferencia a MercadoPago...');
+    
+    const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(preference)
+    });
+    
+    console.log('Respuesta de MercadoPago:', mpResponse.status, mpResponse.statusText);
+    
+    if (!mpResponse.ok) {
+      const errorText = await mpResponse.text();
+      console.error('Error de MercadoPago:', errorText);
+      console.error('Status:', mpResponse.status);
+      console.error('StatusText:', mpResponse.statusText);
+      
+      return NextResponse.json(
+        { error: `Error de MercadoPago: ${errorText}` },
+        { status: 500 }
+      );
+    }
+
+    const data = await mpResponse.json();
+    
+    console.log('Preferencia creada exitosamente:', data.id);
+
+    return NextResponse.json({
+      success: true,
+      init_point: data.init_point,
+      preference_id: data.id,
+      mode: 'production'
     });
     
     // Código original comentado para pruebas

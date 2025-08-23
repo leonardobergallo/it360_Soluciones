@@ -65,7 +65,10 @@
     "test-postgresql": "node scripts/test-postgresql-connection.js",
     "test-all-apis": "node scripts/test-all-apis.js",
     "test-endpoints": "node scripts/test-api-endpoints.js",
-    "test-resend": "node scripts/test-resend-email.js"
+    "test-resend": "node scripts/test-resend-email.js",
+    "test-ticket": "node scripts/test-ticket-email.js",
+    "test-payment": "node scripts/test-payment-flow.js",
+    "test-mercadopago": "node scripts/test-mercadopago-api.js"
   },
   "dependencies": {
     "@libsql/client": "^0.15.10",
