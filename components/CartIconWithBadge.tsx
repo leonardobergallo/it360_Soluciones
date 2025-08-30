@@ -79,7 +79,10 @@ export default function CartIconWithBadge() {
     
     // Escuchar eventos personalizados para actualizar el carrito
     window.addEventListener('cartUpdated', handleCartUpdate);
-    window.addEventListener('cartCleared', () => setCount(0));
+    window.addEventListener('cartCleared', () => {
+      setCount(0);
+      console.log('🛒 Carrito limpiado - contador actualizado a 0');
+    });
     
     // Reducir la frecuencia de actualización para evitar muchos errores 401
     const interval = setInterval(updateCount, 5000); // Cambiar de 1 segundo a 5 segundos

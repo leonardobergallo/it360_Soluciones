@@ -185,13 +185,22 @@ Estado: Pendiente de verificación de stock y habilitación de pago
         prioridad: 'alta'
       };
 
-      // Enviar solicitud como ticket
-      const response = await fetch('/api/tickets', {
+      // Enviar solicitud usando el endpoint de checkout (que crea tickets y ventas)
+      const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(ticketData),
+        body: JSON.stringify({
+          nombre: form.nombre,
+          email: form.email,
+          telefono: form.telefono,
+          direccion: form.direccion,
+          metodoPago: form.metodoPago,
+          items: cartItems,
+          total: cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0),
+          userId: null // No hay usuario logueado en este flujo
+        }),
       });
 
       const data = await response.json();
@@ -200,9 +209,11 @@ Estado: Pendiente de verificación de stock y habilitación de pago
         throw new Error(data.error || 'Error al enviar la solicitud');
       }
 
-      // Mostrar mensaje de éxito simplificado
+      // Mostrar mensaje de éxito con información del ticket
       setSuccess(`
 ✅ ¡Solicitud enviada con éxito!
+
+🎫 Ticket creado: ${data.ticketNumber || 'Procesando...'}
 
 📋 Tu solicitud está siendo procesada.
 
@@ -212,6 +223,8 @@ Estado: Pendiente de verificación de stock y habilitación de pago
 • Habilitar el pago
 
 ⏰ Tiempo estimado: 2-4 horas hábiles
+
+💡 Tu compra aparecerá en "Mis compras" una vez aprobada.
       `);
 
       // Limpiar carrito después de enviar la solicitud

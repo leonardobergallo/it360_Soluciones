@@ -191,7 +191,7 @@ export default function OrderDetailPage() {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Orden {order.orderNumber}</h1>
                 <p className="text-gray-600">
-                  Creada el {format(new Date(order.createdAt), 'dd/MM/yyyy a las HH:mm', { locale: es })}
+                  Creada el {format(new Date(order.createdAt), 'dd/MM/yyyy \'a las\' HH:mm', { locale: es })}
                 </p>
               </div>
               <div className="text-right">

@@ -21,7 +21,7 @@ interface Order {
   id: string;
   orderNumber: string;
   total: number;
-  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED' | 'RETURNED';
+  status: 'PENDING' | 'APPROVED' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED' | 'RETURNED';
   createdAt: string;
   updatedAt: string;
   items: OrderItem[];
@@ -41,18 +41,88 @@ export default function MisComprasPage() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/orders', {
-        headers: {
-          'Authorization': 'Bearer test-token' // TODO: Implementar autenticación real
+      
+      // Intentar obtener ventas del usuario logueado
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          // Primero obtener información del usuario para obtener su email
+          const userResponse = await fetch('/api/users/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          let userEmail = null;
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            userEmail = userData.user?.email;
+          }
+
+          const response = await fetch('/api/sales', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (response.ok) {
+            const sales = await response.json();
+            console.log('🔍 Todas las ventas:', sales.length);
+            console.log('🔍 Email del usuario logueado:', userEmail);
+            
+            // Convertir ventas a formato de órdenes para mostrar
+            // Incluir ventas del usuario logueado O ventas sin usuario pero con el mismo email
+            const userSales = sales.filter((sale: any) => {
+              const hasUser = sale.user?.id;
+              const hasMatchingEmail = userEmail && sale.email === userEmail;
+              const shouldInclude = hasUser || hasMatchingEmail;
+              
+              console.log('🔍 Venta:', {
+                id: sale.id,
+                userId: sale.userId,
+                userEmail: sale.user?.email,
+                saleEmail: sale.email,
+                hasUser,
+                hasMatchingEmail,
+                shouldInclude
+              });
+              
+              return shouldInclude;
+            });
+            
+            console.log('🔍 Ventas filtradas:', userSales.length);
+            setOrders(userSales.map((sale: any) => ({
+              id: sale.id,
+              orderNumber: `COMPRA-${sale.id.slice(-8).toUpperCase()}`,
+              total: sale.amount,
+              status: sale.status === 'completed' ? 'COMPLETED' : 
+                      sale.status === 'approved' ? 'APPROVED' :
+                      sale.status === 'cancelled' ? 'CANCELLED' : 'PENDING',
+              createdAt: sale.createdAt,
+              updatedAt: sale.updatedAt || sale.createdAt,
+              items: [{
+                id: sale.id,
+                quantity: 1,
+                price: sale.amount,
+                product: {
+                  id: sale.product?.id || sale.service?.id || '',
+                  name: sale.product?.name || sale.service?.name || 'Producto',
+                  image: '',
+                  category: 'Producto'
+                }
+              }],
+              shippingMethod: 'pickup',
+              paymentMethod: sale.metodoPago || 'reembolso'
+            })));
+            return;
+          }
+        } catch (error) {
+          console.log('Error obteniendo ventas del usuario:', error);
         }
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al cargar las órdenes');
       }
-
-      const data = await response.json();
-      setOrders(data);
+      
+      // Si no hay token o falla, mostrar mensaje de no hay compras
+      setOrders([]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
     } finally {
@@ -64,8 +134,10 @@ export default function MisComprasPage() {
     switch (status) {
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'PROCESSING':
+      case 'APPROVED':
         return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'PROCESSING':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'COMPLETED':
         return 'bg-green-100 text-green-800 border-green-200';
       case 'CANCELLED':
@@ -80,7 +152,9 @@ export default function MisComprasPage() {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return 'Pendiente';
+        return 'Pendiente de Aprobación';
+      case 'APPROVED':
+        return 'Aprobado';
       case 'PROCESSING':
         return 'En Proceso';
       case 'COMPLETED':
@@ -184,7 +258,7 @@ export default function MisComprasPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Mis compras</h1>
           <p className="text-gray-600">
-            Gestiona todas tus compras online y telefónicas. Si compraste recién puede demorar unos minutos en verse.
+            Gestiona todas tus compras online y telefónicas. Las compras requieren aprobación del administrador antes de ser procesadas.
           </p>
         </div>
 
@@ -232,8 +306,30 @@ export default function MisComprasPage() {
 
                 {/* Estado de la orden */}
                 <div className="px-6 py-4">
-                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(order.status)}`}>
-                    {getStatusText(order.status)}
+                  <div className="flex items-center justify-between">
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(order.status)}`}>
+                      {getStatusText(order.status)}
+                    </div>
+                    {order.status === 'PENDING' && (
+                      <div className="text-sm text-gray-600">
+                        ⏳ Esperando aprobación del administrador
+                      </div>
+                    )}
+                    {order.status === 'APPROVED' && (
+                      <div className="text-sm text-blue-600">
+                        ✅ Compra aprobada - Procesando
+                      </div>
+                    )}
+                    {order.status === 'COMPLETED' && (
+                      <div className="text-sm text-green-600">
+                        🎉 Compra completada
+                      </div>
+                    )}
+                    {order.status === 'CANCELLED' && (
+                      <div className="text-sm text-red-600">
+                        ❌ Compra cancelada
+                      </div>
+                    )}
                   </div>
                 </div>
 

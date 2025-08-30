@@ -2,7 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { ticketNumber, amount, description, customerEmail, customerName } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (jsonError) {
+      console.error('Error parsing JSON:', jsonError);
+      return NextResponse.json(
+        { error: 'Error al procesar los datos JSON' },
+        { status: 400 }
+      );
+    }
+    
+    const { ticketNumber, amount, description, customerEmail, customerName } = body;
 
     if (!ticketNumber || !amount || !description) {
       return NextResponse.json(
@@ -14,7 +25,7 @@ export async function POST(request: NextRequest) {
     const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
     
     // Verificar si el token es válido
-    if (!accessToken || accessToken.includes('APP_USR-2de8db16-9d2b-49c4-80c5-f28020ce2244')) {
+    if (!accessToken || accessToken === 'APP_USR-2de8db16-9d2b-49c4-80c5-f28020ce2244') {
       console.log('⚠️ Token de MercadoPago no válido, usando modo de simulación');
       
       // Modo de simulación para pruebas

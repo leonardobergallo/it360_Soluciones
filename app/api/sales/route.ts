@@ -1,10 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET - Obtener todas las ventas
-export async function GET() {
+// GET - Obtener ventas (todas para admin, del usuario para usuarios)
+export async function GET(request: NextRequest) {
   try {
+    // Importar Prisma dinámicamente
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+
+    // Verificar si hay token de autorización
+    const authHeader = request.headers.get('authorization');
+    let userId = null;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.substring(7);
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        userId = decoded.userId;
+      } catch (error) {
+        console.log('Error decodificando token:', error);
+      }
+    }
+
+    // Si hay userId, filtrar por usuario, sino obtener todas (para admin)
+    const whereClause = userId ? { userId } : {};
+
     const sales = await prisma.sale.findMany({
+      where: whereClause,
       include: {
         user: {
           select: {
@@ -28,11 +50,17 @@ export async function GET() {
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
+
+    await prisma.$disconnect();
     return NextResponse.json(sales);
-  } catch {
+  } catch (error: any) {
+    console.error('Error obteniendo ventas:', error);
     return NextResponse.json(
-      { error: 'Error al obtener ventas' },
+      { error: 'Error al obtener ventas', details: error.message },
       { status: 500 }
     );
   }
@@ -42,7 +70,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, productId, serviceId, amount } = body;
+    const { userId, productId, serviceId, amount, nombre, email, telefono, direccion, metodoPago } = body;
 
     if (!userId || amount === undefined) {
       return NextResponse.json(
@@ -58,12 +86,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Importar Prisma dinámicamente
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+
     const sale = await prisma.sale.create({
       data: {
         userId,
         productId: productId || null,
         serviceId: serviceId || null,
         amount: parseFloat(amount),
+        nombre: nombre || null,
+        email: email || null,
+        telefono: telefono || null,
+        direccion: direccion || null,
+        metodoPago: metodoPago || 'reembolso',
+        status: 'pending'
       },
       include: {
         user: {
@@ -90,10 +128,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    await prisma.$disconnect();
     return NextResponse.json(sale, { status: 201 });
-  } catch {
+  } catch (error: any) {
+    console.error('Error creating sale:', error);
     return NextResponse.json(
-      { error: 'Error al crear venta' },
+      { error: 'Error al crear venta', details: error.message },
       { status: 500 }
     );
   }

@@ -136,14 +136,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           
           {userRole === 'ADMIN' && (
             <Link 
-              href="/admin/transferencias" 
+              href="/admin/pagos" 
               className="flex items-center gap-3 text-cyan-100 hover:bg-white/10 rounded-xl px-4 py-3 transition-all duration-300 hover:scale-105 group" 
               onClick={handleNav}
             >
               <svg className="w-6 h-6 text-cyan-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
-              <span>Transferencias</span>
+              <span>Pagos</span>
               <div className="ml-auto w-2 h-2 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </Link>
           )}

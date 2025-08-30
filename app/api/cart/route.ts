@@ -28,8 +28,15 @@ async function getUserIdFromRequest(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const { userId, error } = await getUserIdFromRequest(request);
   if (!userId) {
-    let message = error || 'No autenticado';
-    return NextResponse.json({ error: message }, { status: 401 });
+    // Si no hay usuario autenticado, devolver carrito vacío en lugar de error
+    console.log('⚠️ Usuario no autenticado, devolviendo carrito vacío');
+    return NextResponse.json({
+      id: 'temp-cart',
+      userId: null,
+      items: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
   }
   try {
     // Verificar que el usuario existe
@@ -59,8 +66,23 @@ export async function GET(request: NextRequest) {
     }
     
     return NextResponse.json(cart);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error en GET /api/cart:', error);
+    
+    // Si hay error de conexión a la base de datos, devolver carrito vacío
+    if (error.message?.includes("Can't reach database server") || 
+        error.code === 'P1001' || 
+        error.name === 'PrismaClientInitializationError') {
+      console.log('⚠️ Error de conexión a BD, devolviendo carrito vacío');
+      return NextResponse.json({
+        id: 'temp-cart',
+        userId,
+        items: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }
+    
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
@@ -72,8 +94,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const { userId, error } = await getUserIdFromRequest(request);
   if (!userId) {
-    let message = error || 'No autenticado';
-    return NextResponse.json({ error: message }, { status: 401 });
+    console.log('⚠️ Usuario no autenticado, no se puede agregar al carrito');
+    return NextResponse.json({ 
+      error: 'Debes iniciar sesión para agregar productos al carrito' 
+    }, { status: 401 });
   }
   const { productId, quantity } = await request.json();
   if (!productId || !quantity || quantity < 1) {
@@ -117,24 +141,36 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(updatedCart);
 }
 
-// DELETE: Eliminar un producto del carrito
+// DELETE: Eliminar un producto del carrito o limpiar todo
 export async function DELETE(request: NextRequest) {
   const { userId, error } = await getUserIdFromRequest(request);
   if (!userId) {
-    let message = error || 'No autenticado';
-    return NextResponse.json({ error: message }, { status: 401 });
+    console.log('⚠️ Usuario no autenticado, no se puede eliminar del carrito');
+    return NextResponse.json({ 
+      error: 'Debes iniciar sesión para modificar el carrito' 
+    }, { status: 401 });
   }
-  const { productId } = await request.json();
-  if (!productId) {
-    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
-  }
+  
+  const body = await request.json();
+  const { productId, clearAll } = body;
+  
   // Buscar el carrito
   const cart = await prisma.cart.findUnique({ where: { userId } });
   if (!cart) {
     return NextResponse.json({ error: 'Carrito no encontrado' }, { status: 404 });
   }
-  // Eliminar el producto
-  await prisma.cartItem.deleteMany({ where: { cartId: cart.id, productId } });
+  
+  if (clearAll) {
+    // Limpiar todo el carrito
+    await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+    console.log('✅ Carrito completamente limpiado');
+  } else if (productId) {
+    // Eliminar un producto específico
+    await prisma.cartItem.deleteMany({ where: { cartId: cart.id, productId } });
+  } else {
+    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
+  }
+  
   // Devolver el carrito actualizado
   const updatedCart = await prisma.cart.findUnique({
     where: { userId },

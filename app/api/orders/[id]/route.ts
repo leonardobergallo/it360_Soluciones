@@ -17,16 +17,17 @@ async function connectDB() {
 // GET - Obtener detalles de una orden específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log(`🔍 Obteniendo detalles de orden: ${params.id}`);
+    const { id } = await params;
+    console.log(`🔍 Obteniendo detalles de orden: ${id}`);
     
     await connectDB();
     
     // Temporalmente usar la tabla Sale existente
     const sale = await prisma.sale.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {

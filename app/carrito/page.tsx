@@ -361,40 +361,53 @@ export default function CarritoPage() {
         return;
       }
       
-      // Si es reembolso o transferencia, registrar la venta
-      if (token && userId) {
-        // Usuario logueado: registrar en backend
-        for (const item of cartItems) {
-          const res = await fetch("/api/sales", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              userId,
-              productId: item.product.id,
-              amount: item.product.price * item.quantity,
-              nombre: form.nombre,
-              email: form.email,
-              telefono: form.telefono,
-              direccion: form.direccion,
-              metodoPago: form.metodoPago
-            })
-          });
-          if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.error || "Error al registrar la venta");
-          }
-        }
-      } else {
-        // Usuario no logueado: solo mostrar mensaje de éxito
-        // En un caso real, aquí se enviaría un email con los detalles
+      // Si es reembolso o transferencia, usar el endpoint de checkout
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          email: form.email,
+          telefono: form.telefono,
+          direccion: form.direccion,
+          metodoPago: form.metodoPago,
+          items: cartItems,
+          total: cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0),
+          userId: userId
+        })
+      });
+      
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Error al procesar la compra");
       }
+      
+      const checkoutData = await res.json();
+      console.log('✅ Checkout procesado:', checkoutData);
       
       setCartItems([]);
       setCheckout(false);
       setSuccess("¡Compra realizada con éxito! Te contactaremos pronto.");
+      
+      // Limpiar carrito del backend si el usuario está logueado
+      if (token && userId) {
+        try {
+          await fetch('/api/cart', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ clearAll: true })
+          });
+          console.log('✅ Carrito del backend limpiado');
+        } catch (error) {
+          console.error('Error limpiando carrito del backend:', error);
+        }
+      }
       
       // Limpiar localStorage (mantener cotizaciones)
       const stored = localStorage.getItem('carrito');
@@ -411,6 +424,9 @@ export default function CarritoPage() {
           localStorage.removeItem('carrito');
         }
       }
+      
+      // Disparar evento para actualizar el ícono del carrito
+      window.dispatchEvent(new CustomEvent('cartCleared'));
       
       if (formRef.current) formRef.current.reset();
     } catch (err: unknown) {

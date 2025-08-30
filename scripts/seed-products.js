@@ -1,134 +1,110 @@
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
+
+const products = [
+  {
+    name: "Monitor LED 24 pulgadas",
+    description: "Monitor LED de 24 pulgadas, resolución Full HD 1920x1080, tiempo de respuesta 5ms, conectores HDMI y VGA.",
+    price: 45000,
+    basePrice: 40000,
+    markup: 12.5,
+    stock: 10,
+    category: "Monitores",
+    image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop",
+    active: true
+  },
+  {
+    name: "Teclado Mecánico RGB",
+    description: "Teclado mecánico con switches azules, retroiluminación RGB, diseño gaming, conexión USB.",
+    price: 15000,
+    basePrice: 12000,
+    markup: 25,
+    stock: 25,
+    category: "Periféricos",
+    image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop",
+    active: true
+  },
+  {
+    name: "Mouse Inalámbrico",
+    description: "Mouse inalámbrico óptico, 1600 DPI, batería recargable, diseño ergonómico, conexión USB.",
+    price: 8000,
+    basePrice: 6000,
+    markup: 33.3,
+    stock: 30,
+    category: "Periféricos",
+    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop",
+    active: true
+  },
+  {
+    name: "Router WiFi 6",
+    description: "Router WiFi 6 de doble banda, velocidad hasta 1.8 Gbps, 4 puertos LAN, antenas externas.",
+    price: 35000,
+    basePrice: 28000,
+    markup: 25,
+    stock: 15,
+    category: "Redes",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    active: true
+  },
+  {
+    name: "Disco Externo 1TB",
+    description: "Disco duro externo USB 3.0, capacidad 1TB, velocidad 5400 RPM, compatible con PC y Mac.",
+    price: 18000,
+    basePrice: 15000,
+    markup: 20,
+    stock: 20,
+    category: "Almacenamiento",
+    image: "https://images.unsplash.com/photo-1597872200964-2b65d56bd16b?w=400&h=300&fit=crop",
+    active: true
+  },
+  {
+    name: "Memoria RAM 8GB DDR4",
+    description: "Memoria RAM DDR4 de 8GB, velocidad 2666 MHz, compatible con la mayoría de placas madre.",
+    price: 12000,
+    basePrice: 10000,
+    markup: 20,
+    stock: 40,
+    category: "Memoria",
+    image: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=400&h=300&fit=crop",
+    active: true
+  }
+];
 
 async function seedProducts() {
   try {
-    console.log('🌱 Poblando base de datos con productos de ejemplo...\n');
-
-    const products = [
-      {
-        name: 'Laptop HP Pavilion',
-        description: 'Laptop HP Pavilion 15.6" Intel Core i5, 8GB RAM, 512GB SSD, Windows 11',
-        price: 899.99,
-        stock: 15,
-        category: 'hardware',
-        image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400',
-        active: true
-      },
-      {
-        name: 'Mouse Inalámbrico Logitech',
-        description: 'Mouse inalámbrico Logitech M185, 1000 DPI, batería de 12 meses',
-        price: 25.99,
-        stock: 50,
-        category: 'perifericos',
-        image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400',
-        active: true
-      },
-      {
-        name: 'Teclado Mecánico RGB',
-        description: 'Teclado mecánico gaming con switches Cherry MX Red y retroiluminación RGB',
-        price: 129.99,
-        stock: 20,
-        category: 'perifericos',
-        image: 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400',
-        active: true
-      },
-      {
-        name: 'Monitor Samsung 24"',
-        description: 'Monitor Samsung 24" Full HD, 75Hz, FreeSync, HDMI, VGA',
-        price: 199.99,
-        stock: 30,
-        category: 'monitores',
-        image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400',
-        active: true
-      },
-      {
-        name: 'Disco Duro Externo 1TB',
-        description: 'Disco duro externo Western Digital 1TB, USB 3.0, compatible con PC y Mac',
-        price: 59.99,
-        stock: 25,
-        category: 'almacenamiento',
-        image: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400',
-        active: true
-      },
-      {
-        name: 'Webcam HD 1080p',
-        description: 'Webcam Logitech C920 HD 1080p, micrófono integrado, compatible con Zoom/Teams',
-        price: 79.99,
-        stock: 40,
-        category: 'perifericos',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-        active: true
-      },
-      {
-        name: 'Router WiFi 6',
-        description: 'Router TP-Link Archer AX10 WiFi 6, 1500 Mbps, 4 antenas, fácil configuración',
-        price: 89.99,
-        stock: 12,
-        category: 'redes',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-        active: true
-      },
-      {
-        name: 'Impresora Multifunción',
-        description: 'Impresora HP DeskJet 3755 multifunción, WiFi, escáner, copiadora',
-        price: 149.99,
-        stock: 18,
-        category: 'impresoras',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-        active: true
-      },
-      {
-        name: 'Cable HDMI 2.0',
-        description: 'Cable HDMI 2.0 de alta velocidad, 4K, 3 metros, dorado',
-        price: 12.99,
-        stock: 100,
-        category: 'cables',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-        active: true
-      },
-      {
-        name: 'Soporte para Monitor',
-        description: 'Soporte para monitor articulado, hasta 27", ajustable, VESA 75x75/100x100',
-        price: 45.99,
-        stock: 35,
-        category: 'accesorios',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-        active: true
-      }
-    ];
-
-    let createdCount = 0;
-    let errorCount = 0;
-
+    console.log('🌱 Iniciando seed de productos...');
+    
+    // Verificar si ya existen productos
+    const existingProducts = await prisma.product.count();
+    if (existingProducts > 0) {
+      console.log(`📦 Ya existen ${existingProducts} productos en la base de datos`);
+      console.log('⚠️ No se eliminarán productos existentes para evitar conflictos de claves foráneas');
+    }
+    
+    // Insertar nuevos productos (solo si no existen)
     for (const product of products) {
       try {
         await prisma.product.create({
           data: product
         });
-        createdCount++;
-        console.log(`✅ Creado producto: ${product.name} - $${product.price}`);
+        console.log(`✅ Producto creado: ${product.name}`);
       } catch (error) {
-        errorCount++;
-        console.error(`❌ Error creando producto ${product.name}:`, error.message);
+        if (error.code === 'P2002') {
+          console.log(`⚠️ Producto ya existe: ${product.name}`);
+        } else {
+          console.error(`❌ Error creando producto ${product.name}:`, error.message);
+        }
       }
     }
-
-    console.log('\n📊 Resumen de creación de productos:');
-    console.log(`   ✅ Creados exitosamente: ${createdCount}`);
-    console.log(`   ❌ Errores: ${errorCount}`);
-    console.log(`   📋 Total procesados: ${products.length}`);
-
-    if (createdCount > 0) {
-      console.log('\n🎉 Productos de ejemplo creados exitosamente!');
-      console.log('💡 Ahora puedes probar la funcionalidad de subir Excel.');
-    }
-
+    
+    console.log(`🎉 ${products.length} productos creados exitosamente`);
+    
   } catch (error) {
-    console.error('❌ Error durante la creación de productos:', error);
+    console.error('❌ Error durante el seed:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-seedProducts(); 
+seedProducts();
