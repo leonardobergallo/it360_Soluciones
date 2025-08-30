@@ -21,6 +21,7 @@ model User {
   role      Role     @default(USER)
   sales     Sale[]
   cart      Cart?
+  orders    Order[]
   paymentPreferences PaymentPreference[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -51,6 +52,7 @@ model Product {
   active      Boolean  @default(true)
   sales       Sale[]
   cartItems   CartItem[]
+  orderItems  OrderItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -138,6 +140,48 @@ model Ticket {
   resueltoEn  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// Enum para estados de orden
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+  RETURNED
+}
+
+// Modelo para órdenes de compra
+model Order {
+  id          String      @id @default(uuid())
+  orderNumber String      @unique // Número de orden único (ej: ORD-2024-001)
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  total       Float
+  status      OrderStatus @default(PENDING)
+  items       OrderItem[]
+  // Información de envío
+  shippingAddress String?
+  shippingMethod  String?  @default("pickup") // pickup, delivery
+  // Información de pago
+  paymentMethod   String?  @default("cash")
+  paymentStatus   String?  @default("pending")
+  // Notas
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Modelo para items de orden
+model OrderItem {
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int      @default(1)
+  price     Float    // Precio al momento de la compra
+  createdAt DateTime @default(now())
 }
 
 model TestTable {

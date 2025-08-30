@@ -78,18 +78,7 @@ export default function GlobalHeader() {
             <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-green-400 to-teal-400 group-hover:w-full transition-all duration-300"></div>
           </Link>
           
-          <Link 
-            href="/hogar-inteligente" 
-            className="group flex items-center gap-3 bg-gradient-to-r from-purple-600/90 to-pink-600/90 backdrop-blur-xl border border-purple-400/50 px-5 py-3 rounded-xl hover:from-purple-500 hover:to-pink-500 hover:border-purple-300/70 transition-all duration-300 hover:scale-110 shadow-xl hover:shadow-2xl hover:shadow-purple-500/30 transform hover:-rotate-1"
-          >
-            <span className="text-xl group-hover:scale-110 transition-transform">🏠</span>
-            <span className="text-white font-bold text-sm group-hover:text-white transition-colors">
-              Hogar Inteligente
-            </span>
-            <span className="text-sm text-white/90 group-hover:text-white transition-colors group-hover:animate-bounce">
-              🤖
-            </span>
-          </Link>
+
         </nav>
       </div>
       <div className="flex items-center gap-2 sm:gap-4">
@@ -128,6 +117,17 @@ export default function GlobalHeader() {
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </Link>
+        
+        {/* Botón de Mis Compras */}
+        <Link 
+          href="/mis-compras" 
+          className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-green-800/80 to-green-700/80 backdrop-blur-xl rounded-xl border border-white/30 flex items-center justify-center hover:from-green-700/90 hover:to-green-600/90 hover:border-white/50 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl"
+          title="Mis compras"
+        >
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </Link>
         
@@ -209,14 +209,14 @@ export default function GlobalHeader() {
               Contacto
             </Link>
             <Link 
-              href="/hogar-inteligente" 
+              href="/mis-compras" 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="group flex items-center gap-3 bg-gradient-to-r from-purple-600/90 to-pink-600/90 backdrop-blur-xl border border-purple-400/50 px-4 py-3 rounded-xl hover:from-purple-500 hover:to-pink-500 hover:border-purple-300/70 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl"
+              className="group flex items-center gap-3 text-white/90 hover:text-green-300 transition-all duration-300 font-semibold text-base px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/20 hover:to-teal-500/20 backdrop-blur-sm border border-transparent hover:border-green-400/30 hover:scale-105 hover:shadow-lg"
             >
-              <span className="text-white group-hover:scale-110 transition-transform text-lg">🏠</span>
-              <span className="text-white font-bold text-base">Hogar Inteligente</span>
-              <span className="text-white/90 group-hover:animate-bounce text-lg">🤖</span>
+              <span className="text-green-400 group-hover:scale-110 transition-transform text-lg">📋</span>
+              Mis compras
             </Link>
+
           </nav>
         </div>
       )}
