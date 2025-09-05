@@ -50,6 +50,9 @@ model Product {
   category    String
   image       String?
   active      Boolean  @default(true)
+  // Campos para descuentos
+  volumeDiscounts String? // JSON con descuentos por volumen
+  customerDiscounts String? // JSON con descuentos por tipo de cliente
   sales       Sale[]
   cartItems   CartItem[]
   orderItems  OrderItem[]

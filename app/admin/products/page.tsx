@@ -1,6 +1,7 @@
 "use client";
 import AdminLayout from '@/components/AdminLayout';
 import Table from '@/components/Table';
+import PriceCalculator from '@/components/PriceCalculator';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -485,9 +486,20 @@ export default function ProductsPage() {
                 />
               </div>
               
+              {/* Calculadora de Precios */}
+              <PriceCalculator
+                basePrice={Number(form.basePrice) || 0}
+                markup={Number(form.markup) || 0}
+                category={form.category}
+                onPriceChange={(price) => setForm({ ...form, price: price.toString() })}
+                onMarkupChange={(markup) => setForm({ ...form, markup: markup.toString() })}
+                className="mb-6"
+              />
+              
+              {/* Campos manuales como respaldo */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Precio Base</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Precio Base (Manual)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -499,7 +511,7 @@ export default function ProductsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Markup (%)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Markup % (Manual)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -511,7 +523,7 @@ export default function ProductsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Precio Final</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Precio Final (Manual)</label>
                   <input
                     type="number"
                     step="0.01"
