@@ -131,7 +131,7 @@ export default function CatalogoPage() {
         if (Array.isArray(data)) {
           setProducts(data.map((p: { id: string; name: string; description: string; price: number; image?: string; category?: string }, i: number) => {
             // Usar la imagen del producto si existe, sino usar imagen automática
-            const mainImage = p.image || productImages[i % productImages.length];
+            const mainImage = p.image === 'USE_NAME' ? 'USE_NAME' : (p.image || productImages[i % productImages.length]);
             return { 
               ...p, 
               type: "product", 
