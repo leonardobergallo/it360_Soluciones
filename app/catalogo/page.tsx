@@ -136,7 +136,7 @@ export default function CatalogoPage() {
               ...p, 
               type: "product", 
               image: mainImage,
-              imagenes: generateProductImages(p.name, mainImage),
+              imagenes: mainImage === 'USE_NAME' ? ['USE_NAME'] : generateProductImages(p.name, mainImage),
               icon: getProductIcon(p.name)
             };
           }));
@@ -476,14 +476,25 @@ export default function CatalogoPage() {
                 {/* Efecto de brillo en hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/15 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                {/* Imagen del producto */}
+                {/* Imagen del producto o nombre */}
                 <div className="relative h-40 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 flex items-center justify-center p-6 backdrop-blur-sm overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 to-blue-500/5"></div>
-                  <img 
-                    src={p.image} 
-                    alt={p.name} 
-                    className="relative w-20 h-20 object-contain group-hover:scale-125 transition-transform duration-700 z-10" 
-                  />
+                  {p.image === 'USE_NAME' ? (
+                    // Mostrar nombre del producto en lugar de imagen
+                    <div className="relative text-center z-10">
+                      <div className="text-4xl mb-2">{p.icon}</div>
+                      <div className="text-white/90 font-semibold text-sm leading-tight px-2">
+                        {p.name.length > 50 ? p.name.substring(0, 50) + '...' : p.name}
+                      </div>
+                    </div>
+                  ) : (
+                    // Mostrar imagen normal
+                    <img 
+                      src={p.image} 
+                      alt={p.name} 
+                      className="relative w-20 h-20 object-contain group-hover:scale-125 transition-transform duration-700 z-10" 
+                    />
+                  )}
                   {/* Efecto de partículas */}
                   <div className="absolute top-2 right-2 w-2 h-2 bg-cyan-400/60 rounded-full animate-pulse"></div>
                   <div className="absolute bottom-2 left-2 w-1.5 h-1.5 bg-blue-400/60 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
@@ -658,16 +669,27 @@ export default function CatalogoPage() {
                 </button>
               </div>
 
-              {/* Galería de imágenes */}
+              {/* Galería de imágenes o nombre */}
               <div className="mb-3">
                 <div className="relative h-32 sm:h-40 bg-gray-100 rounded-lg overflow-hidden mb-2">
-                  <img 
-                    src={selectedProduct.imagenes?.[currentImageIndex] || selectedProduct.image} 
-                    alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Navegación de imágenes */}
-                  {selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
+                  {selectedProduct.image === 'USE_NAME' ? (
+                    // Mostrar nombre del producto en lugar de imagen
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-50">
+                      <div className="text-6xl mb-3">{selectedProduct.icon}</div>
+                      <div className="text-gray-800 font-bold text-center px-4">
+                        {selectedProduct.name}
+                      </div>
+                    </div>
+                  ) : (
+                    // Mostrar imagen normal
+                    <img 
+                      src={selectedProduct.imagenes?.[currentImageIndex] || selectedProduct.image} 
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {/* Navegación de imágenes - solo si no es USE_NAME */}
+                  {selectedProduct.image !== 'USE_NAME' && selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
                     <>
                       <button 
                         onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : selectedProduct.imagenes!.length - 1)}
@@ -684,8 +706,8 @@ export default function CatalogoPage() {
                     </>
                   )}
                 </div>
-                {/* Miniaturas */}
-                {selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
+                {/* Miniaturas - solo si no es USE_NAME */}
+                {selectedProduct.image !== 'USE_NAME' && selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
                   <div className="flex gap-1 justify-center">
                     {selectedProduct.imagenes.map((img, index) => (
                       <button
