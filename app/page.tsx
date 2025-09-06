@@ -253,112 +253,11 @@ export default function Home() {
 
 
 
-      {/* Hero Section - Completamente Rediseñado y Moderno */}
-      <section id="inicio" className="relative flex flex-col items-center justify-center min-h-screen py-20 px-6 text-center fade-in opacity-0 translate-y-8 transition-all duration-1000">
-        {/* Fondo animado mejorado */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Gradiente animado de fondo */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-800 animate-pulse"></div>
-          
-          {/* Círculos flotantes animados */}
-          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 rounded-full blur-3xl animate-bounce"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-blue-400/15 to-cyan-500/15 rounded-full blur-3xl animate-spin-slow"></div>
-          
-          {/* Líneas de conexión animadas */}
-          <div className="absolute top-1/3 left-1/3 w-1 h-20 bg-gradient-to-b from-cyan-400/50 to-transparent animate-pulse"></div>
-          <div className="absolute bottom-1/3 right-1/3 w-1 h-20 bg-gradient-to-t from-purple-400/50 to-transparent animate-pulse animation-delay-1000"></div>
-        </div>
-
-        <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-6xl mx-auto">
-          {/* Logo animado */}
-          <div className="mb-8 transform hover:scale-110 transition-transform duration-500">
-            <ModernLogo size="2xl" className="drop-shadow-2xl scale-125" />
-          </div>
-
-          {/* Título principal con efectos */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent animate-pulse">
-                IT360
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                Soluciones
-              </span>
-            </h1>
-            
-          </div>
-        </div>
-      </section>
-
-      {/* Pasarela de tecnologías - Completamente uniforme */}
-      <section className="py-20 bg-white/10 backdrop-blur-sm fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-wrap justify-center items-center gap-10 overflow-x-auto">
-            {/* Next.js - Uniforme */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
-              <svg width="28" height="28" viewBox="0 0 120 40" fill="none" className="text-white">
-                <text x="0" y="32" fontSize="32" fontWeight="bold" fill="currentColor">NEXT</text>
-                <text x="72" y="36" fontSize="12" fill="currentColor">.Js</text>
-              </svg>
-            </div>
-            
-            {/* React - Uniforme */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
-              <svg width="28" height="28" viewBox="0 0 32 32" className="text-cyan-400">
-                <g>
-                  <ellipse cx="16" cy="16" rx="14" ry="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <ellipse cx="16" cy="16" rx="6" ry="14" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <circle cx="16" cy="16" r="2.5" fill="currentColor"/>
-                </g>
-              </svg>
-              <span className="text-white font-medium text-base">React</span>
-            </div>
-            
-            {/* Node.js - Uniforme */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
-              <svg width="28" height="28" viewBox="0 0 32 32" className="text-green-400">
-                <polygon points="16,2 30,9 30,23 16,30 2,23 2,9" fill="currentColor"/>
-                <text x="8" y="22" fontSize="10" fill="white">Node</text>
-              </svg>
-              <span className="text-white font-medium text-base">Node.js</span>
-            </div>
-            
-            {/* PostgreSQL - Uniforme */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
-              <svg width="28" height="28" viewBox="0 0 32 32" className="text-blue-400">
-                <ellipse cx="16" cy="16" rx="14" ry="14" fill="currentColor"/>
-                <text x="7" y="22" fontSize="10" fill="white">PGSQL</text>
-              </svg>
-              <span className="text-white font-medium text-base">PostgreSQL</span>
-            </div>
-            
-            {/* TypeScript - Uniforme */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
-              <svg width="28" height="28" viewBox="0 0 32 32" className="text-blue-500">
-                <rect width="32" height="32" rx="6" fill="currentColor"/>
-                <text x="4" y="22" fontSize="14" fill="white">TS</text>
-              </svg>
-              <span className="text-white font-medium text-base">TypeScript</span>
-            </div>
-            
-            {/* Docker - Uniforme */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
-              <svg width="28" height="28" viewBox="0 0 32 32" className="text-blue-400">
-                <rect width="32" height="32" rx="6" fill="currentColor"/>
-                <text x="4" y="22" fontSize="16" fill="white">🐳</text>
-              </svg>
-              <span className="text-white font-medium text-base">Docker</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      
 
 
       {/* Servicios Mejorados - Compactos y Atractivos */}
-      <section id="servicios" className="max-w-7xl mx-auto py-12 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
+      <section id="servicios" className="max-w-7xl mx-auto py-16 px-6 fade-in opacity-0 translate-y-8 transition-all duration-700">
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 flex items-center justify-center gap-4">
             <span>🚀</span>
@@ -434,21 +333,7 @@ export default function Home() {
       {/* Sobre Nosotros - Completamente Rediseñado */}
       <section id="nosotros" className="py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
         <div className="max-w-7xl mx-auto">
-          {/* Header de la sección */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6">
-              <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
-                Sobre
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                Nosotros
-              </span>
-            </h2>
-            <p className="text-xl sm:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
-              Transformamos ideas en soluciones tecnológicas que impulsan el crecimiento de tu negocio
-            </p>
-          </div>
+          
 
           {/* Contenido principal */}
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -536,124 +421,64 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonios - Completamente Rediseñado */}
-      <section id="testimonios" className="py-20 px-4 sm:px-6 lg:px-8 fade-in opacity-0 translate-y-8 transition-all duration-700">
-        <div className="max-w-7xl mx-auto">
-          {/* Header de la sección */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6">
-              <span className="bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent">
-                Lo que dicen
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-                nuestros clientes
-              </span>
-            </h2>
-            <p className="text-xl sm:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
-              Testimonios reales de clientes satisfechos que confían en nuestras soluciones
-            </p>
-          </div>
-
-          {/* Grid de testimonios */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Testimonio 1 */}
-            <div className="group relative">
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 h-full hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                <div className="flex items-center gap-4 mb-6">
-                  <img 
-                    src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&h=120&fit=crop&crop=face&auto=format" 
-                    alt="María González" 
-                    className="w-16 h-16 rounded-full object-cover border-2 border-cyan-400 shadow-lg"
-                  />
-                  <div>
-                    <h4 className="font-bold text-white text-lg">María González</h4>
-                    <p className="text-cyan-400 text-sm">CEO, TechStart</p>
-                  </div>
-                </div>
-                <p className="text-white/90 leading-relaxed mb-4 italic">
-                  "IT360 transformó completamente nuestra infraestructura digital. 
-                  Su equipo profesional y dedicado nos ayudó a modernizar nuestros sistemas 
-                  y mejorar la eficiencia operativa en un 300%. ¡100% recomendados!"
-                </p>
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400 text-lg">⭐</span>
-                  ))}
-                </div>
-              </div>
+      {/* Pasarela de tecnologías - Completamente uniforme */}
+      <section className="py-20 bg-white/10 backdrop-blur-sm fade-in opacity-0 translate-y-8 transition-all duration-700">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-wrap justify-center items-center gap-10 overflow-x-auto">
+            {/* Next.js - Uniforme */}
+            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
+              <svg width="28" height="28" viewBox="0 0 120 40" fill="none" className="text-white">
+                <text x="0" y="32" fontSize="32" fontWeight="bold" fill="currentColor">NEXT</text>
+                <text x="72" y="36" fontSize="12" fill="currentColor">.Js</text>
+              </svg>
             </div>
-
-            {/* Testimonio 2 */}
-            <div className="group relative">
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 h-full hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                <div className="flex items-center gap-4 mb-6">
-                  <img 
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face&auto=format" 
-                    alt="Carlos Rodríguez" 
-                    className="w-16 h-16 rounded-full object-cover border-2 border-purple-400 shadow-lg"
-                  />
-                  <div>
-                    <h4 className="font-bold text-white text-lg">Carlos Rodríguez</h4>
-                    <p className="text-purple-400 text-sm">CTO, InnovateCorp</p>
-                  </div>
-                </div>
-                <p className="text-white/90 leading-relaxed mb-4 italic">
-                  "El soporte técnico de IT360 es excepcional. Respuesta rápida 24/7 
-                  y soluciones efectivas para cualquier problema. Su expertise en 
-                  ciberseguridad nos da total tranquilidad."
-                </p>
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400 text-lg">⭐</span>
-                  ))}
-                </div>
-              </div>
+            
+            {/* React - Uniforme */}
+            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
+              <svg width="28" height="28" viewBox="0 0 32 32" className="text-cyan-400">
+                <g>
+                  <ellipse cx="16" cy="16" rx="14" ry="6" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  <ellipse cx="16" cy="16" rx="6" ry="14" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  <circle cx="16" cy="16" r="2.5" fill="currentColor"/>
+                </g>
+              </svg>
+              <span className="text-white font-medium text-base">React</span>
             </div>
-
-            {/* Testimonio 3 */}
-            <div className="group relative">
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 h-full hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                <div className="flex items-center gap-4 mb-6">
-                  <img 
-                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&crop=face&auto=format" 
-                    alt="Ana Martínez" 
-                    className="w-16 h-16 rounded-full object-cover border-2 border-green-400 shadow-lg"
-                  />
-                  <div>
-                    <h4 className="font-bold text-white text-lg">Ana Martínez</h4>
-                    <p className="text-green-400 text-sm">Gerente de Proyectos</p>
-                  </div>
-                </div>
-                <p className="text-white/90 leading-relaxed mb-4 italic">
-                  "Desarrollaron una aplicación móvil personalizada que superó todas 
-                  nuestras expectativas. El proceso fue transparente, la comunicación 
-                  excelente y el resultado final, perfecto."
-                </p>
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400 text-lg">⭐</span>
-                  ))}
-                </div>
-              </div>
+            
+            {/* Node.js - Uniforme */}
+            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
+              <svg width="28" height="28" viewBox="0 0 32 32" className="text-green-400">
+                <polygon points="16,2 30,9 30,23 16,30 2,23 2,9" fill="currentColor"/>
+                <text x="8" y="22" fontSize="10" fill="white">Node</text>
+              </svg>
+              <span className="text-white font-medium text-base">Node.js</span>
             </div>
-          </div>
-
-          {/* CTA para más testimonios */}
-          <div className="text-center mt-12">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 max-w-2xl mx-auto">
-              <h3 className="text-2xl font-bold text-white mb-4">¿Quieres ser el próximo cliente satisfecho?</h3>
-              <p className="text-white/80 mb-6">
-                Únete a nuestra lista de clientes exitosos y transforma tu negocio con tecnología de vanguardia
-              </p>
-              <a 
-                href="/contacto" 
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-bold shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105"
-              >
-                <span>💬</span>
-                Contáctanos Ahora
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
-              </a>
+            
+            {/* PostgreSQL - Uniforme */}
+            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
+              <svg width="28" height="28" viewBox="0 0 32 32" className="text-blue-400">
+                <ellipse cx="16" cy="16" rx="14" ry="14" fill="currentColor"/>
+                <text x="7" y="22" fontSize="10" fill="white">PGSQL</text>
+              </svg>
+              <span className="text-white font-medium text-base">PostgreSQL</span>
+            </div>
+            
+            {/* TypeScript - Uniforme */}
+            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
+              <svg width="28" height="28" viewBox="0 0 32 32" className="text-blue-500">
+                <rect width="32" height="32" rx="6" fill="currentColor"/>
+                <text x="4" y="22" fontSize="14" fill="white">TS</text>
+              </svg>
+              <span className="text-white font-medium text-base">TypeScript</span>
+            </div>
+            
+            {/* Docker - Uniforme */}
+            <div className="flex items-center gap-3 px-4 py-3 bg-white/15 backdrop-blur-sm rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-300 min-w-[120px] justify-center">
+              <svg width="28" height="28" viewBox="0 0 32 32" className="text-blue-400">
+                <rect width="32" height="32" rx="6" fill="currentColor"/>
+                <text x="4" y="22" fontSize="16" fill="white">🐳</text>
+              </svg>
+              <span className="text-white font-medium text-base">Docker</span>
             </div>
           </div>
         </div>
