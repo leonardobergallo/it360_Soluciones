@@ -130,14 +130,29 @@ export default function CatalogoPage() {
       .then(data => {
         if (Array.isArray(data)) {
           setProducts(data.map((p: { id: string; name: string; description: string; price: number; image?: string; category?: string }, i: number) => {
-            // Usar la imagen del producto si existe, sino usar imagen automática
-            const mainImage = p.image === 'USE_NAME' ? 'USE_NAME' : (p.image || productImages[i % productImages.length]);
+            // Manejar diferentes tipos de imagen
+            let mainImage, productIcon;
+            
+            if (p.image && p.image.startsWith('ICON:')) {
+              // Producto con icono por categoría
+              mainImage = 'USE_ICON';
+              productIcon = p.image.replace('ICON:', '');
+            } else if (p.image === 'USE_NAME') {
+              // Producto que usa nombre (legacy)
+              mainImage = 'USE_NAME';
+              productIcon = getProductIcon(p.name);
+            } else {
+              // Producto con imagen real
+              mainImage = p.image || productImages[i % productImages.length];
+              productIcon = getProductIcon(p.name);
+            }
+            
             return { 
               ...p, 
               type: "product", 
               image: mainImage,
-              imagenes: mainImage === 'USE_NAME' ? ['USE_NAME'] : generateProductImages(p.name, mainImage),
-              icon: getProductIcon(p.name)
+              imagenes: mainImage === 'USE_ICON' || mainImage === 'USE_NAME' ? [mainImage] : generateProductImages(p.name, mainImage),
+              icon: productIcon
             };
           }));
           console.log(`✅ Cargados ${data.length} productos del catálogo`);
@@ -479,8 +494,8 @@ export default function CatalogoPage() {
                 {/* Imagen del producto o nombre */}
                 <div className="relative h-40 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 flex items-center justify-center p-6 backdrop-blur-sm overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 to-blue-500/5"></div>
-                  {p.image === 'USE_NAME' ? (
-                    // Mostrar nombre del producto en lugar de imagen
+                  {p.image === 'USE_ICON' || p.image === 'USE_NAME' ? (
+                    // Mostrar icono por categoría + nombre del producto
                     <div className="relative text-center z-10">
                       <div className="text-4xl mb-2">{p.icon}</div>
                       <div className="text-white/90 font-semibold text-sm leading-tight px-2">
@@ -672,8 +687,8 @@ export default function CatalogoPage() {
               {/* Galería de imágenes o nombre */}
               <div className="mb-3">
                 <div className="relative h-32 sm:h-40 bg-gray-100 rounded-lg overflow-hidden mb-2">
-                  {selectedProduct.image === 'USE_NAME' ? (
-                    // Mostrar nombre del producto en lugar de imagen
+                  {selectedProduct.image === 'USE_ICON' || selectedProduct.image === 'USE_NAME' ? (
+                    // Mostrar icono por categoría + nombre del producto
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-50">
                       <div className="text-6xl mb-3">{selectedProduct.icon}</div>
                       <div className="text-gray-800 font-bold text-center px-4">
@@ -688,8 +703,8 @@ export default function CatalogoPage() {
                       className="w-full h-full object-cover"
                     />
                   )}
-                  {/* Navegación de imágenes - solo si no es USE_NAME */}
-                  {selectedProduct.image !== 'USE_NAME' && selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
+                  {/* Navegación de imágenes - solo si no es USE_ICON o USE_NAME */}
+                  {selectedProduct.image !== 'USE_ICON' && selectedProduct.image !== 'USE_NAME' && selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
                     <>
                       <button 
                         onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : selectedProduct.imagenes!.length - 1)}
@@ -706,8 +721,8 @@ export default function CatalogoPage() {
                     </>
                   )}
                 </div>
-                {/* Miniaturas - solo si no es USE_NAME */}
-                {selectedProduct.image !== 'USE_NAME' && selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
+                {/* Miniaturas - solo si no es USE_ICON o USE_NAME */}
+                {selectedProduct.image !== 'USE_ICON' && selectedProduct.image !== 'USE_NAME' && selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
                   <div className="flex gap-1 justify-center">
                     {selectedProduct.imagenes.map((img, index) => (
                       <button
