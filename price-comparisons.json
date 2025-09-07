@@ -1,0 +1,239 @@
+{
+  "generatedAt": "2025-09-07T16:53:39.888Z",
+  "totalComparisons": 5,
+  "totalActiveProducts": 74,
+  "totalInactiveProducts": 1416,
+  "comparisons": [
+    {
+      "activeProduct": {
+        "id": "058964ca-097a-445a-aac9-d83fc1056d1d",
+        "name": "Gadnic Hamaca Paraguaya Colgante",
+        "price": 275000,
+        "category": "Otros"
+      },
+      "excelProduct": {
+        "id": "04246487-6986-4b9f-ad79-b62f446bd317",
+        "name": "Gadnic Balanza de Ba�o Gadnic Digital con APP",
+        "price": 32400,
+        "category": "Otros"
+      },
+      "excelPrice": 32400,
+      "currentPrice": 275000,
+      "markupApplied": 748.7654320987655,
+      "priceDifference": 242600,
+      "similarity": 0.4
+    },
+    {
+      "activeProduct": {
+        "id": "1c03bb4b-3cb6-4932-8b33-c18445b0e04a",
+        "name": "Lenovo Auricular BT Supraaural TA330 Black",
+        "price": 380000,
+        "category": "Audio"
+      },
+      "excelProduct": {
+        "id": "0a8a8679-2d18-4e79-aa11-54c07c6e9dd9",
+        "name": "Genius Auricular c/microfono -black -Genius HS-300N (31710146100)",
+        "price": 15200,
+        "category": "Audio"
+      },
+      "excelPrice": 15200,
+      "currentPrice": 380000,
+      "markupApplied": 2400,
+      "priceDifference": 364800,
+      "similarity": 0.42857142857142855
+    },
+    {
+      "activeProduct": {
+        "id": "bd196cd9-bc11-4472-92ff-866cf0caf611",
+        "name": "Lenovo Auricular BT LP3 Pro Black",
+        "price": 445000,
+        "category": "Audio"
+      },
+      "excelProduct": {
+        "id": "0a8a8679-2d18-4e79-aa11-54c07c6e9dd9",
+        "name": "Genius Auricular c/microfono -black -Genius HS-300N (31710146100)",
+        "price": 15200,
+        "category": "Audio"
+      },
+      "excelPrice": 15200,
+      "currentPrice": 445000,
+      "markupApplied": 2827.6315789473683,
+      "priceDifference": 429800,
+      "similarity": 0.42857142857142855
+    },
+    {
+      "activeProduct": {
+        "id": "6685d6de-85cd-4030-893f-91ab96bafcc1",
+        "name": "Nisuta Kit de Herramientas 60 Piezas",
+        "price": 400000,
+        "category": "Otros"
+      },
+      "excelProduct": {
+        "id": "590110b0-3ce5-4d15-9455-63a83367a753",
+        "name": "Gadnic Kit de herramientas de jardineria -11 piezas -c/estuche -green -Gadnic (JD1000)",
+        "price": 32900,
+        "category": "Otros"
+      },
+      "excelPrice": 32900,
+      "currentPrice": 400000,
+      "markupApplied": 1115.8054711246202,
+      "priceDifference": 367100,
+      "similarity": 0.4444444444444444
+    },
+    {
+      "activeProduct": {
+        "id": "91c64136-9669-42c1-85e1-7b1c8abb5c68",
+        "name": "Mouse Gaming Logitech",
+        "price": 255000,
+        "category": "Periféricos"
+      },
+      "excelProduct": {
+        "id": "9a6dcaad-7cfb-4295-ae54-5bb342719fb1",
+        "name": "Logitech Mouse optico -wireless -1000dpi -blue -Logitech M185 (910-003636)",
+        "price": 17500,
+        "category": "Periféricos"
+      },
+      "excelPrice": 17500,
+      "currentPrice": 255000,
+      "markupApplied": 1357.142857142857,
+      "priceDifference": 237500,
+      "similarity": 0.35
+    }
+  ],
+  "categoryStats": {
+    "Otros": {
+      "totalProducts": 2,
+      "totalMarkup": 1864.5709032233858,
+      "totalExcelValue": 65300,
+      "totalCurrentValue": 675000,
+      "comparisons": [
+        {
+          "activeProduct": {
+            "id": "058964ca-097a-445a-aac9-d83fc1056d1d",
+            "name": "Gadnic Hamaca Paraguaya Colgante",
+            "price": 275000,
+            "category": "Otros"
+          },
+          "excelProduct": {
+            "id": "04246487-6986-4b9f-ad79-b62f446bd317",
+            "name": "Gadnic Balanza de Ba�o Gadnic Digital con APP",
+            "price": 32400,
+            "category": "Otros"
+          },
+          "excelPrice": 32400,
+          "currentPrice": 275000,
+          "markupApplied": 748.7654320987655,
+          "priceDifference": 242600,
+          "similarity": 0.4
+        },
+        {
+          "activeProduct": {
+            "id": "6685d6de-85cd-4030-893f-91ab96bafcc1",
+            "name": "Nisuta Kit de Herramientas 60 Piezas",
+            "price": 400000,
+            "category": "Otros"
+          },
+          "excelProduct": {
+            "id": "590110b0-3ce5-4d15-9455-63a83367a753",
+            "name": "Gadnic Kit de herramientas de jardineria -11 piezas -c/estuche -green -Gadnic (JD1000)",
+            "price": 32900,
+            "category": "Otros"
+          },
+          "excelPrice": 32900,
+          "currentPrice": 400000,
+          "markupApplied": 1115.8054711246202,
+          "priceDifference": 367100,
+          "similarity": 0.4444444444444444
+        }
+      ],
+      "averageMarkup": 932.2854516116929,
+      "totalMarkupValue": 609700,
+      "markupPercentage": 933.6906584992344
+    },
+    "Audio": {
+      "totalProducts": 2,
+      "totalMarkup": 5227.631578947368,
+      "totalExcelValue": 30400,
+      "totalCurrentValue": 825000,
+      "comparisons": [
+        {
+          "activeProduct": {
+            "id": "1c03bb4b-3cb6-4932-8b33-c18445b0e04a",
+            "name": "Lenovo Auricular BT Supraaural TA330 Black",
+            "price": 380000,
+            "category": "Audio"
+          },
+          "excelProduct": {
+            "id": "0a8a8679-2d18-4e79-aa11-54c07c6e9dd9",
+            "name": "Genius Auricular c/microfono -black -Genius HS-300N (31710146100)",
+            "price": 15200,
+            "category": "Audio"
+          },
+          "excelPrice": 15200,
+          "currentPrice": 380000,
+          "markupApplied": 2400,
+          "priceDifference": 364800,
+          "similarity": 0.42857142857142855
+        },
+        {
+          "activeProduct": {
+            "id": "bd196cd9-bc11-4472-92ff-866cf0caf611",
+            "name": "Lenovo Auricular BT LP3 Pro Black",
+            "price": 445000,
+            "category": "Audio"
+          },
+          "excelProduct": {
+            "id": "0a8a8679-2d18-4e79-aa11-54c07c6e9dd9",
+            "name": "Genius Auricular c/microfono -black -Genius HS-300N (31710146100)",
+            "price": 15200,
+            "category": "Audio"
+          },
+          "excelPrice": 15200,
+          "currentPrice": 445000,
+          "markupApplied": 2827.6315789473683,
+          "priceDifference": 429800,
+          "similarity": 0.42857142857142855
+        }
+      ],
+      "averageMarkup": 2613.815789473684,
+      "totalMarkupValue": 794600,
+      "markupPercentage": 2613.815789473684
+    },
+    "Periféricos": {
+      "totalProducts": 1,
+      "totalMarkup": 1357.142857142857,
+      "totalExcelValue": 17500,
+      "totalCurrentValue": 255000,
+      "comparisons": [
+        {
+          "activeProduct": {
+            "id": "91c64136-9669-42c1-85e1-7b1c8abb5c68",
+            "name": "Mouse Gaming Logitech",
+            "price": 255000,
+            "category": "Periféricos"
+          },
+          "excelProduct": {
+            "id": "9a6dcaad-7cfb-4295-ae54-5bb342719fb1",
+            "name": "Logitech Mouse optico -wireless -1000dpi -blue -Logitech M185 (910-003636)",
+            "price": 17500,
+            "category": "Periféricos"
+          },
+          "excelPrice": 17500,
+          "currentPrice": 255000,
+          "markupApplied": 1357.142857142857,
+          "priceDifference": 237500,
+          "similarity": 0.35
+        }
+      ],
+      "averageMarkup": 1357.142857142857,
+      "totalMarkupValue": 237500,
+      "markupPercentage": 1357.142857142857
+    }
+  },
+  "summary": {
+    "averageMarkup": 1689.8690678627222,
+    "totalExcelValue": 113200,
+    "totalCurrentValue": 1755000,
+    "totalMarkupValue": 1641800
+  }
+}

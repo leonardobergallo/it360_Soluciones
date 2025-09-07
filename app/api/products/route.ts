@@ -13,9 +13,8 @@ export async function GET() {
     // Intentar conectar a la base de datos con timeout
     const products = await Promise.race([
       prisma.product.findMany({
-        where: {
-          active: true // Solo productos activos
-        },
+        // Cargar TODOS los productos (activos e inactivos)
+        // El filtro se aplicará en el frontend
         orderBy: {
           name: 'asc'
         }
