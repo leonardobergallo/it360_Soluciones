@@ -1,21 +1,44 @@
 import requests
 
-url = "http://localhost:3000/api/products"
+BASE_URL = "http://localhost:3000/api/products"
 
-# Lista de IDs a eliminar
-ids = [
-    "a95f560c-8e9f-4b27-a757-0cdd7ded2bc1",
-    "648b996f-dd2e-4e57-9b21-9318b8e46a1e"
-]
-
-for product_id in ids:
+def fetch_all_products():
     try:
-        response = requests.delete(url, json={"id": product_id})
+        resp = requests.get(BASE_URL, timeout=20)
+        if resp.status_code != 200:
+            print(f"❌ Error obteniendo productos: {resp.status_code} {resp.text}")
+            return []
+        data = resp.json()
+        if not isinstance(data, list):
+            print("❌ La respuesta no es una lista")
+            return []
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"⚠️ Error de conexión al obtener productos: {e}")
+        return []
 
-        if response.status_code == 200:
+def delete_product(product_id: str):
+    try:
+        resp = requests.delete(BASE_URL, json={"id": product_id}, timeout=20)
+        if resp.status_code == 200:
             print(f"✅ Producto {product_id} eliminado correctamente")
         else:
-            print(f"❌ Error eliminando {product_id}: {response.status_code} {response.text}")
-
+            print(f"❌ Error eliminando {product_id}: {resp.status_code} {resp.text}")
     except requests.exceptions.RequestException as e:
         print(f"⚠️ Error de conexión eliminando {product_id}: {e}")
+
+def main():
+    products = fetch_all_products()
+    if not products:
+        print("⚠️ No se encontraron productos para eliminar.")
+        return
+
+    print(f"🔎 Encontrados {len(products)} productos. Eliminando...")
+    for p in products:
+        product_id = p.get("id")
+        if not product_id:
+            continue
+        delete_product(product_id)
+
+if __name__ == "__main__":
+    main()

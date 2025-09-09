@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { sendVentaNotification } from '@/lib/email-service';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -19,6 +20,31 @@ export async function POST(request: NextRequest) {
       total,
       userId 
     } = body;
+
+    // Obtener userId del token si no se proporciona en el body
+    let finalUserId = userId;
+    if (!finalUserId) {
+      const authHeader = request.headers.get('authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET || 'it360-secret-key-2024') as any;
+          finalUserId = decoded.userId;
+          console.log('🔍 UserId obtenido del token:', finalUserId);
+        } catch (error) {
+          console.log('🔍 Error decodificando token:', error);
+        }
+      }
+    }
+
+    // Log para debug
+    console.log('🔍 Checkout recibido:', {
+      nombre,
+      email,
+      userId: finalUserId,
+      itemsCount: items?.length,
+      total
+    });
 
     // Validaciones básicas
     if (!nombre || !email || !telefono || !direccion || !metodoPago || !items || !total) {
@@ -60,6 +86,35 @@ export async function POST(request: NextRequest) {
       metodoPago,
       requiereAprobacion: metodoPago === 'transferencia'
     });
+
+    // Crear ventas para cada producto en la tabla sales
+    const ventasCreadas = [];
+    for (const item of items) {
+      console.log('🔍 Creando venta con userId:', finalUserId);
+      const venta = await prisma.sale.create({
+        data: {
+          userId: finalUserId || null,
+          productId: item.product?.id || null,
+          serviceId: item.service?.id || null,
+          amount: (item.product?.price || item.price || 0) * item.quantity,
+          nombre: nombre,
+          email: email,
+          telefono: telefono,
+          direccion: direccion,
+          metodoPago: metodoPago,
+          status: 'pending', // Estado inicial pendiente
+          ticketId: ticketCompra.id, // Vincular con el ticket
+          adminNotes: `Ticket: ${ticketNumber}`
+        }
+      });
+      ventasCreadas.push(venta);
+      console.log('✅ Venta creada:', {
+        id: venta.id,
+        producto: item.product?.name || item.name,
+        cantidad: item.quantity,
+        monto: venta.amount
+      });
+    }
 
     // Enviar email de notificación usando Gmail
     try {

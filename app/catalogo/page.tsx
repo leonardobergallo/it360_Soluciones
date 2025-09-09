@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ContactVendorModal from "../../components/ContactVendorModal";
+import ProductInquiryModal from "../../components/ProductInquiryModal";
 
 interface Item {
   id: string;
@@ -32,26 +33,46 @@ export default function CatalogoPage() {
   const [selectedProduct, setSelectedProduct] = useState<Item | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // Estado para la galería de imágenes
   const [contactModalOpen, setContactModalOpen] = useState(false); // Estado para el modal de contacto
+  const [inquiryModalOpen, setInquiryModalOpen] = useState(false); // Estado para el modal de consulta
   
+  // Normaliza rutas de imagen para servir desde /public
+  const normalizeImagePath = (image?: string) => {
+    if (!image) return image as any;
+    const replaced = image.replace(/\\/g, '/');
+    const publicIdx = replaced.indexOf('/public/');
+    if (publicIdx >= 0) {
+      return replaced.slice(publicIdx + '/public'.length);
+    }
+    if (replaced.startsWith('http://') || replaced.startsWith('https://')) return replaced;
+    if (replaced.startsWith('/images/')) return replaced;
+    if (replaced.startsWith('/')) return replaced;
+    return `/images/${replaced}`;
+  };
+
   // Estados para filtros y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("todas");
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 200000 });
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 2000000 });
   const [sortBy, setSortBy] = useState("nombre"); // nombre, precio, popularidad
   
   // Categorías disponibles (actualizadas según la base de datos)
   const categories = [
     { id: "todas", name: "Todas las categorías", icon: "🏷️" },
     { id: "Celulares", name: "Celulares", icon: "📱" },
-    { id: "Notebook", name: "Notebook", icon: "💻" },
+    { id: "Notebooks", name: "Notebooks", icon: "💻" },
     { id: "Monitores", name: "Monitores", icon: "🖥️" },
-    { id: "Impresora", name: "Impresoras", icon: "🖨️" },
-    { id: "Almacena", name: "Almacenamiento", icon: "💾" },
+    { id: "Impresoras", name: "Impresoras", icon: "🖨️" },
+    { id: "Almacenamiento", name: "Almacenamiento", icon: "💾" },
     { id: "Tablets", name: "Tablets", icon: "📱" },
-    { id: "Accesorio", name: "Accesorios", icon: "🎧" },
-    { id: "Periferico", name: "Periféricos", icon: "🖱️" },
-    { id: "Parlantes", name: "Parlantes", icon: "🔊" },
-    { id: "Redes", name: "Redes", icon: "📡" }
+    { id: "Accesorios Auto", name: "Accesorios Auto", icon: "🚗" },
+    { id: "Periféricos", name: "Periféricos", icon: "🖱️" },
+    { id: "Audio", name: "Audio", icon: "🔊" },
+    { id: "Redes", name: "Redes", icon: "📡" },
+    { id: "Cámaras", name: "Cámaras", icon: "📷" },
+    { id: "Smartwatches", name: "Smartwatches", icon: "⌚" },
+    { id: "Electrodomésticos", name: "Electrodomésticos", icon: "🏠" },
+    { id: "Muebles", name: "Muebles", icon: "🪑" },
+    { id: "Otros", name: "Otros", icon: "📦" }
   ];
 
   // Función para generar múltiples imágenes para un producto
@@ -120,7 +141,7 @@ export default function CatalogoPage() {
   };
 
   useEffect(() => {
-    fetch("/api/products")
+    fetch("/api/products/catalog")
       .then(r => {
         if (!r.ok) {
           throw new Error(`HTTP error! status: ${r.status}`);
@@ -130,14 +151,30 @@ export default function CatalogoPage() {
       .then(data => {
         if (Array.isArray(data)) {
           setProducts(data.map((p: { id: string; name: string; description: string; price: number; image?: string; category?: string }, i: number) => {
-            // Usar la imagen del producto si existe, sino usar imagen automática
-            const mainImage = p.image || productImages[i % productImages.length];
+            // Manejar diferentes tipos de imagen
+            let mainImage, productIcon;
+            
+            if (p.image && p.image.startsWith('ICON:')) {
+              // Producto con icono por categoría
+              mainImage = 'USE_ICON';
+              productIcon = p.image.replace('ICON:', '');
+            } else if (p.image === 'USE_NAME') {
+              // Producto que usa nombre (legacy)
+              mainImage = 'USE_NAME';
+              productIcon = getProductIcon(p.name);
+            } else {
+              // Producto con imagen real
+              const normalized = normalizeImagePath(p.image);
+              mainImage = normalized || productImages[i % productImages.length];
+              productIcon = getProductIcon(p.name);
+            }
+            
             return { 
               ...p, 
               type: "product", 
               image: mainImage,
-              imagenes: generateProductImages(p.name, mainImage),
-              icon: getProductIcon(p.name)
+              imagenes: mainImage === 'USE_ICON' || mainImage === 'USE_NAME' ? [mainImage] : generateProductImages(p.name, mainImage),
+              icon: productIcon
             };
           }));
           console.log(`✅ Cargados ${data.length} productos del catálogo`);
@@ -476,14 +513,25 @@ export default function CatalogoPage() {
                 {/* Efecto de brillo en hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/15 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                {/* Imagen del producto */}
+                {/* Imagen del producto o nombre */}
                 <div className="relative h-40 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 flex items-center justify-center p-6 backdrop-blur-sm overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 to-blue-500/5"></div>
-                  <img 
-                    src={p.image} 
-                    alt={p.name} 
-                    className="relative w-20 h-20 object-contain group-hover:scale-125 transition-transform duration-700 z-10" 
-                  />
+                  {p.image === 'USE_ICON' || p.image === 'USE_NAME' ? (
+                    // Mostrar icono por categoría + nombre del producto
+                    <div className="relative text-center z-10">
+                      <div className="text-4xl mb-2">{p.icon}</div>
+                      <div className="text-white/90 font-semibold text-sm leading-tight px-2">
+                        {p.name.length > 50 ? p.name.substring(0, 50) + '...' : p.name}
+                      </div>
+                    </div>
+                  ) : (
+                    // Mostrar imagen normal
+                    <img 
+                      src={p.image} 
+                      alt={p.name} 
+                      className="relative w-20 h-20 object-contain group-hover:scale-125 transition-transform duration-700 z-10" 
+                    />
+                  )}
                   {/* Efecto de partículas */}
                   <div className="absolute top-2 right-2 w-2 h-2 bg-cyan-400/60 rounded-full animate-pulse"></div>
                   <div className="absolute bottom-2 left-2 w-1.5 h-1.5 bg-blue-400/60 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
@@ -558,6 +606,30 @@ export default function CatalogoPage() {
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/0 via-cyan-400/20 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               </div>
             ))}
+          </div>
+
+          {/* Botón de consulta de productos */}
+          <div className="mt-12 text-center">
+            <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 rounded-2xl p-8 backdrop-blur-md">
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-2xl font-bold text-white mb-4">
+                ¿No encuentras lo que buscas?
+              </h3>
+              <p className="text-white/70 mb-6 max-w-2xl mx-auto">
+                Si no ves el producto que necesitas en nuestro catálogo, ¡no te preocupes! 
+                Podemos conseguirlo para ti. Déjanos saber qué estás buscando y te contactaremos 
+                con la mejor opción disponible.
+              </p>
+              <button
+                onClick={() => setInquiryModalOpen(true)}
+                className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105 flex items-center gap-3 mx-auto"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Consultar Producto
+              </button>
+            </div>
           </div>
         </div>
 
@@ -658,16 +730,27 @@ export default function CatalogoPage() {
                 </button>
               </div>
 
-              {/* Galería de imágenes */}
+              {/* Galería de imágenes o nombre */}
               <div className="mb-3">
                 <div className="relative h-32 sm:h-40 bg-gray-100 rounded-lg overflow-hidden mb-2">
-                  <img 
-                    src={selectedProduct.imagenes?.[currentImageIndex] || selectedProduct.image} 
-                    alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Navegación de imágenes */}
-                  {selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
+                  {selectedProduct.image === 'USE_ICON' || selectedProduct.image === 'USE_NAME' ? (
+                    // Mostrar icono por categoría + nombre del producto
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-50">
+                      <div className="text-6xl mb-3">{selectedProduct.icon}</div>
+                      <div className="text-gray-800 font-bold text-center px-4">
+                        {selectedProduct.name}
+                      </div>
+                    </div>
+                  ) : (
+                    // Mostrar imagen normal
+                    <img 
+                      src={selectedProduct.imagenes?.[currentImageIndex] || selectedProduct.image} 
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {/* Navegación de imágenes - solo si no es USE_ICON o USE_NAME */}
+                  {selectedProduct.image !== 'USE_ICON' && selectedProduct.image !== 'USE_NAME' && selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
                     <>
                       <button 
                         onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : selectedProduct.imagenes!.length - 1)}
@@ -684,8 +767,8 @@ export default function CatalogoPage() {
                     </>
                   )}
                 </div>
-                {/* Miniaturas */}
-                {selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
+                {/* Miniaturas - solo si no es USE_ICON o USE_NAME */}
+                {selectedProduct.image !== 'USE_ICON' && selectedProduct.image !== 'USE_NAME' && selectedProduct.imagenes && selectedProduct.imagenes.length > 1 && (
                   <div className="flex gap-1 justify-center">
                     {selectedProduct.imagenes.map((img, index) => (
                       <button
@@ -781,6 +864,13 @@ export default function CatalogoPage() {
           price: selectedProduct.price,
           description: selectedProduct.description
         } : undefined}
+      />
+
+      {/* Modal de consulta de productos */}
+      <ProductInquiryModal
+        isOpen={inquiryModalOpen}
+        onClose={() => setInquiryModalOpen(false)}
+        searchTerm={searchTerm}
       />
     </div>
   );
