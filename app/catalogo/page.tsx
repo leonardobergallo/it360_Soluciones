@@ -54,6 +54,9 @@ export default function CatalogoPage() {
   const [selectedCategory, setSelectedCategory] = useState("todas");
   const [priceRange, setPriceRange] = useState({ min: 0, max: 2000000 });
   const [sortBy, setSortBy] = useState("nombre"); // nombre, precio, popularidad
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 30;
   
   // Categorías disponibles (actualizadas según la base de datos)
   const categories = [
@@ -335,6 +338,23 @@ export default function CatalogoPage() {
     return filtered;
   };
 
+  // Resetear a página 1 cuando cambian los filtros o el término de búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, priceRange.min, priceRange.max, sortBy, products.length]);
+
+  const paginatedProducts = () => {
+    const all = getFilteredProducts();
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    return all.slice(start, end);
+  };
+
+  const totalPages = () => {
+    const total = getFilteredProducts().length;
+    return Math.max(1, Math.ceil(total / pageSize));
+  };
+
   const addToCart = async (item: Item) => {
     const token = localStorage.getItem('authToken');
     
@@ -591,7 +611,7 @@ export default function CatalogoPage() {
           </div>
           
           <div className="grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {getFilteredProducts().map((p, index) => (
+            {paginatedProducts().map((p, index) => (
               <div 
                 key={p.id} 
                 className="group bg-gradient-to-br from-white/5 to-white/10 border border-white/20 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-500 transform hover:-translate-y-2 overflow-hidden cursor-pointer relative backdrop-blur-md"
@@ -694,6 +714,35 @@ export default function CatalogoPage() {
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/0 via-cyan-400/20 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               </div>
             ))}
+          </div>
+
+          {/* Paginación */}
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 border backdrop-blur-md ${
+                currentPage === 1
+                  ? 'bg-white/5 border-white/10 text-white/40 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/30 text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30'
+              }`}
+            >
+              ← Anterior
+            </button>
+            <span className="text-white/80">
+              Página <span className="font-bold text-white">{currentPage}</span> de <span className="font-bold text-white">{totalPages()}</span>
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages(), p + 1))}
+              disabled={currentPage >= totalPages()}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 border backdrop-blur-md ${
+                currentPage >= totalPages()
+                  ? 'bg-white/5 border-white/10 text-white/40 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/30 text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30'
+              }`}
+            >
+              Siguiente →
+            </button>
           </div>
 
           {/* Botón de consulta de productos */}
