@@ -4,17 +4,17 @@ import os
 url = "http://localhost:3000/api/products"
 
 # Ruta absoluta de la imagen (expandimos el "~")
-image_path = os.path.expanduser("/public/images/michael1.jpg")
+image_path = os.path.expanduser("/public/images/heleitor.png")
 
 # Datos del nuevo producto
 new_product = {
-    "name": "Michael jackson",
-    "description": "Es un músico de alta calidad para llamadas y música.",
-    "price": 99999,
+    "name": "Heladera Kohinoor",
+    "description": "Es un heladera de alta calidad para llamadas y música.",
+    "price": 514556,
     "basePrice": 178458985455.0,
     "markup": 5068965.0,
     "stock": 10,
-    "category": "Accesorios",
+    "category": "Electrodomésticos",
     "image": image_path  # la API espera un string, no el archivo en binario
 }
 

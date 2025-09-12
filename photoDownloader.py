@@ -1,8 +1,10 @@
 import base64
 import html
+from io import BytesIO
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote, urljoin
 import requests
+from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -10,12 +12,37 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # --- Función para normalizar y descargar src ---
-def download_image_from_src(img_src: str, page_url: str = None, dest: str = "image.jpg"):
+def _ensure_png_path(path: Path) -> Path:
+    # Fuerza extensión .png
+    return path.with_suffix('.png') if path.suffix.lower() != '.png' else path
+
+
+def _to_png_transparent(image_bytes: bytes, white_threshold: int = 245) -> bytes:
+    """
+    Convierte a PNG con fondo transparente. Hace transparente el fondo blanco/casi blanco.
+    white_threshold: 0-255. Mayor => más píxeles se vuelven transparentes.
+    """
+    with Image.open(BytesIO(image_bytes)) as im:
+        im = im.convert('RGBA')
+        pixels = im.load()
+        width, height = im.size
+        for y in range(height):
+            for x in range(width):
+                r, g, b, a = pixels[x, y]
+                if r >= white_threshold and g >= white_threshold and b >= white_threshold:
+                    pixels[x, y] = (r, g, b, 0)
+        out = BytesIO()
+        im.save(out, format='PNG')
+        return out.getvalue()
+
+
+def download_image_from_src(img_src: str, page_url: str = None, dest: str = "image.png"):
     # Si dest es solo un nombre de archivo, guardar en public/images
     base_images_dir = Path("/home/bartolo/Documents/it360/it360_Soluciones/public/images")
     dest_path = Path(dest)
     if dest_path.parent == Path('.'):
         dest_path = base_images_dir / dest_path.name
+    dest_path = _ensure_png_path(dest_path)
 
     src = html.unescape((img_src or "").strip())
     if src.startswith("//"):
@@ -37,8 +64,9 @@ def download_image_from_src(img_src: str, page_url: str = None, dest: str = "ima
     if final_url.startswith("data:"):
         header, b64 = final_url.split(",", 1)
         data = base64.b64decode(b64)
+        png_bytes = _to_png_transparent(data)
         dest_path.parent.mkdir(parents=True, exist_ok=True)
-        dest_path.write_bytes(data)
+        dest_path.write_bytes(png_bytes)
         return str(dest_path.resolve())
 
     # descarga normal con requests
@@ -48,8 +76,9 @@ def download_image_from_src(img_src: str, page_url: str = None, dest: str = "ima
 
     resp = requests.get(final_url, headers=headers, timeout=30)
     resp.raise_for_status()
+    png_bytes = _to_png_transparent(resp.content)
     dest_path.parent.mkdir(parents=True, exist_ok=True)
-    dest_path.write_bytes(resp.content)
+    dest_path.write_bytes(png_bytes)
     return str(dest_path.resolve())
 
 # --- Clase Selenium Downloader para Notebook ---
@@ -72,7 +101,7 @@ class PhotoDownloader:
         self.driver = webdriver.Chrome(options=options)
         self.driver.set_window_size(1280, 800)
 
-    def descargar_foto(self, query: str, destino="foto.jpg"):
+    def descargar_foto(self, query: str, destino="foto.png"):
         q = query.replace(" ", "+")
         url = f"https://duckduckgo.com/?q={q}&iax=images&ia=images"
         self.driver.get(url)

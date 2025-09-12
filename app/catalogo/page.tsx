@@ -51,119 +51,191 @@ export default function CatalogoPage() {
 
   // Estados para filtros y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("todas");
+  // Filtros por categoría (estructura en árbol: grupo -> subcategoría)
+  const [selectedGroup, setSelectedGroup] = useState("todas");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("todas");
   const [priceRange, setPriceRange] = useState({ min: 0, max: 2000000 });
   const [sortBy, setSortBy] = useState("nombre"); // nombre, precio, popularidad
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 30;
   
-  // Categorías disponibles (actualizadas según la base de datos)
+  // Grupos de categorías con mapeo a rubros
+  const groupedCategories = [
+    {
+      id: 'audio',
+      name: 'Audio y Sonido',
+      icon: '🔊',
+      rubros: [
+        'Auriculares Intrauditivos Bluetooth/Inalambricos',
+        'Auriculares Intrauditivos c/cable',
+        'Auriculares Vincha Bluetooth/Inalambricos',
+        'Auriculares Vincha c/cable',
+        'Microfonos Bluetooth/Inalambricos',
+        'Microfonos C/Cable',
+        'Parlantes PC y Sistemas de Audio',
+        'Parlantes Portables Moviles/Columnas/Monovolumen',
+        'Reproductor De Mp3 Mp4 Mp5'
+      ]
+    },
+    {
+      id: 'gaming',
+      name: 'Gaming y Entretenimiento',
+      icon: '🎮',
+      rubros: [
+        'Consolas De Juego',
+        'Joystick',
+        'Accesorios y Gadgets Geeks',
+        'Drone',
+        'Jugueteria'
+      ]
+    },
+    {
+      id: 'computadoras',
+      name: 'Computadoras y Notebooks',
+      icon: '💻',
+      rubros: [
+        'PCs Armadas / AIOs',
+        'Notebooks y Netbooks',
+        'Notebooks - Cargadores y Baterias',
+        'Notebooks/Tablets - Accesorios',
+        'Notebooks/Tablets - Maletines / Mochilas / Fundas'
+      ]
+    },
+    {
+      id: 'componentes',
+      name: 'Componentes de PC',
+      icon: '🧩',
+      rubros: [
+        'Micro Socket 1200',
+        'Micro Socket 1700',
+        'Micro Socket AM4',
+        'Micro Socket AM5',
+        'Mother Socket 1200',
+        'Mother Socket 1700',
+        'Mother Socket AM4',
+        'Mother Socket AM5',
+        'Memorias DDR',
+        'Memorias Flash',
+        'Memorias Para Notebook',
+        'Placa De Video Y Aceleradora',
+        'Placa De Sonido',
+        'Placas / Puertos / Controladoras / Hub usb',
+        'Fuentes De Alimentacion',
+        'Gabinetes',
+        'Ventiladores',
+        'Ups Y Estabilizadores'
+      ]
+    },
+    {
+      id: 'almacenamiento',
+      name: 'Almacenamiento',
+      icon: '💾',
+      rubros: [
+        'Disco Rigido Sata 2 / Sata 3',
+        'Disco SSD Sata 3.0',
+        'Disco SSD M.2 / PCIe NVMe',
+        'Pen Drive',
+        'Carry Disk'
+      ]
+    },
+    {
+      id: 'perifericos',
+      name: 'Periféricos y Accesorios',
+      icon: '🖱️',
+      rubros: [
+        'Teclados Bluetooth/Inalambricos',
+        'Teclados C/Cable',
+        'Teclados P/ SmartTV/Multidispositivo',
+        'Mouses Bluetooth/Inalambricos',
+        'Mouses C/Cable',
+        'Teclado y Mouse Kit Bluetooth/Inalambricos',
+        'Teclado y Mouse Kit C/Cable',
+        'Pad Para Mouse',
+        'Tableta Digitalizadora',
+        'Monitor Lcd / Led',
+        'Proyectores',
+        'Soportes TV/LCD/LED/Proyector',
+        'Soportes Smartphone/Tablet/Gps',
+        'Smartwatch y Smartband'
+      ]
+    },
+    {
+      id: 'impresion',
+      name: 'Impresión y Consumibles',
+      icon: '🖨️',
+      rubros: [
+        'Impresora Multifuncion Inyec Tinta',
+        'Impresora Multifuncion Laser',
+        'Impresora Laser',
+        'Impresora De Fotos',
+        'Cartuchos Originales',
+        'Cartuchos Alternativos Epson',
+        'Cartuchos Alternativos Hp',
+        'Tinta Alternativa Para Recarga',
+        'Tintas Originales Para Recarga',
+        'Toner Alternativo',
+        'Cintas Alternativas',
+        'Papeleria'
+      ]
+    },
+    {
+      id: 'cables',
+      name: 'Cables y Conectividad',
+      icon: '🔌',
+      rubros: [
+        'Cables Audio',
+        'Cables Video (Hdmi-Vga-Dvi-DisplayPort)',
+        'Cables Moviles (MiniUSB/MicroUSB/Lightning/Type-c)',
+        'Cables PC Power-Sata-Ps/2-Serie-Firewire-Paralelo',
+        'Cables USB',
+        'Cargadores y Fuentes',
+        'Conectividad Placas De Red',
+        'Conectividad Switchs',
+        'Conectividad Routers',
+        'Conectividad Print Server-Kvm-Data Switch-Splitter',
+        'Conectividad Accesorios',
+        'Conectividad Herramientas',
+        'Conectividad Ir Y Bluetooth'
+      ]
+    },
+    {
+      id: 'imagen',
+      name: 'Imagen y Video',
+      icon: '📷',
+      rubros: [
+        'Camara De Fotos',
+        'Camara De Fotos Accesorios',
+        'Camaras Web',
+        'Seguridad Video Accesorios',
+        'Seguridad Video IP Camaras y Nvr',
+        'Seguridad Porteros/Intercom',
+        'Seguridad Controles de Acceso',
+        'Seguridad Alarmas',
+        'Editoras / Sintonizadoras y adaptadores p/TV'
+      ]
+    },
+    {
+      id: 'hogar',
+      name: 'Hogar y Otros',
+      icon: '🏠',
+      rubros: [
+        'Bazar y Hogar',
+        'Electrodomesticos',
+        'Iluminacion',
+        'Muebles Cocina',
+        'Muebles Sillas',
+        'Manejo De Dinero',
+        'Pilas y Cargadores de Pilas',
+        'Limpieza y Mantenimiento',
+        'Herramientas'
+      ]
+    }
+  ];
+
   const categories = [
-    { id: "todas", name: "Todas las categorías", icon: "🏷️" },
-    { id: "Accesorios", name: "Accesorios", icon: "🏷️" },
-    { id: "Accesorios y Gadgets Geeks", name: "Accesorios y Gadgets Geeks", icon: "🏷️" },
-    { id: "Adaptadores", name: "Adaptadores", icon: "🏷️" },
-    { id: "Auriculares Intrauditivos Bluetooth/Inalambricos", name: "Auriculares Intrauditivos Bluetooth/Inalambricos", icon: "🏷️" },
-    { id: "Auriculares Intrauditivos c/cable", name: "Auriculares Intrauditivos c/cable", icon: "🏷️" },
-    { id: "Auriculares Vincha Bluetooth/Inalambricos", name: "Auriculares Vincha Bluetooth/Inalambricos", icon: "🏷️" },
-    { id: "Auriculares Vincha c/cable", name: "Auriculares Vincha c/cable", icon: "🏷️" },
-    { id: "Bazar y Hogar", name: "Bazar y Hogar", icon: "🏷️" },
-    { id: "Cables Audio", name: "Cables Audio", icon: "🏷️" },
-    { id: "Cables Moviles (MiniUSB/MicroUSB/Lightning/Type-c)", name: "Cables Moviles (MiniUSB/MicroUSB/Lightning/Type-c)", icon: "🏷️" },
-    { id: "Cables PC Power-Sata-Ps/2-Serie-Firewire-Paralelo", name: "Cables PC Power-Sata-Ps/2-Serie-Firewire-Paralelo", icon: "🏷️" },
-    { id: "Cables USB", name: "Cables USB", icon: "🏷️" },
-    { id: "Cables Video (Hdmi-Vga-Dvi-DisplayPort)", name: "Cables Video (Hdmi-Vga-Dvi-DisplayPort)", icon: "🏷️" },
-    { id: "Camara De Fotos", name: "Camara De Fotos", icon: "🏷️" },
-    { id: "Camara De Fotos Accesorios", name: "Camara De Fotos Accesorios", icon: "🏷️" },
-    { id: "Camaras Web", name: "Camaras Web", icon: "🏷️" },
-    { id: "Cargadores y Fuentes", name: "Cargadores y Fuentes", icon: "🏷️" },
-    { id: "Carry Disk", name: "Carry Disk", icon: "🏷️" },
-    { id: "Cartuchos Alternativos Epson", name: "Cartuchos Alternativos Epson", icon: "🏷️" },
-    { id: "Cartuchos Alternativos Hp", name: "Cartuchos Alternativos Hp", icon: "🏷️" },
-    { id: "Cartuchos Originales", name: "Cartuchos Originales", icon: "🏷️" },
-    { id: "Cintas Alternativas", name: "Cintas Alternativas", icon: "🏷️" },
-    { id: "Conectividad Accesorios", name: "Conectividad Accesorios", icon: "🏷️" },
-    { id: "Conectividad Cables", name: "Conectividad Cables", icon: "🏷️" },
-    { id: "Conectividad Herramientas", name: "Conectividad Herramientas", icon: "🏷️" },
-    { id: "Conectividad Ir Y Bluetooth", name: "Conectividad Ir Y Bluetooth", icon: "🏷️" },
-    { id: "Conectividad Placas De Red", name: "Conectividad Placas De Red", icon: "🏷️" },
-    { id: "Conectividad Print Server-Kvm-Data Switch-Splitter", name: "Conectividad Print Server-Kvm-Data Switch-Splitter", icon: "🏷️" },
-    { id: "Conectividad Routers", name: "Conectividad Routers", icon: "🏷️" },
-    { id: "Conectividad Switchs", name: "Conectividad Switchs", icon: "🏷️" },
-    { id: "Consolas De Juego", name: "Consolas De Juego", icon: "🏷️" },
-    { id: "Disco Rigido Sata 2 / Sata 3", name: "Disco Rigido Sata 2 / Sata 3", icon: "🏷️" },
-    { id: "Disco SSD M.2 / PCIe NVMe", name: "Disco SSD M.2 / PCIe NVMe", icon: "🏷️" },
-    { id: "Disco SSD Sata 3.0", name: "Disco SSD Sata 3.0", icon: "🏷️" },
-    { id: "Drone", name: "Drone", icon: "🏷️" },
-    { id: "Editoras / Sintonizadoras y adaptadores p/TV", name: "Editoras / Sintonizadoras y adaptadores p/TV", icon: "🏷️" },
-    { id: "Electrodomesticos", name: "Electrodomesticos", icon: "🏷️" },
-    { id: "Fuentes De Alimentacion", name: "Fuentes De Alimentacion", icon: "🏷️" },
-    { id: "Gabinetes", name: "Gabinetes", icon: "🏷️" },
-    { id: "Herramientas", name: "Herramientas", icon: "🏷️" },
-    { id: "Iluminacion", name: "Iluminacion", icon: "🏷️" },
-    { id: "Impresora De Fotos", name: "Impresora De Fotos", icon: "🏷️" },
-    { id: "Impresora Laser", name: "Impresora Laser", icon: "🏷️" },
-    { id: "Impresora Multifuncion Inyec Tinta", name: "Impresora Multifuncion Inyec Tinta", icon: "🏷️" },
-    { id: "Impresora Multifuncion Laser", name: "Impresora Multifuncion Laser", icon: "🏷️" },
-    { id: "Joystick", name: "Joystick", icon: "🏷️" },
-    { id: "Jugueteria", name: "Jugueteria", icon: "🏷️" },
-    { id: "Limpieza y Mantenimiento", name: "Limpieza y Mantenimiento", icon: "🏷️" },
-    { id: "Manejo De Dinero", name: "Manejo De Dinero", icon: "🏷️" },
-    { id: "Memorias DDR", name: "Memorias DDR", icon: "🏷️" },
-    { id: "Memorias Flash", name: "Memorias Flash", icon: "🏷️" },
-    { id: "Memorias Para Notebook", name: "Memorias Para Notebook", icon: "🏷️" },
-    { id: "Micro Socket 1200", name: "Micro Socket 1200", icon: "🏷️" },
-    { id: "Micro Socket 1700", name: "Micro Socket 1700", icon: "🏷️" },
-    { id: "Micro Socket AM4", name: "Micro Socket AM4", icon: "🏷️" },
-    { id: "Micro Socket AM5", name: "Micro Socket AM5", icon: "🏷️" },
-    { id: "Microfonos Bluetooth/Inalambricos", name: "Microfonos Bluetooth/Inalambricos", icon: "🏷️" },
-    { id: "Microfonos C/Cable", name: "Microfonos C/Cable", icon: "🏷️" },
-    { id: "Monitor Lcd / Led", name: "Monitor Lcd / Led", icon: "🏷️" },
-    { id: "Mother Socket 1200", name: "Mother Socket 1200", icon: "🏷️" },
-    { id: "Mother Socket 1700", name: "Mother Socket 1700", icon: "🏷️" },
-    { id: "Mother Socket AM4", name: "Mother Socket AM4", icon: "🏷️" },
-    { id: "Mother Socket AM5", name: "Mother Socket AM5", icon: "🏷️" },
-    { id: "Mouses Bluetooth/Inalambricos", name: "Mouses Bluetooth/Inalambricos", icon: "🏷️" },
-    { id: "Mouses C/Cable", name: "Mouses C/Cable", icon: "🏷️" },
-    { id: "Muebles Cocina", name: "Muebles Cocina", icon: "🏷️" },
-    { id: "Muebles Sillas", name: "Muebles Sillas", icon: "🏷️" },
-    { id: "Notebooks - Cargadores y Baterias", name: "Notebooks - Cargadores y Baterias", icon: "🏷️" },
-    { id: "Notebooks y Netbooks", name: "Notebooks y Netbooks", icon: "🏷️" },
-    { id: "Notebooks/Tablets - Accesorios", name: "Notebooks/Tablets - Accesorios", icon: "🏷️" },
-    { id: "Notebooks/Tablets - Maletines / Mochilas / Fundas", name: "Notebooks/Tablets - Maletines / Mochilas / Fundas", icon: "🏷️" },
-    { id: "Pad Para Mouse", name: "Pad Para Mouse", icon: "🏷️" },
-    { id: "Papeleria", name: "Papeleria", icon: "🏷️" },
-    { id: "Parlantes PC y Sistemas de Audio", name: "Parlantes PC y Sistemas de Audio", icon: "🏷️" },
-    { id: "Parlantes Portables Moviles/Columnas/Monovolumen", name: "Parlantes Portables Moviles/Columnas/Monovolumen", icon: "🏷️" },
-    { id: "PCs Armadas / AIOs", name: "PCs Armadas / AIOs", icon: "🏷️" },
-    { id: "Pen Drive", name: "Pen Drive", icon: "🏷️" },
-    { id: "Pilas y Cargadores de Pilas", name: "Pilas y Cargadores de Pilas", icon: "🏷️" },
-    { id: "Placa De Sonido", name: "Placa De Sonido", icon: "🏷️" },
-    { id: "Placa De Video Y Aceleradora", name: "Placa De Video Y Aceleradora", icon: "🏷️" },
-    { id: "Placas / Puertos / Controladoras / Hub usb", name: "Placas / Puertos / Controladoras / Hub usb", icon: "🏷️" },
-    { id: "Proyectores", name: "Proyectores", icon: "🏷️" },
-    { id: "Reproductor De Mp3 Mp4 Mp5", name: "Reproductor De Mp3 Mp4 Mp5", icon: "🏷️" },
-    { id: "Seguridad Alarmas", name: "Seguridad Alarmas", icon: "🏷️" },
-    { id: "Seguridad Controles de Acceso", name: "Seguridad Controles de Acceso", icon: "🏷️" },
-    { id: "Seguridad Porteros/Intercom", name: "Seguridad Porteros/Intercom", icon: "🏷️" },
-    { id: "Seguridad Video Accesorios", name: "Seguridad Video Accesorios", icon: "🏷️" },
-    { id: "Seguridad Video IP Camaras y Nvr", name: "Seguridad Video IP Camaras y Nvr", icon: "🏷️" },
-    { id: "Smartwatch y Smartband", name: "Smartwatch y Smartband", icon: "🏷️" },
-    { id: "Soportes Smartphone/Tablet/Gps", name: "Soportes Smartphone/Tablet/Gps", icon: "🏷️" },
-    { id: "Soportes TV/LCD/LED/Proyector", name: "Soportes TV/LCD/LED/Proyector", icon: "🏷️" },
-    { id: "Tableta Digitalizadora", name: "Tableta Digitalizadora", icon: "🏷️" },
-    { id: "Tablets / e-Readers", name: "Tablets / e-Readers", icon: "🏷️" },
-    { id: "Teclado y Mouse Kit Bluetooth/Inalambricos", name: "Teclado y Mouse Kit Bluetooth/Inalambricos", icon: "🏷️" },
-    { id: "Teclado y Mouse Kit C/Cable", name: "Teclado y Mouse Kit C/Cable", icon: "🏷️" },
-    { id: "Teclados Bluetooth/Inalambricos", name: "Teclados Bluetooth/Inalambricos", icon: "🏷️" },
-    { id: "Teclados C/Cable", name: "Teclados C/Cable", icon: "🏷️" },
-    { id: "Teclados P/ SmartTV/Multidispositivo", name: "Teclados P/ SmartTV/Multidispositivo", icon: "🏷️" },
-    { id: "Tinta Alternativa Para Recarga", name: "Tinta Alternativa Para Recarga", icon: "🏷️" },
-    { id: "Tintas Originales Para Recarga", name: "Tintas Originales Para Recarga", icon: "🏷️" },
-    { id: "Toner Alternativo", name: "Toner Alternativo", icon: "🏷️" },
-    { id: "Ups Y Estabilizadores", name: "Ups Y Estabilizadores", icon: "🏷️" },
-    { id: "Ventiladores", name: "Ventiladores", icon: "🏷️" }
+    { id: 'todas', name: 'Todas las categorías', icon: '🏷️' },
+    ...groupedCategories.map(g => ({ id: g.name, name: g.name, icon: g.icon }))
   ];
 
   // Función para generar múltiples imágenes para un producto
@@ -311,8 +383,17 @@ export default function CatalogoPage() {
                            product.description.toLowerCase().includes(searchTerm.toLowerCase());
       
       // Filtro por categoría
-      const matchesCategory = selectedCategory === "todas" || 
-                             (product as { category?: string }).category === selectedCategory;
+      const matchesCategory = (() => {
+        const prodCategory = (product as { category?: string }).category || '';
+        // Sin filtros
+        if (selectedGroup === 'todas' && selectedSubcategory === 'todas') return true;
+        // Subcategoría específica prioritaria
+        if (selectedSubcategory !== 'todas') return prodCategory === selectedSubcategory;
+        // Filtro por grupo
+        const group = groupedCategories.find(g => g.name === selectedGroup);
+        if (group) return group.rubros.includes(prodCategory);
+        return true;
+      })();
       
       // Filtro por precio
       const matchesPrice = product.price >= priceRange.min && product.price <= priceRange.max;
@@ -341,7 +422,7 @@ export default function CatalogoPage() {
   // Resetear a página 1 cuando cambian los filtros o el término de búsqueda
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, priceRange.min, priceRange.max, sortBy, products.length]);
+  }, [searchTerm, selectedGroup, selectedSubcategory, priceRange.min, priceRange.max, sortBy, products.length]);
 
   const paginatedProducts = () => {
     const all = getFilteredProducts();
@@ -551,17 +632,28 @@ export default function CatalogoPage() {
                 </svg>
               </div>
 
-              {/* Filtro por categoría */}
-              <div>
+              {/* Filtro por categoría (Grupo y Subcategoría) */}
+              <div className="flex flex-col gap-2">
                 <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  value={selectedGroup}
+                  onChange={(e) => { setSelectedGroup(e.target.value); setSelectedSubcategory('todas'); }}
                   className="w-full backdrop-blur-md bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
                 >
                   {categories.map(category => (
-                    <option key={category.id} value={category.id} className="bg-gray-800 text-white">
+                    <option key={category.id} value={category.name} className="bg-gray-800 text-white">
                       {category.icon} {category.name}
                     </option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedSubcategory}
+                  onChange={(e) => setSelectedSubcategory(e.target.value)}
+                  className="w-full backdrop-blur-md bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                >
+                  <option value="todas" className="bg-gray-800 text-white">Todas las subcategorías</option>
+                  {(groupedCategories.find(g => g.name === selectedGroup)?.rubros || []).map(r => (
+                    <option key={r} value={r} className="bg-gray-800 text-white">{r}</option>
                   ))}
                 </select>
               </div>
